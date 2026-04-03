@@ -68,4 +68,28 @@ export const darkTheme = createTheme({
       fontWeight: 500,
     },
   },
+  components: {
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#2A2A2A',
+          '& .MuiTableCell-head': {
+            color: '#FFFFFF',
+            fontWeight: 600,
+            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          backgroundColor: '#2A2A2A',
+          color: '#FFFFFF',
+          fontWeight: 600,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+        },
+      },
+    },
+  },
 });

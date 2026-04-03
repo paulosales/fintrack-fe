@@ -4,12 +4,21 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer, { TransactionState } from './transactionSlice';
+import accountsReducer, { AccountsState } from '../accounts/accountsSlice';
 import TransactionList from './TransactionList';
 
-const renderWithStore = (state: TransactionState) => {
+interface TestState {
+  transactions: TransactionState;
+  accounts: AccountsState;
+}
+
+const renderWithStore = (state: TestState) => {
   const store = configureStore({
-    reducer: { transactions: transactionsReducer },
-    preloadedState: { transactions: state },
+    reducer: {
+      transactions: transactionsReducer,
+      accounts: accountsReducer,
+    },
+    preloadedState: state,
   });
 
   return render(
@@ -20,12 +29,21 @@ const renderWithStore = (state: TransactionState) => {
 };
 
 describe('TransactionList', () => {
+  const mockAccountsState: AccountsState = {
+    loading: false,
+    error: null,
+    data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', account_type_id: 1 }],
+  };
+
   it('renders empty state', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true, data: [] }) })
     );
-    renderWithStore({ loading: false, error: null, data: [] });
+    renderWithStore({
+      transactions: { loading: false, error: null, data: [] },
+      accounts: mockAccountsState,
+    });
 
     expect(await screen.findByText('No transactions found.')).toBeInTheDocument();
   });
@@ -48,7 +66,10 @@ describe('TransactionList', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true, data }) })
     );
-    renderWithStore({ loading: false, error: null, data: [] });
+    renderWithStore({
+      transactions: { loading: false, error: null, data: [] },
+      accounts: mockAccountsState,
+    });
 
     expect(await screen.findByText('Purchase test')).toBeInTheDocument();
     expect(screen.getByText('100')).toBeInTheDocument();

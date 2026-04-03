@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTransactions, Transaction } from './transactionSlice';
+import { fetchAccounts } from '../accounts/accountsSlice';
 import type { RootState, AppDispatch } from '../../store';
 import {
   Box,
@@ -14,15 +15,27 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 
 const TransactionList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { data, loading, error } = useSelector((state: RootState) => state.transactions);
+  const {
+    data: accounts,
+    loading: accountsLoading,
+    error: accountsError,
+  } = useSelector((state: RootState) => state.accounts);
   const [accountId, setAccountId] = useState<number | null>(null);
+
+  useEffect(() => {
+    dispatch(fetchAccounts());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchTransactions(accountId));
@@ -30,6 +43,11 @@ const TransactionList: React.FC = () => {
 
   const handleReload = () => {
     dispatch(fetchTransactions(accountId));
+  };
+
+  const getAccountName = (id: number): string => {
+    const account = accounts.find((acc) => acc.id === id);
+    return account ? `${account.code} - ${account.name}` : `Account ${id}`;
   };
 
   return (
@@ -40,19 +58,44 @@ const TransactionList: React.FC = () => {
 
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
-            label="Account ID"
-            type="number"
-            value={accountId ?? ''}
-            onChange={(event) =>
-              setAccountId(event.target.value ? Number(event.target.value) : null)
-            }
-          />
+          <FormControl sx={{ minWidth: 300 }}>
+            <InputLabel>Select Account</InputLabel>
+            <Select
+              value={accountId ?? ''}
+              onChange={(event) =>
+                setAccountId(event.target.value ? Number(event.target.value) : null)
+              }
+              label="Select Account"
+              disabled={accountsLoading}
+            >
+              <MenuItem value="">
+                <em>All Accounts</em>
+              </MenuItem>
+              {accountsLoading ? (
+                <MenuItem disabled>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Loading accounts...
+                </MenuItem>
+              ) : (
+                accounts.map((account) => (
+                  <MenuItem key={account.id} value={account.id}>
+                    {account.code} - {account.name}
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
           <Button variant="contained" onClick={handleReload}>
             Reload
           </Button>
         </Box>
       </Paper>
+
+      {accountsError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to load accounts: {accountsError}
+        </Alert>
+      )}
 
       {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -83,7 +126,7 @@ const TransactionList: React.FC = () => {
               {data.map((tx: Transaction) => (
                 <TableRow key={tx.id}>
                   <TableCell>{tx.id}</TableCell>
-                  <TableCell>{tx.account_id}</TableCell>
+                  <TableCell>{getAccountName(tx.account_id)}</TableCell>
                   <TableCell>{tx.transaction_type_id}</TableCell>
                   <TableCell>{tx.datetime}</TableCell>
                   <TableCell>{tx.amount}</TableCell>
