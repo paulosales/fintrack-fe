@@ -32,7 +32,7 @@ describe('TransactionList', () => {
   const mockAccountsState: AccountsState = {
     loading: false,
     error: null,
-    data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', account_type_id: 1 }],
+    data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }],
   };
 
   it('renders empty state', async () => {
@@ -52,8 +52,8 @@ describe('TransactionList', () => {
     const data = [
       {
         id: 1,
-        account_id: 123,
-        transaction_type_id: 1,
+        accountId: 123,
+        transactionTypeId: 1,
         datetime: '2026-04-03 00:00:00',
         amount: 100,
         description: 'Purchase test',

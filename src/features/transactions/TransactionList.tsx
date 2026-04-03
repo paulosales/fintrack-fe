@@ -126,8 +126,8 @@ const TransactionList: React.FC = () => {
               {data.map((tx: Transaction) => (
                 <TableRow key={tx.id}>
                   <TableCell>{tx.id}</TableCell>
-                  <TableCell>{getAccountName(tx.account_id)}</TableCell>
-                  <TableCell>{tx.transaction_type_id}</TableCell>
+                  <TableCell>{getAccountName(tx.accountId)}</TableCell>
+                  <TableCell>{tx.transactionTypeId}</TableCell>
                   <TableCell>{tx.datetime}</TableCell>
                   <TableCell>{tx.amount}</TableCell>
                   <TableCell>{tx.description}</TableCell>

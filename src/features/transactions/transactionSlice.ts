@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Transaction {
   id: number;
-  account_id: number;
-  transaction_type_id: number;
+  accountId: number;
+  transactionTypeId: number;
   datetime: string;
   amount: number;
   description: string;
