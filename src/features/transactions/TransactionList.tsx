@@ -120,6 +120,7 @@ const TransactionList: React.FC = () => {
                 <TableCell>Date</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Description</TableCell>
+                <TableCell>Note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -131,6 +132,7 @@ const TransactionList: React.FC = () => {
                   <TableCell>{tx.datetime}</TableCell>
                   <TableCell>{tx.amount}</TableCell>
                   <TableCell>{tx.description}</TableCell>
+                  <TableCell>{tx.note || '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
