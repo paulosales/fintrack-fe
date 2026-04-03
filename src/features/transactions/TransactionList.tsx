@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchTransactions, Transaction } from './transactionSlice';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import type { RootState, AppDispatch } from '../../store';
+import { formatDateTime } from '../../utils/dateUtils';
 import {
   Box,
   Button,
@@ -129,7 +130,7 @@ const TransactionList: React.FC = () => {
                   <TableCell>{tx.id}</TableCell>
                   <TableCell>{getAccountName(tx.accountId)}</TableCell>
                   <TableCell>{tx.transactionTypeId}</TableCell>
-                  <TableCell>{tx.datetime}</TableCell>
+                  <TableCell>{formatDateTime(tx.datetime)}</TableCell>
                   <TableCell>{tx.amount}</TableCell>
                   <TableCell>{tx.description}</TableCell>
                   <TableCell>{tx.note || '-'}</TableCell>

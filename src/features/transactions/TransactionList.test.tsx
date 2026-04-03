@@ -74,5 +74,6 @@ describe('TransactionList', () => {
     expect(await screen.findByText('Purchase test')).toBeInTheDocument();
     expect(screen.getByText('100')).toBeInTheDocument();
     expect(screen.getByText('note')).toBeInTheDocument();
+    expect(screen.getByText('2026-04-03 00:00:00')).toBeInTheDocument();
   });
 });
