@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Container,
-  AppBar,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { Box, Container, AppBar, Toolbar, Typography } from '@mui/material';
 import TransactionList from './features/transactions/TransactionList';
 import ThemeToggle from './components/ThemeToggle';
 

@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
@@ -29,6 +31,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "happy-dom": "^20.8.9",
     "jsdom": "^29.0.1",
+    "prettier": "^3.8.1",
     "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vitest": "^4.1.2"

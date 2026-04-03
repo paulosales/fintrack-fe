@@ -20,7 +20,7 @@ export interface TransactionState {
 const initialState: TransactionState = {
   loading: false,
   error: null,
-  data: []
+  data: [],
 };
 
 export const fetchTransactions = createAsyncThunk(
@@ -33,7 +33,11 @@ export const fetchTransactions = createAsyncThunk(
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
       }
-      const payload = (await response.json()) as { success: boolean; data?: Transaction[]; error?: string };
+      const payload = (await response.json()) as {
+        success: boolean;
+        data?: Transaction[];
+        error?: string;
+      };
       if (!payload.success) {
         return rejectWithValue(payload.error || 'Unknown error');
       }
@@ -52,11 +56,11 @@ const transactionSlice = createSlice({
       state.data = [];
       state.error = null;
       state.loading = false;
-    }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchTransactions.pending, state => {
+      .addCase(fetchTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -68,7 +72,7 @@ const transactionSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const { clearTransactions } = transactionSlice.actions;

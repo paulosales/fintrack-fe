@@ -16,7 +16,7 @@ import {
   TableRow,
   TextField,
   Typography,
-  Alert
+  Alert,
 } from '@mui/material';
 
 const TransactionList: React.FC = () => {
@@ -44,9 +44,13 @@ const TransactionList: React.FC = () => {
             label="Account ID"
             type="number"
             value={accountId ?? ''}
-            onChange={event => setAccountId(event.target.value ? Number(event.target.value) : null)}
+            onChange={(event) =>
+              setAccountId(event.target.value ? Number(event.target.value) : null)
+            }
           />
-          <Button variant="contained" onClick={handleReload}>Reload</Button>
+          <Button variant="contained" onClick={handleReload}>
+            Reload
+          </Button>
         </Box>
       </Paper>
 
