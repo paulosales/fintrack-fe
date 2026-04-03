@@ -42,8 +42,9 @@ export const fetchTransactions = createAsyncThunk(
         return rejectWithValue(payload.error || 'Unknown error');
       }
       return payload.data || [];
-    } catch (error: any) {
-      return rejectWithValue(error?.message || 'API call failed');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'API call failed';
+      return rejectWithValue(errorMessage);
     }
   }
 );

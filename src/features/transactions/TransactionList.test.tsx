@@ -3,10 +3,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import transactionsReducer from './transactionSlice';
+import transactionsReducer, { TransactionState } from './transactionSlice';
 import TransactionList from './TransactionList';
 
-const renderWithStore = (state: any) => {
+const renderWithStore = (state: TransactionState) => {
   const store = configureStore({
     reducer: { transactions: transactionsReducer },
     preloadedState: { transactions: state },

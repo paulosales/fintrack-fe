@@ -61,3 +61,33 @@ Prettier is configured with:
 - Semicolons enabled
 
 See [.prettierrc](.prettierrc) for the full configuration.
+
+## Linting
+
+This project uses [ESLint](https://eslint.org/) to maintain code quality and identify potential issues.
+
+### Run Linter
+
+Check for linting issues:
+
+```bash
+npm run lint
+```
+
+### Fix Linting Issues
+
+Automatically fix issues that ESLint can resolve:
+
+```bash
+npm run lint:fix
+```
+
+### ESLint Configuration
+
+ESLint is configured with:
+- Recommended rules for JavaScript
+- TypeScript support via @typescript-eslint
+- React best practices
+- React hooks validation
+
+See [eslint.config.js](eslint.config.js) for the full configuration.
