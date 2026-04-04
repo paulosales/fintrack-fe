@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Account } from '../../models/accounts';
+import type { TransactionFiltersProps } from './types';
 import {
   Box,
   Button,
@@ -11,20 +11,11 @@ import {
   Select,
 } from '@mui/material';
 
-interface TransactionFiltersProps {
-  accountId: number | null;
-  accounts: Account[];
-  accountsLoading: boolean;
-  onAccountChange: (accountId: number | null) => void;
-  onReload: () => void;
-}
-
 const TransactionFilters: React.FC<TransactionFiltersProps> = ({
-  accountId,
-  accounts,
-  accountsLoading,
-  onAccountChange,
-  onReload,
+  filters,
+  options,
+  loadingState,
+  actions,
 }) => {
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
@@ -32,23 +23,23 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
         <FormControl sx={{ minWidth: 300 }}>
           <InputLabel>Select Account</InputLabel>
           <Select
-            value={accountId ?? ''}
+            value={filters.accountId ?? ''}
             onChange={(event) =>
-              onAccountChange(event.target.value ? Number(event.target.value) : null)
+              actions.onAccountChange(event.target.value ? Number(event.target.value) : null)
             }
             label="Select Account"
-            disabled={accountsLoading}
+            disabled={loadingState.accounts}
           >
             <MenuItem value="">
               <em>All Accounts</em>
             </MenuItem>
-            {accountsLoading ? (
+            {loadingState.accounts ? (
               <MenuItem disabled>
                 <CircularProgress size={20} sx={{ mr: 1 }} />
                 Loading accounts...
               </MenuItem>
             ) : (
-              accounts.map((account) => (
+              options.accounts.map((account) => (
                 <MenuItem key={account.id} value={account.id}>
                   {account.code} - {account.name}
                 </MenuItem>
@@ -56,8 +47,37 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             )}
           </Select>
         </FormControl>
-        <Button variant="contained" onClick={onReload}>
-          Reload
+        <FormControl sx={{ minWidth: 300 }}>
+          <InputLabel>Select Type</InputLabel>
+          <Select
+            value={filters.transactionTypeId ?? ''}
+            onChange={(event) =>
+              actions.onTransactionTypeChange(
+                event.target.value ? Number(event.target.value) : null
+              )
+            }
+            label="Select Type"
+            disabled={loadingState.transactionTypes}
+          >
+            <MenuItem value="">
+              <em>All Types</em>
+            </MenuItem>
+            {loadingState.transactionTypes ? (
+              <MenuItem disabled>
+                <CircularProgress size={20} sx={{ mr: 1 }} />
+                Loading types...
+              </MenuItem>
+            ) : (
+              options.transactionTypes.map((transactionType) => (
+                <MenuItem key={transactionType.id} value={transactionType.id}>
+                  {transactionType.name}
+                </MenuItem>
+              ))
+            )}
+          </Select>
+        </FormControl>
+        <Button variant="contained" onClick={actions.onReload} disabled={loadingState.transactions}>
+          {loadingState.transactions ? <CircularProgress size={20} color="inherit" /> : 'Reload'}
         </Button>
       </Box>
     </Paper>

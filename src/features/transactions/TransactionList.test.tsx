@@ -3,13 +3,18 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import transactionsReducer, { TransactionState } from './transactionSlice';
+import transactionsReducer from './transactionSlice';
 import accountsReducer, { AccountsState } from '../accounts/accountsSlice';
+import transactionTypesReducer, {
+  TransactionTypesState,
+} from '../transactionTypes/transactionTypesSlice';
+import type { TransactionState } from './types';
 import TransactionList from './TransactionList';
 
 interface TestState {
   transactions: TransactionState;
   accounts: AccountsState;
+  transactionTypes: TransactionTypesState;
 }
 
 const renderWithStore = (state: TestState) => {
@@ -17,6 +22,7 @@ const renderWithStore = (state: TestState) => {
     reducer: {
       transactions: transactionsReducer,
       accounts: accountsReducer,
+      transactionTypes: transactionTypesReducer,
     },
     preloadedState: state,
   });
@@ -34,6 +40,11 @@ describe('TransactionList', () => {
     error: null,
     data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }],
   };
+  const mockTransactionTypesState: TransactionTypesState = {
+    loading: false,
+    error: null,
+    data: [{ id: 1, code: 'INCOME', name: 'Income' }],
+  };
 
   it('renders empty state', async () => {
     vi.stubGlobal(
@@ -43,6 +54,7 @@ describe('TransactionList', () => {
     renderWithStore({
       transactions: { loading: false, error: null, data: [] },
       accounts: mockAccountsState,
+      transactionTypes: mockTransactionTypesState,
     });
 
     expect(await screen.findByText('No transactions found.')).toBeInTheDocument();
@@ -53,7 +65,7 @@ describe('TransactionList', () => {
       {
         id: 1,
         accountId: 123,
-        transactionTypeId: 1,
+        transactionTypeName: 'Income',
         datetime: '2026-04-03 00:00:00',
         amount: 100,
         description: 'Purchase test',
@@ -69,10 +81,12 @@ describe('TransactionList', () => {
     renderWithStore({
       transactions: { loading: false, error: null, data: [] },
       accounts: mockAccountsState,
+      transactionTypes: mockTransactionTypesState,
     });
 
     expect(await screen.findByText('Purchase test')).toBeInTheDocument();
-    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText('Income')).toBeInTheDocument();
+    expect(screen.getByText('$100.00')).toBeInTheDocument();
     expect(screen.getByText('note')).toBeInTheDocument();
     expect(screen.getByText('2026-04-03 00:00:00')).toBeInTheDocument();
   });

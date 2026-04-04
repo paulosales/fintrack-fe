@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTransactions, Transaction } from './transactionSlice';
+import { fetchTransactions } from './transactionSlice';
 import { fetchAccounts } from '../accounts/accountsSlice';
+import { fetchTransactionTypes } from '../transactionTypes/transactionTypesSlice';
 import TransactionFilters from './TransactionFilters';
+import type { Transaction } from './types';
 import type { RootState, AppDispatch } from '../../store';
+import { formatCurrency } from '../../utils/currencyUtils';
 import { formatDateTime } from '../../utils/dateUtils';
 import {
-  Box,
-  CircularProgress,
   Container,
   Paper,
   Table,
@@ -28,18 +29,25 @@ const TransactionList: React.FC = () => {
     loading: accountsLoading,
     error: accountsError,
   } = useSelector((state: RootState) => state.accounts);
+  const {
+    data: transactionTypes,
+    loading: transactionTypesLoading,
+    error: transactionTypesError,
+  } = useSelector((state: RootState) => state.transactionTypes);
   const [accountId, setAccountId] = useState<number | null>(null);
+  const [transactionTypeId, setTransactionTypeId] = useState<number | null>(null);
 
   useEffect(() => {
     dispatch(fetchAccounts());
+    dispatch(fetchTransactionTypes());
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchTransactions(accountId));
-  }, [dispatch, accountId]);
+    dispatch(fetchTransactions({ accountId, transactionTypeId }));
+  }, [dispatch, accountId, transactionTypeId]);
 
   const handleReload = () => {
-    dispatch(fetchTransactions(accountId));
+    dispatch(fetchTransactions({ accountId, transactionTypeId }));
   };
 
   const getAccountName = (id: number): string => {
@@ -54,11 +62,18 @@ const TransactionList: React.FC = () => {
       </Typography>
 
       <TransactionFilters
-        accountId={accountId}
-        accounts={accounts}
-        accountsLoading={accountsLoading}
-        onAccountChange={setAccountId}
-        onReload={handleReload}
+        filters={{ accountId, transactionTypeId }}
+        options={{ accounts, transactionTypes }}
+        loadingState={{
+          accounts: accountsLoading,
+          transactionTypes: transactionTypesLoading,
+          transactions: loading,
+        }}
+        actions={{
+          onAccountChange: setAccountId,
+          onTransactionTypeChange: setTransactionTypeId,
+          onReload: handleReload,
+        }}
       />
 
       {accountsError && (
@@ -67,10 +82,10 @@ const TransactionList: React.FC = () => {
         </Alert>
       )}
 
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
-        </Box>
+      {transactionTypesError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to load transaction types: {transactionTypesError}
+        </Alert>
       )}
 
       {error && <Alert severity="error">Error: {error}</Alert>}
@@ -98,9 +113,9 @@ const TransactionList: React.FC = () => {
                 <TableRow key={tx.id}>
                   <TableCell>{tx.id}</TableCell>
                   <TableCell>{getAccountName(tx.accountId)}</TableCell>
-                  <TableCell>{tx.transactionTypeId}</TableCell>
+                  <TableCell>{tx.transactionTypeName || '-'}</TableCell>
                   <TableCell>{formatDateTime(tx.datetime)}</TableCell>
-                  <TableCell>{tx.amount}</TableCell>
+                  <TableCell>{formatCurrency(tx.amount)}</TableCell>
                   <TableCell>{tx.description}</TableCell>
                   <TableCell>{tx.note || '-'}</TableCell>
                 </TableRow>

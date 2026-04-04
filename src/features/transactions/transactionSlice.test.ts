@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer, { fetchTransactions } from './transactionSlice';
+import type { TransactionFilters } from './types';
 
 describe('transactionSlice async thunk', () => {
   it('fetches data successfully', async () => {
@@ -9,8 +10,8 @@ describe('transactionSlice async thunk', () => {
       data: [
         {
           id: 1,
-          account_id: 123,
-          transaction_type_id: 1,
+          accountId: 123,
+          transactionTypeName: 'Income',
           datetime: '2026-04-03 00:00:00',
           amount: 100,
           description: 'Test',
@@ -32,7 +33,9 @@ describe('transactionSlice async thunk', () => {
       reducer: { transactions: transactionsReducer },
     });
 
-    await store.dispatch(fetchTransactions(null));
+    await store.dispatch(
+      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+    );
 
     expect(store.getState().transactions.data).toEqual(mockData.data);
     expect(store.getState().transactions.loading).toBe(false);
@@ -50,7 +53,9 @@ describe('transactionSlice async thunk', () => {
     );
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
-    await store.dispatch(fetchTransactions(null));
+    await store.dispatch(
+      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+    );
 
     expect(store.getState().transactions.data).toEqual([]);
     expect(store.getState().transactions.error).toBe('Failed');
@@ -68,7 +73,9 @@ describe('transactionSlice async thunk', () => {
     );
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
-    await store.dispatch(fetchTransactions(null));
+    await store.dispatch(
+      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+    );
 
     expect(store.getState().transactions.data).toEqual([]);
     expect(store.getState().transactions.error).toBe('HTTP 500: Internal server error');

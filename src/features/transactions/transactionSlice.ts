@@ -1,21 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface Transaction {
-  id: number;
-  accountId: number;
-  transactionTypeId: number;
-  datetime: string;
-  amount: number;
-  description: string;
-  note?: string;
-  fingerprint: string;
-}
-
-export interface TransactionState {
-  loading: boolean;
-  error: string | null;
-  data: Transaction[];
-}
+import type { Transaction, TransactionFilters, TransactionState } from './types';
 
 const initialState: TransactionState = {
   loading: false,
@@ -25,9 +9,19 @@ const initialState: TransactionState = {
 
 export const fetchTransactions = createAsyncThunk(
   'transactions/fetchTransactions',
-  async (accountId: number | null, { rejectWithValue }) => {
+  async (filters: TransactionFilters, { rejectWithValue }) => {
     try {
-      const query = accountId ? `?account_id=${accountId}` : '';
+      const searchParams = new URLSearchParams();
+
+      if (filters.accountId !== null) {
+        searchParams.set('account_id', String(filters.accountId));
+      }
+
+      if (filters.transactionTypeId !== null) {
+        searchParams.set('transaction_type_id', String(filters.transactionTypeId));
+      }
+
+      const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
       const response = await fetch(`/api/transactions${query}`);
       if (!response.ok) {
         const text = await response.text();
