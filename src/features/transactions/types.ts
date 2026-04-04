@@ -41,6 +41,8 @@ export interface TransactionFiltersProps {
 export interface Transaction {
   id: number;
   accountId: number;
+  transactionTypeId: number;
+  categoryIds?: string;
   transactionTypeName?: string;
   categories?: string;
   datetime: string;
@@ -48,6 +50,26 @@ export interface Transaction {
   description: string;
   note?: string;
   fingerprint: string;
+}
+
+export interface TransactionMutationPayload {
+  accountId: number;
+  transactionTypeId: number;
+  categoryIds: number[];
+  datetime: string;
+  amount: number;
+  description: string;
+  note?: string;
+}
+
+export interface TransactionFormState {
+  accountId: string;
+  transactionTypeId: string;
+  categoryIds: string[];
+  datetime: string;
+  amount: string;
+  description: string;
+  note: string;
 }
 
 export interface TransactionState {

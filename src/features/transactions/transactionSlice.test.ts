@@ -12,6 +12,7 @@ describe('transactionSlice async thunk', () => {
         {
           id: 1,
           accountId: 123,
+          transactionTypeId: 1,
           transactionTypeName: 'Income',
           categories: 'Groceries',
           datetime: '2026-04-03 00:00:00',

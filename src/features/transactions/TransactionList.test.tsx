@@ -78,6 +78,7 @@ describe('TransactionList', () => {
       {
         id: 1,
         accountId: 123,
+        transactionTypeId: 1,
         transactionTypeName: 'Income',
         categories: 'Groceries, Home',
         datetime: '2026-04-03 00:00:00',
@@ -103,10 +104,13 @@ describe('TransactionList', () => {
     });
 
     expect(await screen.findByText('Purchase test')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create Transaction' })).toBeInTheDocument();
     expect(screen.getByText('Income')).toBeInTheDocument();
     expect(screen.getByText('$100.00')).toBeInTheDocument();
     expect(screen.getByText('Groceries, Home')).toBeInTheDocument();
     expect(screen.getByText('note')).toBeInTheDocument();
     expect(screen.getByText('2026-04-03 00:00:00')).toBeInTheDocument();
+    expect(screen.getByLabelText('edit transaction 1')).toBeInTheDocument();
+    expect(screen.getByLabelText('delete transaction 1')).toBeInTheDocument();
   });
 });
