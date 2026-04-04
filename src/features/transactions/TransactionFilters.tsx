@@ -9,6 +9,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  TextField,
 } from '@mui/material';
 
 const TransactionFilters: React.FC<TransactionFiltersProps> = ({
@@ -20,7 +21,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-        <FormControl sx={{ minWidth: 300 }}>
+        <FormControl sx={{ minWidth: 200 }}>
           <InputLabel>Select Account</InputLabel>
           <Select
             value={filters.accountId ?? ''}
@@ -47,7 +48,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             )}
           </Select>
         </FormControl>
-        <FormControl sx={{ minWidth: 300 }}>
+        <FormControl sx={{ minWidth: 200 }}>
           <InputLabel>Select Type</InputLabel>
           <Select
             value={filters.transactionTypeId ?? ''}
@@ -76,7 +77,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             )}
           </Select>
         </FormControl>
-        <FormControl sx={{ minWidth: 300 }}>
+        <FormControl sx={{ minWidth: 200 }}>
           <InputLabel>Select Category</InputLabel>
           <Select
             value={filters.categoryId ?? ''}
@@ -103,6 +104,13 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             )}
           </Select>
         </FormControl>
+        <TextField
+          label="Description"
+          value={filters.descriptionInput}
+          onChange={(event) => actions.onDescriptionChange(event.target.value)}
+          placeholder="Filter by description"
+          sx={{ minWidth: 200 }}
+        />
         <Button variant="contained" onClick={actions.onReload} disabled={loadingState.transactions}>
           {loadingState.transactions ? <CircularProgress size={20} color="inherit" /> : 'Reload'}
         </Button>

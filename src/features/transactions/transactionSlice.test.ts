@@ -47,6 +47,7 @@ describe('transactionSlice async thunk', () => {
         accountId: null,
         transactionTypeId: null,
         categoryId: null,
+        description: '',
         page: 1,
         pageSize: 10,
       } as TransactionFilters)
@@ -74,6 +75,7 @@ describe('transactionSlice async thunk', () => {
         accountId: null,
         transactionTypeId: null,
         categoryId: null,
+        description: '',
         page: 1,
         pageSize: 10,
       } as TransactionFilters)
@@ -101,6 +103,7 @@ describe('transactionSlice async thunk', () => {
         accountId: null,
         transactionTypeId: null,
         categoryId: null,
+        description: '',
         page: 1,
         pageSize: 10,
       } as TransactionFilters)
@@ -110,5 +113,30 @@ describe('transactionSlice async thunk', () => {
     expect(store.getState().transactions.pagination).toEqual(defaultPagination);
     expect(store.getState().transactions.error).toBe('HTTP 500: Internal server error');
     expect(store.getState().transactions.loading).toBe(false);
+  });
+
+  it('includes the description filter in the request query', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: [], pagination: defaultPagination }),
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const store = configureStore({ reducer: { transactions: transactionsReducer } });
+    await store.dispatch(
+      fetchTransactions({
+        accountId: null,
+        transactionTypeId: null,
+        categoryId: null,
+        description: '  Coffee Shop  ',
+        page: 1,
+        pageSize: 10,
+      } as TransactionFilters)
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/transactions?description=Coffee+Shop&page=1&page_size=10'
+    );
   });
 });

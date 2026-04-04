@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebouncedCallback } from 'use-debounce';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -68,6 +69,8 @@ const TransactionList: React.FC = () => {
   const [accountId, setAccountId] = useState<number | null>(null);
   const [transactionTypeId, setTransactionTypeId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [descriptionInput, setDescriptionInput] = useState('');
+  const [description, setDescription] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -91,9 +94,25 @@ const TransactionList: React.FC = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  const debouncedApplyDescription = useDebouncedCallback((nextDescription: string) => {
+    setDescription(nextDescription);
+    setPage(1);
+  }, 600);
+
+  useEffect(() => () => debouncedApplyDescription.cancel(), [debouncedApplyDescription]);
+
   useEffect(() => {
-    dispatch(fetchTransactions({ accountId, transactionTypeId, categoryId, page, pageSize }));
-  }, [dispatch, accountId, transactionTypeId, categoryId, page, pageSize]);
+    dispatch(
+      fetchTransactions({
+        accountId,
+        transactionTypeId,
+        categoryId,
+        description,
+        page,
+        pageSize,
+      })
+    );
+  }, [dispatch, accountId, transactionTypeId, categoryId, description, page, pageSize]);
 
   const reloadTransactions = (nextPage = page) => {
     dispatch(
@@ -101,6 +120,7 @@ const TransactionList: React.FC = () => {
         accountId,
         transactionTypeId,
         categoryId,
+        description,
         page: nextPage,
         pageSize,
       })
@@ -124,6 +144,11 @@ const TransactionList: React.FC = () => {
   const handleCategoryChange = (nextCategoryId: number | null) => {
     setCategoryId(nextCategoryId);
     setPage(1);
+  };
+
+  const handleDescriptionChange = (nextDescription: string) => {
+    setDescriptionInput(nextDescription);
+    debouncedApplyDescription(nextDescription);
   };
 
   const handlePageSizeChange = (nextPageSize: number) => {
@@ -304,7 +329,15 @@ const TransactionList: React.FC = () => {
       </Box>
 
       <TransactionFilters
-        filters={{ accountId, transactionTypeId, categoryId, page, pageSize }}
+        filters={{
+          accountId,
+          transactionTypeId,
+          categoryId,
+          description,
+          descriptionInput,
+          page,
+          pageSize,
+        }}
         options={{ accounts, transactionTypes, categories }}
         loadingState={{
           accounts: accountsLoading,
@@ -316,6 +349,7 @@ const TransactionList: React.FC = () => {
           onAccountChange: handleAccountChange,
           onTransactionTypeChange: handleTransactionTypeChange,
           onCategoryChange: handleCategoryChange,
+          onDescriptionChange: handleDescriptionChange,
           onReload: handleReload,
         }}
       />

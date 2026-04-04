@@ -43,6 +43,7 @@ export const fetchTransactions = createAsyncThunk(
   async (filters: TransactionFilters, { rejectWithValue }) => {
     try {
       const searchParams = new URLSearchParams();
+      const description = filters.description.trim();
 
       if (filters.accountId !== null) {
         searchParams.set('account_id', String(filters.accountId));
@@ -54,6 +55,10 @@ export const fetchTransactions = createAsyncThunk(
 
       if (filters.categoryId !== null) {
         searchParams.set('category_id', String(filters.categoryId));
+      }
+
+      if (description !== '') {
+        searchParams.set('description', description);
       }
 
       searchParams.set('page', String(filters.page));

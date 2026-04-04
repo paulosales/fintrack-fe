@@ -7,6 +7,8 @@ export interface TransactionFilters {
   accountId: number | null;
   transactionTypeId: number | null;
   categoryId: number | null;
+  description: string;
+  descriptionInput?: string;
   page: number;
   pageSize: number;
 }
@@ -28,6 +30,7 @@ export interface TransactionFilterActions {
   onAccountChange: (accountId: number | null) => void;
   onTransactionTypeChange: (transactionTypeId: number | null) => void;
   onCategoryChange: (categoryId: number | null) => void;
+  onDescriptionChange: (description: string) => void;
   onReload: () => void;
 }
 
