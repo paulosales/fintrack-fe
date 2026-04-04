@@ -12,6 +12,7 @@ describe('transactionSlice async thunk', () => {
           id: 1,
           accountId: 123,
           transactionTypeName: 'Income',
+          categories: 'Groceries',
           datetime: '2026-04-03 00:00:00',
           amount: 100,
           description: 'Test',
@@ -34,7 +35,7 @@ describe('transactionSlice async thunk', () => {
     });
 
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual(mockData.data);
@@ -54,7 +55,7 @@ describe('transactionSlice async thunk', () => {
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual([]);
@@ -74,7 +75,7 @@ describe('transactionSlice async thunk', () => {
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null } as TransactionFilters)
+      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual([]);

@@ -21,6 +21,10 @@ export const fetchTransactions = createAsyncThunk(
         searchParams.set('transaction_type_id', String(filters.transactionTypeId));
       }
 
+      if (filters.categoryId !== null) {
+        searchParams.set('category_id', String(filters.categoryId));
+      }
+
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
       const response = await fetch(`/api/transactions${query}`);
       if (!response.ok) {

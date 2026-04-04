@@ -76,6 +76,33 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             )}
           </Select>
         </FormControl>
+        <FormControl sx={{ minWidth: 300 }}>
+          <InputLabel>Select Category</InputLabel>
+          <Select
+            value={filters.categoryId ?? ''}
+            onChange={(event) =>
+              actions.onCategoryChange(event.target.value ? Number(event.target.value) : null)
+            }
+            label="Select Category"
+            disabled={loadingState.categories}
+          >
+            <MenuItem value="">
+              <em>All Categories</em>
+            </MenuItem>
+            {loadingState.categories ? (
+              <MenuItem disabled>
+                <CircularProgress size={20} sx={{ mr: 1 }} />
+                Loading categories...
+              </MenuItem>
+            ) : (
+              options.categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>
+              ))
+            )}
+          </Select>
+        </FormControl>
         <Button variant="contained" onClick={actions.onReload} disabled={loadingState.transactions}>
           {loadingState.transactions ? <CircularProgress size={20} color="inherit" /> : 'Reload'}
         </Button>
