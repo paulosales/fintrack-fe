@@ -1,11 +1,14 @@
 import type { Account } from '../../models/accounts';
 import type { Category } from '../../models/categories';
 import type { TransactionType } from '../../models/transactionTypes';
+import type { PaginationMeta } from '../../types/pagination';
 
 export interface TransactionFilters {
   accountId: number | null;
   transactionTypeId: number | null;
   categoryId: number | null;
+  page: number;
+  pageSize: number;
 }
 
 export interface TransactionFilterOptions {
@@ -51,4 +54,5 @@ export interface TransactionState {
   loading: boolean;
   error: string | null;
   data: Transaction[];
+  pagination: PaginationMeta;
 }

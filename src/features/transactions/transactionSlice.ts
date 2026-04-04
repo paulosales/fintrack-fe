@@ -1,11 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Transaction, TransactionFilters, TransactionState } from './types';
+import { defaultPagination } from '../../types/pagination';
 
 const initialState: TransactionState = {
   loading: false,
   error: null,
   data: [],
+  pagination: defaultPagination,
 };
+
+interface TransactionsPayload {
+  data: Transaction[];
+  pagination: TransactionState['pagination'];
+}
 
 export const fetchTransactions = createAsyncThunk(
   'transactions/fetchTransactions',
@@ -25,6 +32,9 @@ export const fetchTransactions = createAsyncThunk(
         searchParams.set('category_id', String(filters.categoryId));
       }
 
+      searchParams.set('page', String(filters.page));
+      searchParams.set('page_size', String(filters.pageSize));
+
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
       const response = await fetch(`/api/transactions${query}`);
       if (!response.ok) {
@@ -34,12 +44,16 @@ export const fetchTransactions = createAsyncThunk(
       const payload = (await response.json()) as {
         success: boolean;
         data?: Transaction[];
+        pagination?: TransactionState['pagination'];
         error?: string;
       };
       if (!payload.success) {
         return rejectWithValue(payload.error || 'Unknown error');
       }
-      return payload.data || [];
+      return {
+        data: payload.data || [],
+        pagination: payload.pagination || defaultPagination,
+      };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'API call failed';
       return rejectWithValue(errorMessage);
@@ -63,9 +77,10 @@ const transactionSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactions.fulfilled, (state, action: PayloadAction<Transaction[]>) => {
+      .addCase(fetchTransactions.fulfilled, (state, action: PayloadAction<TransactionsPayload>) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;

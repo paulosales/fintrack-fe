@@ -11,6 +11,7 @@ import transactionTypesReducer, {
 } from '../transactionTypes/transactionTypesSlice';
 import type { TransactionState } from './types';
 import TransactionList from './TransactionList';
+import { defaultPagination } from '../../types/pagination';
 
 interface TestState {
   transactions: TransactionState;
@@ -57,10 +58,13 @@ describe('TransactionList', () => {
   it('renders empty state', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true, data: [] }) })
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: [], pagination: defaultPagination }),
+      })
     );
     renderWithStore({
-      transactions: { loading: false, error: null, data: [] },
+      transactions: { loading: false, error: null, data: [], pagination: defaultPagination },
       accounts: mockAccountsState,
       categories: mockCategoriesState,
       transactionTypes: mockTransactionTypesState,
@@ -86,10 +90,13 @@ describe('TransactionList', () => {
 
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true, data }) })
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data, pagination: defaultPagination }),
+      })
     );
     renderWithStore({
-      transactions: { loading: false, error: null, data: [] },
+      transactions: { loading: false, error: null, data: [], pagination: defaultPagination },
       accounts: mockAccountsState,
       categories: mockCategoriesState,
       transactionTypes: mockTransactionTypesState,

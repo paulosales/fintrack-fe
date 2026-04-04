@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer, { fetchTransactions } from './transactionSlice';
 import type { TransactionFilters } from './types';
+import { defaultPagination } from '../../types/pagination';
 
 describe('transactionSlice async thunk', () => {
   it('fetches data successfully', async () => {
@@ -20,6 +21,12 @@ describe('transactionSlice async thunk', () => {
           fingerprint: 'abc',
         },
       ],
+      pagination: {
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        totalPages: 1,
+      },
     };
 
     vi.stubGlobal(
@@ -35,10 +42,17 @@ describe('transactionSlice async thunk', () => {
     });
 
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
+      fetchTransactions({
+        accountId: null,
+        transactionTypeId: null,
+        categoryId: null,
+        page: 1,
+        pageSize: 10,
+      } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual(mockData.data);
+    expect(store.getState().transactions.pagination).toEqual(mockData.pagination);
     expect(store.getState().transactions.loading).toBe(false);
     expect(store.getState().transactions.error).toBe(null);
   });
@@ -55,10 +69,17 @@ describe('transactionSlice async thunk', () => {
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
+      fetchTransactions({
+        accountId: null,
+        transactionTypeId: null,
+        categoryId: null,
+        page: 1,
+        pageSize: 10,
+      } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual([]);
+    expect(store.getState().transactions.pagination).toEqual(defaultPagination);
     expect(store.getState().transactions.error).toBe('Failed');
     expect(store.getState().transactions.loading).toBe(false);
   });
@@ -75,10 +96,17 @@ describe('transactionSlice async thunk', () => {
 
     const store = configureStore({ reducer: { transactions: transactionsReducer } });
     await store.dispatch(
-      fetchTransactions({ accountId: null, transactionTypeId: null, categoryId: null } as TransactionFilters)
+      fetchTransactions({
+        accountId: null,
+        transactionTypeId: null,
+        categoryId: null,
+        page: 1,
+        pageSize: 10,
+      } as TransactionFilters)
     );
 
     expect(store.getState().transactions.data).toEqual([]);
+    expect(store.getState().transactions.pagination).toEqual(defaultPagination);
     expect(store.getState().transactions.error).toBe('HTTP 500: Internal server error');
     expect(store.getState().transactions.loading).toBe(false);
   });
