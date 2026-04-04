@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTransactions, Transaction } from './transactionSlice';
 import { fetchAccounts } from '../accounts/accountsSlice';
+import TransactionFilters from './TransactionFilters';
 import type { RootState, AppDispatch } from '../../store';
 import { formatDateTime } from '../../utils/dateUtils';
 import {
   Box,
-  Button,
   CircularProgress,
   Container,
   Paper,
@@ -18,10 +18,6 @@ import {
   TableRow,
   Typography,
   Alert,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 
 const TransactionList: React.FC = () => {
@@ -57,40 +53,13 @@ const TransactionList: React.FC = () => {
         Transaction List
       </Typography>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <FormControl sx={{ minWidth: 300 }}>
-            <InputLabel>Select Account</InputLabel>
-            <Select
-              value={accountId ?? ''}
-              onChange={(event) =>
-                setAccountId(event.target.value ? Number(event.target.value) : null)
-              }
-              label="Select Account"
-              disabled={accountsLoading}
-            >
-              <MenuItem value="">
-                <em>All Accounts</em>
-              </MenuItem>
-              {accountsLoading ? (
-                <MenuItem disabled>
-                  <CircularProgress size={20} sx={{ mr: 1 }} />
-                  Loading accounts...
-                </MenuItem>
-              ) : (
-                accounts.map((account) => (
-                  <MenuItem key={account.id} value={account.id}>
-                    {account.code} - {account.name}
-                  </MenuItem>
-                ))
-              )}
-            </Select>
-          </FormControl>
-          <Button variant="contained" onClick={handleReload}>
-            Reload
-          </Button>
-        </Box>
-      </Paper>
+      <TransactionFilters
+        accountId={accountId}
+        accounts={accounts}
+        accountsLoading={accountsLoading}
+        onAccountChange={setAccountId}
+        onReload={handleReload}
+      />
 
       {accountsError && (
         <Alert severity="error" sx={{ mb: 2 }}>
