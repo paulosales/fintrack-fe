@@ -11,9 +11,9 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  MenuItem,
   Stack,
   TextField,
+  Autocomplete,
 } from '@mui/material';
 import type { BudgetFormDialogProps } from './types';
 
@@ -64,22 +64,23 @@ const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
           <Controller
             control={control}
             name="accountId"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label={t('budgets.form.account')}
-                required
-                disabled={isSetupLocked}
-                fullWidth
-              >
-                {accounts.map((account) => (
-                  <MenuItem key={account.id} value={String(account.id)}>
-                    {account.code} - {account.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+            render={({ field }) => {
+              const value = field.value ? accounts.find((a) => a.id === Number(field.value)) : null;
+
+              return (
+                <Autocomplete
+                  options={accounts}
+                  getOptionLabel={(option) => `${option.code} - ${option.name}`}
+                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  value={value}
+                  onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
+                  disabled={isSetupLocked}
+                  renderInput={(params) => (
+                    <TextField {...params} label={t('budgets.form.account')} required fullWidth />
+                  )}
+                />
+              );
+            }}
           />
           <Controller
             control={control}

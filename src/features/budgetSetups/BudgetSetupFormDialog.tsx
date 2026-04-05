@@ -13,6 +13,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Autocomplete,
 } from '@mui/material';
 import type { BudgetSetupFormDialogProps, BudgetSetupFormState } from './types';
 import { repeatFrequencyOptions } from './types';
@@ -68,21 +69,27 @@ const BudgetSetupFormDialog: React.FC<BudgetSetupFormDialogProps> = ({
           <Controller
             control={control}
             name="accountId"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label={t('budgetSetups.form.account')}
-                required
-                fullWidth
-              >
-                {accounts.map((account) => (
-                  <MenuItem key={account.id} value={String(account.id)}>
-                    {account.code} - {account.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+            render={({ field }) => {
+              const value = field.value ? accounts.find((a) => a.id === Number(field.value)) : null;
+
+              return (
+                <Autocomplete
+                  options={accounts}
+                  getOptionLabel={(option) => `${option.code} - ${option.name}`}
+                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  value={value}
+                  onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('budgetSetups.form.account')}
+                      required
+                      fullWidth
+                    />
+                  )}
+                />
+              );
+            }}
           />
           <Controller
             control={control}

@@ -9,11 +9,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
   Stack,
   TextField,
+  Autocomplete,
 } from '@mui/material';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import type { TransactionFormDialogProps, TransactionFormState } from './types';
+import type { Category } from '../../models/categories';
 
 const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
   open,
@@ -76,76 +79,105 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
           <Controller
             control={control}
             name="accountId"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label={t('transactions.form.account')}
-                required
-                fullWidth
-              >
-                {accounts.map((account) => (
-                  <MenuItem key={account.id} value={String(account.id)}>
-                    {account.code} - {account.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+            render={({ field }) => {
+              const value = field.value ? accounts.find((a) => a.id === Number(field.value)) : null;
+
+              return (
+                <Autocomplete
+                  options={accounts}
+                  getOptionLabel={(option) => `${option.code} - ${option.name}`}
+                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  value={value}
+                  onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('transactions.form.account')}
+                      required
+                      fullWidth
+                    />
+                  )}
+                />
+              );
+            }}
           />
           <Controller
             control={control}
             name="transactionTypeId"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label={t('transactions.form.transactionType')}
-                required
-                fullWidth
-              >
-                {transactionTypes.map((transactionType) => (
-                  <MenuItem key={transactionType.id} value={String(transactionType.id)}>
-                    {transactionType.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+            render={({ field }) => {
+              const value = field.value
+                ? transactionTypes.find((t) => t.id === Number(field.value))
+                : null;
+
+              return (
+                <Autocomplete
+                  options={transactionTypes}
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  value={value}
+                  onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('transactions.form.transactionType')}
+                      required
+                      fullWidth
+                    />
+                  )}
+                />
+              );
+            }}
           />
           <Controller
             control={control}
             name="categoryIds"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label={t('transactions.form.categories')}
-                fullWidth
-                SelectProps={{
-                  multiple: true,
-                  renderValue: (selected) => {
-                    const selectedIds = Array.isArray(selected) ? selected : [];
+            render={({ field }) => {
+              const selectedValues: Category[] = Array.isArray(field.value)
+                ? field.value
+                    .map((id) => categories.find((c) => c.id === Number(id)))
+                    .filter((c): c is Category => Boolean(c))
+                : [];
 
-                    return categories
-                      .filter((category) => selectedIds.includes(String(category.id)))
-                      .map((category) => category.name)
-                      .join(', ');
-                  },
-                }}
-                onChange={(event) =>
-                  field.onChange(
-                    typeof event.target.value === 'string'
-                      ? event.target.value.split(',')
-                      : event.target.value
-                  )
-                }
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category.id} value={String(category.id)}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+              const CheckBoxOutline = CheckBoxOutlineBlankIcon;
+              const CheckBoxFilled = CheckBoxIcon;
+
+              return (
+                <Autocomplete<Category, true, false, false>
+                  multiple
+                  disableCloseOnSelect
+                  options={categories}
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  value={selectedValues}
+                  onChange={(_, newVal: Category[]) =>
+                    field.onChange(newVal.map((c) => String(c.id)))
+                  }
+                  limitTags={2}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props} key={option.id}>
+                      {selected ? (
+                        <CheckBoxFilled fontSize="small" style={{ marginRight: 8 }} />
+                      ) : (
+                        <CheckBoxOutline fontSize="small" style={{ marginRight: 8 }} />
+                      )}
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('transactions.form.categories')}
+                      placeholder={t('transactions.form.categories')}
+                      fullWidth
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: <>{params.InputProps.endAdornment}</>,
+                      }}
+                    />
+                  )}
+                />
+              );
+            }}
           />
           <Controller
             control={control}

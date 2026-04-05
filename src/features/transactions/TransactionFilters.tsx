@@ -4,17 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
 import type { TransactionFiltersProps } from './types';
 import { useEffect } from 'react';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Box, Button, CircularProgress, Paper, TextField, Autocomplete } from '@mui/material';
 
 interface TransactionFilterFormValues {
   accountId: string;
@@ -100,96 +90,123 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>{t('transactions.filters.account')}</InputLabel>
-          <Controller
-            control={control}
-            name="accountId"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label={t('transactions.filters.account')}
+        <Controller
+          control={control}
+          name="accountId"
+          render={({ field }) => {
+            const value = field.value
+              ? options.accounts.find((a) => a.id === Number(field.value))
+              : null;
+
+            return (
+              <Autocomplete
+                options={options.accounts}
+                getOptionLabel={(option) => `${option.code} - ${option.name}`}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                value={value}
+                onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
                 disabled={loadingState.accounts}
-              >
-                <MenuItem value="">
-                  <em>{t('common.allAccounts')}</em>
-                </MenuItem>
-                {loadingState.accounts ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                    {t('common.loadingAccounts')}
-                  </MenuItem>
-                ) : (
-                  options.accounts.map((account) => (
-                    <MenuItem key={account.id} value={String(account.id)}>
-                      {account.code} - {account.name}
-                    </MenuItem>
-                  ))
+                sx={{ minWidth: 200 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('transactions.filters.account')}
+                    placeholder={t('common.allAccounts')}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingState.accounts ? (
+                            <CircularProgress color="inherit" size={20} sx={{ mr: 1 }} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
                 )}
-              </Select>
-            )}
-          />
-        </FormControl>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>{t('transactions.filters.type')}</InputLabel>
-          <Controller
-            control={control}
-            name="transactionTypeId"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label={t('transactions.filters.type')}
+              />
+            );
+          }}
+        />
+        <Controller
+          control={control}
+          name="transactionTypeId"
+          render={({ field }) => {
+            const value = field.value
+              ? options.transactionTypes.find((t) => t.id === Number(field.value))
+              : null;
+
+            return (
+              <Autocomplete
+                options={options.transactionTypes}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                value={value}
+                onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
                 disabled={loadingState.transactionTypes}
-              >
-                <MenuItem value="">
-                  <em>{t('common.allTypes')}</em>
-                </MenuItem>
-                {loadingState.transactionTypes ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                    {t('common.loadingTypes')}
-                  </MenuItem>
-                ) : (
-                  options.transactionTypes.map((transactionType) => (
-                    <MenuItem key={transactionType.id} value={String(transactionType.id)}>
-                      {transactionType.name}
-                    </MenuItem>
-                  ))
+                sx={{ minWidth: 200 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('transactions.filters.type')}
+                    placeholder={t('common.allTypes')}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingState.transactionTypes ? (
+                            <CircularProgress color="inherit" size={20} sx={{ mr: 1 }} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
                 )}
-              </Select>
-            )}
-          />
-        </FormControl>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>{t('transactions.filters.category')}</InputLabel>
-          <Controller
-            control={control}
-            name="categoryId"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label={t('transactions.filters.category')}
+              />
+            );
+          }}
+        />
+        <Controller
+          control={control}
+          name="categoryId"
+          render={({ field }) => {
+            const value = field.value
+              ? options.categories.find((c) => c.id === Number(field.value))
+              : null;
+
+            return (
+              <Autocomplete
+                options={options.categories}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                value={value}
+                onChange={(_, newVal) => field.onChange(newVal ? String(newVal.id) : '')}
                 disabled={loadingState.categories}
-              >
-                <MenuItem value="">
-                  <em>{t('common.allCategories')}</em>
-                </MenuItem>
-                {loadingState.categories ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                    {t('common.loadingCategories')}
-                  </MenuItem>
-                ) : (
-                  options.categories.map((category) => (
-                    <MenuItem key={category.id} value={String(category.id)}>
-                      {category.name}
-                    </MenuItem>
-                  ))
+                sx={{ minWidth: 200 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('transactions.filters.category')}
+                    placeholder={t('common.allCategories')}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingState.categories ? (
+                            <CircularProgress color="inherit" size={20} sx={{ mr: 1 }} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
                 )}
-              </Select>
-            )}
-          />
-        </FormControl>
+              />
+            );
+          }}
+        />
         <Controller
           control={control}
           name="description"

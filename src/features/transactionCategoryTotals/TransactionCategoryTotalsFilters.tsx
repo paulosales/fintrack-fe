@@ -1,17 +1,7 @@
 import React from 'react';
 import { Controller, type Control } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Box, Button, CircularProgress, Paper, TextField, Autocomplete } from '@mui/material';
 import type { Category } from '../../models/categories';
 
 export interface TransactionCategoryTotalsFilterFormValues {
@@ -48,29 +38,32 @@ const TransactionCategoryTotalsFilters: React.FC<TransactionCategoryTotalsFilter
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-        <FormControl sx={{ minWidth: 220 }}>
-          <InputLabel>{t('transactionCategoryTotals.filters.month')}</InputLabel>
-          <Controller
-            control={control}
-            name="month"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label={t('transactionCategoryTotals.filters.month')}
-                onChange={(event) => {
-                  field.onChange(event);
-                  onMonthChange(String(event.target.value));
+        <Controller
+          control={control}
+          name="month"
+          render={({ field }) => {
+            const value = field.value
+              ? monthOptions.find((m) => String(m.value) === String(field.value))
+              : null;
+
+            return (
+              <Autocomplete
+                options={monthOptions}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(opt, val) => String(opt.value) === String(val?.value)}
+                value={value}
+                onChange={(_, newVal) => {
+                  field.onChange(newVal ? String(newVal.value) : '');
+                  onMonthChange(newVal ? String(newVal.value) : '');
                 }}
-              >
-                {monthOptions.map((option) => (
-                  <MenuItem key={String(option.value)} value={String(option.value)}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
-          />
-        </FormControl>
+                sx={{ minWidth: 220 }}
+                renderInput={(params) => (
+                  <TextField {...params} label={t('transactionCategoryTotals.filters.month')} />
+                )}
+              />
+            );
+          }}
+        />
 
         <Controller
           control={control}
@@ -89,40 +82,46 @@ const TransactionCategoryTotalsFilters: React.FC<TransactionCategoryTotalsFilter
           )}
         />
 
-        <FormControl sx={{ minWidth: 260 }}>
-          <InputLabel>{t('transactionCategoryTotals.filters.category')}</InputLabel>
-          <Controller
-            control={control}
-            name="categoryId"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label={t('transactionCategoryTotals.filters.category')}
-                disabled={categoriesLoading}
-                onChange={(event) => {
-                  field.onChange(event);
-                  onCategoryChange(String(event.target.value));
+        <Controller
+          control={control}
+          name="categoryId"
+          render={({ field }) => {
+            const value = field.value ? categories.find((c) => c.id === Number(field.value)) : null;
+
+            return (
+              <Autocomplete
+                options={categories}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                value={value}
+                onChange={(_, newVal) => {
+                  field.onChange(newVal ? String(newVal.id) : '');
+                  onCategoryChange(newVal ? String(newVal.id) : '');
                 }}
-              >
-                <MenuItem value="">
-                  <em>{t('common.allCategories')}</em>
-                </MenuItem>
-                {categoriesLoading ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                    {t('common.loadingCategories')}
-                  </MenuItem>
-                ) : (
-                  categories.map((category) => (
-                    <MenuItem key={category.id} value={String(category.id)}>
-                      {category.name}
-                    </MenuItem>
-                  ))
+                disabled={categoriesLoading}
+                sx={{ minWidth: 260 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('transactionCategoryTotals.filters.category')}
+                    placeholder={t('common.allCategories')}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {categoriesLoading ? (
+                            <CircularProgress color="inherit" size={20} sx={{ mr: 1 }} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
                 )}
-              </Select>
-            )}
-          />
-        </FormControl>
+              />
+            );
+          }}
+        />
 
         <Button variant="contained" onClick={onReload} disabled={loading}>
           {loading ? <CircularProgress size={20} color="inherit" /> : t('common.reload')}
