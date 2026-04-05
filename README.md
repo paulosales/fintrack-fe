@@ -22,7 +22,7 @@ Open http://localhost:5173.
 - Fetch transactions: `GET /api/transactions`
 - Fetch transactions by account: `GET /api/transactions?account_id=123`
 
-> The proxy in `vite.config.ts` forwards `/api` to `http://localhost:3000`.
+> The proxy in `vite.config.ts` forwards `/api` to `http://localhost:3001`.
 
 ## Test
 
