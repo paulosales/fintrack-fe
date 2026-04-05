@@ -276,7 +276,7 @@ const BudgetListPage: React.FC = () => {
   const isSetupLocked = editingBudget?.isRepeatle ?? false;
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Box>
       <Box
         sx={{
           display: 'flex',
@@ -463,7 +463,7 @@ const BudgetListPage: React.FC = () => {
         onClose={handleGenerateDialogClose}
         onSubmit={handleGenerateSubmit}
       />
-    </Container>
+    </Box>
   );
 };
 

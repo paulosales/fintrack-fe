@@ -22,7 +22,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "currency.js": "^2.0.4",
     "date-fns": "^4.1.0",
-    "i18next": "^25.2.1",
+    "i18next": "^26.0.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.65.0",

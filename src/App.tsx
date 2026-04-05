@@ -46,7 +46,12 @@ const App: React.FC = () => {
           <Tab component={RouterLink} to="/budgets" value="/budgets" label={t('nav.budgets')} />
         </Tabs>
       </AppBar>
-      <Container maxWidth="lg" component="main" sx={{ py: 4, flex: 1 }}>
+      <Container
+        maxWidth={false}
+        disableGutters
+        component="main"
+        sx={{ py: 4, px: 1.25, flex: 1 }}
+      >
         <Routes>
           <Route path="/" element={<Navigate to="/transactions" replace />} />
           <Route path="/transactions" element={<TransactionList />} />

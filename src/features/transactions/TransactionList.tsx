@@ -292,7 +292,7 @@ const TransactionList: React.FC = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Box>
       <Box
         sx={{
           display: 'flex',
@@ -437,7 +437,7 @@ const TransactionList: React.FC = () => {
         onClose={handleDialogClose}
         onSubmit={handleSubmit}
       />
-    </Container>
+    </Box>
   );
 };
 

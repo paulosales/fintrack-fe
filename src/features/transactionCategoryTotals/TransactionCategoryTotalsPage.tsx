@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
 import {
@@ -8,25 +8,22 @@ import {
   Box,
   CircularProgress,
   Collapse,
-  FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
-  Button,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import PaginationControls from '../../components/PaginationControls';
+import TransactionCategoryTotalsFilters, {
+  type TransactionCategoryTotalsFilterFormValues,
+} from './TransactionCategoryTotalsFilters';
 import { fetchCategories } from '../categories/categoriesSlice';
 import {
   fetchTransactionCategoryTotalDetails,
@@ -37,12 +34,6 @@ import { getTransactionCategoryDetailKey } from './types';
 import type { RootState, AppDispatch } from '../../store';
 import { formatCurrency } from '../../utils/currencyUtils';
 import { formatDateTime } from '../../utils/dateUtils';
-
-interface TransactionCategoryTotalsFilterFormValues {
-  month: string;
-  year: string;
-  categoryId: string;
-}
 
 const buildDetailRequest = (
   row: TransactionCategoryTotal
@@ -87,8 +78,6 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
-
-  const values = useWatch({ control });
   const monthOptions = [
     { value: '', label: t('common.allMonths') },
     { value: 1, label: t('months.january') },
@@ -120,29 +109,21 @@ const TransactionCategoryTotalsPage: React.FC = () => {
     dispatch(fetchTransactionCategoryTotals({ month, year, categoryId, page, pageSize }));
   }, [dispatch, month, year, categoryId, page, pageSize]);
 
-  useEffect(() => {
-    const nextMonth = values.month ? Number(values.month) : null;
-
-    if (nextMonth !== month) {
-      setMonth(nextMonth);
-      setPage(1);
-    }
-  }, [month, values.month]);
-
-  useEffect(() => {
-    const nextCategoryId = values.categoryId ? Number(values.categoryId) : null;
-
-    if (nextCategoryId !== categoryId) {
-      setCategoryId(nextCategoryId);
-      setPage(1);
-    }
-  }, [categoryId, values.categoryId]);
-
-  useEffect(() => {
-    debouncedApplyYear(values.year || '');
-  }, [debouncedApplyYear, values.year]);
-
   useEffect(() => () => debouncedApplyYear.cancel(), [debouncedApplyYear]);
+
+  const handleMonthChange = (value: string) => {
+    setMonth(value ? Number(value) : null);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryId(value ? Number(value) : null);
+    setPage(1);
+  };
+
+  const handleYearChange = (value: string) => {
+    debouncedApplyYear(value);
+  };
 
   const handleReload = () => {
     dispatch(fetchTransactionCategoryTotals({ month, year, categoryId, page, pageSize }));
@@ -169,79 +150,22 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box>
       <Typography variant="h4" component="h1" gutterBottom>
         {t('transactionCategoryTotals.title')}
       </Typography>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-          <FormControl sx={{ minWidth: 220 }}>
-            <InputLabel>{t('transactionCategoryTotals.filters.month')}</InputLabel>
-            <Controller
-              control={control}
-              name="month"
-              render={({ field }) => (
-                <Select {...field} label={t('transactionCategoryTotals.filters.month')}>
-                  {monthOptions.map((option) => (
-                    <MenuItem key={String(option.value)} value={String(option.value)}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          </FormControl>
-
-          <Controller
-            control={control}
-            name="year"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label={t('transactionCategoryTotals.filters.year')}
-                type="number"
-                sx={{ width: 180 }}
-              />
-            )}
-          />
-
-          <FormControl sx={{ minWidth: 260 }}>
-            <InputLabel>{t('transactionCategoryTotals.filters.category')}</InputLabel>
-            <Controller
-              control={control}
-              name="categoryId"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  label={t('transactionCategoryTotals.filters.category')}
-                  disabled={categoriesLoading}
-                >
-                  <MenuItem value="">
-                    <em>{t('common.allCategories')}</em>
-                  </MenuItem>
-                  {categoriesLoading ? (
-                    <MenuItem disabled>
-                      <CircularProgress size={20} sx={{ mr: 1 }} />
-                      {t('common.loadingCategories')}
-                    </MenuItem>
-                  ) : (
-                    categories.map((category) => (
-                      <MenuItem key={category.id} value={String(category.id)}>
-                        {category.name}
-                      </MenuItem>
-                    ))
-                  )}
-                </Select>
-              )}
-            />
-          </FormControl>
-
-          <Button variant="contained" onClick={handleReload} disabled={loading}>
-            {loading ? <CircularProgress size={20} color="inherit" /> : t('common.reload')}
-          </Button>
-        </Box>
-      </Paper>
+      <TransactionCategoryTotalsFilters
+        control={control}
+        monthOptions={monthOptions}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
+        loading={loading}
+        onMonthChange={handleMonthChange}
+        onYearChange={handleYearChange}
+        onCategoryChange={handleCategoryChange}
+        onReload={handleReload}
+      />
 
       {categoriesError && (
         <Alert severity="error" sx={{ mb: 2 }}>
