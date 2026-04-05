@@ -29,11 +29,7 @@ import {
   updateBudgetSetup,
 } from './budgetSetupSlice';
 import BudgetSetupFormDialog from './BudgetSetupFormDialog';
-import type {
-  BudgetSetupFormState,
-  BudgetSetupMutationPayload,
-  BudgetSetupRecord,
-} from './types';
+import type { BudgetSetupFormState, BudgetSetupMutationPayload, BudgetSetupRecord } from './types';
 
 const getCurrentLocalDate = (): string => {
   const date = new Date();
@@ -47,7 +43,11 @@ const buildBudgetSetupFormDefaults = (
   budgetSetup: BudgetSetupRecord | null,
   accountOptions: RootState['accounts']['data']
 ): BudgetSetupFormState => ({
-  accountId: budgetSetup ? String(budgetSetup.accountId) : accountOptions[0] ? String(accountOptions[0].id) : '',
+  accountId: budgetSetup
+    ? String(budgetSetup.accountId)
+    : accountOptions[0]
+      ? String(accountOptions[0].id)
+      : '',
   date: budgetSetup?.date ?? getCurrentLocalDate(),
   isRepeatle: budgetSetup?.isRepeatle ?? false,
   repeatFrequency: budgetSetup?.repeatFrequency ?? '',
@@ -282,9 +282,13 @@ const BudgetSetupListPage: React.FC = () => {
                 {data.map((budgetSetup) => (
                   <TableRow key={budgetSetup.id}>
                     <TableCell>{budgetSetup.id}</TableCell>
-                    <TableCell>{budgetSetup.accountCode} - {budgetSetup.accountName}</TableCell>
+                    <TableCell>
+                      {budgetSetup.accountCode} - {budgetSetup.accountName}
+                    </TableCell>
                     <TableCell>{budgetSetup.date}</TableCell>
-                    <TableCell>{budgetSetup.isRepeatle ? t('common.yes') : t('common.no')}</TableCell>
+                    <TableCell>
+                      {budgetSetup.isRepeatle ? t('common.yes') : t('common.no')}
+                    </TableCell>
                     <TableCell>{budgetSetup.repeatFrequency || t('common.notAvailable')}</TableCell>
                     <TableCell>{budgetSetup.endDate || t('common.notAvailable')}</TableCell>
                     <TableCell>{budgetSetup.description}</TableCell>

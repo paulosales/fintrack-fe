@@ -114,6 +114,11 @@
       "amount": "金额"
     }
   },
+  "search": {
+    "open": "打开搜索",
+    "title": "搜索",
+    "placeholder": "输入以搜索..."
+  },
   "budgets": {
     "title": "预算",
     "create": "创建预算",

@@ -52,7 +52,13 @@ const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{editingBudget ? t('budgets.edit') : t('budgets.create')}</DialogTitle>
       <DialogContent>
-        <Stack component="form" id="budget-form" spacing={2} sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          component="form"
+          id="budget-form"
+          spacing={2}
+          sx={{ mt: 1 }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {formError && <Alert severity="error">{formError}</Alert>}
           <Controller
             control={control}
@@ -92,7 +98,13 @@ const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
             control={control}
             name="amount"
             render={({ field }) => (
-              <TextField {...field} label={t('budgets.form.amount')} type="number" required fullWidth />
+              <TextField
+                {...field}
+                label={t('budgets.form.amount')}
+                type="number"
+                required
+                fullWidth
+              />
             )}
           />
           <Controller
@@ -122,7 +134,10 @@ const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
                 control={control}
                 name="processed"
                 render={({ field }) => (
-                  <Checkbox checked={field.value} onChange={(event) => field.onChange(event.target.checked)} />
+                  <Checkbox
+                    checked={field.value}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                  />
                 )}
               />
             }

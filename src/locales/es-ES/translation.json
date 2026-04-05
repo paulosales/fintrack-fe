@@ -114,6 +114,11 @@
       "amount": "Importe"
     }
   },
+  "search": {
+    "open": "Abrir búsqueda",
+    "title": "Buscar",
+    "placeholder": "Escribe para buscar..."
+  },
   "budgets": {
     "title": "Presupuesto",
     "create": "Crear presupuesto",

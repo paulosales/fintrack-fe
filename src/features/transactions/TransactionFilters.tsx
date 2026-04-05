@@ -70,7 +70,9 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   }, [actions, filters.accountId, values.accountId]);
 
   useEffect(() => {
-    const nextTransactionTypeId = values.transactionTypeId ? Number(values.transactionTypeId) : null;
+    const nextTransactionTypeId = values.transactionTypeId
+      ? Number(values.transactionTypeId)
+      : null;
 
     if (nextTransactionTypeId !== filters.transactionTypeId) {
       actions.onTransactionTypeChange(nextTransactionTypeId);
@@ -201,7 +203,11 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           )}
         />
         <Button variant="contained" onClick={actions.onReload} disabled={loadingState.transactions}>
-          {loadingState.transactions ? <CircularProgress size={20} color="inherit" /> : t('common.reload')}
+          {loadingState.transactions ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            t('common.reload')
+          )}
         </Button>
       </Box>
     </Paper>

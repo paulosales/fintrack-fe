@@ -160,10 +160,7 @@ export const createBudget = createAsyncThunk(
 
 export const updateBudget = createAsyncThunk(
   'budgets/updateBudget',
-  async (
-    { id, payload }: { id: number; payload: BudgetMutationPayload },
-    { rejectWithValue }
-  ) => {
+  async ({ id, payload }: { id: number; payload: BudgetMutationPayload }, { rejectWithValue }) => {
     try {
       const response = await fetch(`/api/budgets/${id}`, {
         method: 'PUT',

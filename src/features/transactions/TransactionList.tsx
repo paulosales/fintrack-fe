@@ -173,7 +173,9 @@ const TransactionList: React.FC = () => {
 
   const getAccountName = (id: number): string => {
     const account = accounts.find((acc) => acc.id === id);
-    return account ? `${account.code} - ${account.name}` : `${t('transactions.form.account')} ${id}`;
+    return account
+      ? `${account.code} - ${account.name}`
+      : `${t('transactions.form.account')} ${id}`;
   };
 
   const handleCreateClick = () => {

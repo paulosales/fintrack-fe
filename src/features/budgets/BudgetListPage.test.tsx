@@ -63,7 +63,11 @@ describe('BudgetListPage', () => {
     );
 
     renderWithStore({
-      accounts: { loading: false, error: null, data: [{ id: 1, code: 'CHK', name: 'Checking', accountTypeId: 1 }] },
+      accounts: {
+        loading: false,
+        error: null,
+        data: [{ id: 1, code: 'CHK', name: 'Checking', accountTypeId: 1 }],
+      },
       budgets: {
         loading: false,
         error: null,
@@ -131,7 +135,11 @@ describe('BudgetListPage', () => {
     );
 
     renderWithStore({
-      accounts: { loading: false, error: null, data: [{ id: 1, code: 'CHK', name: 'Checking', accountTypeId: 1 }] },
+      accounts: {
+        loading: false,
+        error: null,
+        data: [{ id: 1, code: 'CHK', name: 'Checking', accountTypeId: 1 }],
+      },
       budgets: {
         loading: false,
         error: null,

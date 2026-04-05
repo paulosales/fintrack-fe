@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Box,
-} from '@mui/material';
+import { IconButton, Avatar, Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import i18n, { supportedLanguages } from '../i18n';
 import enUSFlag from '../assets/flags/en-US.svg';
@@ -61,7 +53,11 @@ const LanguageSelector: React.FC = () => {
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose} keepMounted>
         {supportedLanguages.map((language) => (
-          <MenuItem key={language} selected={language === current} onClick={() => handleSelect(language)}>
+          <MenuItem
+            key={language}
+            selected={language === current}
+            onClick={() => handleSelect(language)}
+          >
             <ListItemIcon>
               <Avatar src={flagMap[language]} alt={language} sx={{ width: 20, height: 20 }} />
             </ListItemIcon>

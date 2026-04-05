@@ -39,7 +39,13 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>{t('budgets.generateDialog.title')}</DialogTitle>
       <DialogContent>
-        <Stack component="form" id="budget-generate-form" spacing={2} sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          component="form"
+          id="budget-generate-form"
+          spacing={2}
+          sx={{ mt: 1 }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {formError && <Alert severity="error">{formError}</Alert>}
           <Controller
             control={control}
@@ -61,7 +67,10 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
                 control={control}
                 name="generateOnlyForFuture"
                 render={({ field }) => (
-                  <Checkbox checked={field.value} onChange={(event) => field.onChange(event.target.checked)} />
+                  <Checkbox
+                    checked={field.value}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                  />
                 )}
               />
             }
@@ -73,7 +82,12 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
         <Button onClick={onClose} disabled={isSubmitting}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" form="budget-generate-form" variant="contained" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          form="budget-generate-form"
+          variant="contained"
+          disabled={isSubmitting}
+        >
           {t('common.generate')}
         </Button>
       </DialogActions>

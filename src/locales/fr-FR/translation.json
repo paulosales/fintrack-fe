@@ -110,6 +110,11 @@
       "amount": "Montant"
     }
   },
+  "search": {
+    "open": "Ouvrir la recherche",
+    "title": "Recherche",
+    "placeholder": "Tapez pour rechercher..."
+  },
   "budgets": {
     "title": "Budget",
     "create": "Créer un budget",

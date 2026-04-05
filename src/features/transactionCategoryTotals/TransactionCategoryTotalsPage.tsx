@@ -192,7 +192,9 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                   <TableCell />
                   <TableCell>{t('transactionCategoryTotals.columns.month')}</TableCell>
                   <TableCell>{t('transactionCategoryTotals.columns.category')}</TableCell>
-                  <TableCell align="right">{t('transactionCategoryTotals.columns.total')}</TableCell>
+                  <TableCell align="right">
+                    {t('transactionCategoryTotals.columns.total')}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -241,7 +243,9 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                               {!detailsState.loading &&
                                 !detailsState.error &&
                                 detailsState.data.length === 0 && (
-                                  <Alert severity="info">{t('transactionCategoryTotals.detailsEmpty')}</Alert>
+                                  <Alert severity="info">
+                                    {t('transactionCategoryTotals.detailsEmpty')}
+                                  </Alert>
                                 )}
 
                               {detailsState.data.length > 0 && (
@@ -249,12 +253,24 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                                   <TableHead>
                                     <TableRow>
                                       <TableCell>{t('transactions.columns.id')}</TableCell>
-                                      <TableCell>{t('transactionCategoryTotals.columns.type')}</TableCell>
-                                      <TableCell>{t('transactionCategoryTotals.columns.description')}</TableCell>
-                                      <TableCell>{t('transactionCategoryTotals.columns.datetime')}</TableCell>
-                                      <TableCell>{t('transactionCategoryTotals.columns.note')}</TableCell>
-                                      <TableCell>{t('transactionCategoryTotals.columns.category')}</TableCell>
-                                      <TableCell align="right">{t('transactionCategoryTotals.columns.amount')}</TableCell>
+                                      <TableCell>
+                                        {t('transactionCategoryTotals.columns.type')}
+                                      </TableCell>
+                                      <TableCell>
+                                        {t('transactionCategoryTotals.columns.description')}
+                                      </TableCell>
+                                      <TableCell>
+                                        {t('transactionCategoryTotals.columns.datetime')}
+                                      </TableCell>
+                                      <TableCell>
+                                        {t('transactionCategoryTotals.columns.note')}
+                                      </TableCell>
+                                      <TableCell>
+                                        {t('transactionCategoryTotals.columns.category')}
+                                      </TableCell>
+                                      <TableCell align="right">
+                                        {t('transactionCategoryTotals.columns.amount')}
+                                      </TableCell>
                                     </TableRow>
                                   </TableHead>
                                   <TableBody>
@@ -264,7 +280,9 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                                         <TableCell>{detail.type}</TableCell>
                                         <TableCell>{detail.description}</TableCell>
                                         <TableCell>{formatDateTime(detail.datetime)}</TableCell>
-                                        <TableCell>{detail.note || t('common.notAvailable')}</TableCell>
+                                        <TableCell>
+                                          {detail.note || t('common.notAvailable')}
+                                        </TableCell>
                                         <TableCell>{detail.category}</TableCell>
                                         <TableCell align="right">
                                           {formatCurrency(detail.amount)}

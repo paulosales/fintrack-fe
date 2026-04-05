@@ -68,7 +68,13 @@ const BudgetSetupFormDialog: React.FC<BudgetSetupFormDialogProps> = ({
             control={control}
             name="accountId"
             render={({ field }) => (
-              <TextField {...field} select label={t('budgetSetups.form.account')} required fullWidth>
+              <TextField
+                {...field}
+                select
+                label={t('budgetSetups.form.account')}
+                required
+                fullWidth
+              >
                 {accounts.map((account) => (
                   <MenuItem key={account.id} value={String(account.id)}>
                     {account.code} - {account.name}
@@ -97,7 +103,10 @@ const BudgetSetupFormDialog: React.FC<BudgetSetupFormDialogProps> = ({
                 control={control}
                 name="isRepeatle"
                 render={({ field }) => (
-                  <Checkbox checked={field.value} onChange={(event) => field.onChange(event.target.checked)} />
+                  <Checkbox
+                    checked={field.value}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                  />
                 )}
               />
             }
@@ -150,14 +159,26 @@ const BudgetSetupFormDialog: React.FC<BudgetSetupFormDialogProps> = ({
             control={control}
             name="amount"
             render={({ field }) => (
-              <TextField {...field} label={t('budgetSetups.form.amount')} type="number" required fullWidth />
+              <TextField
+                {...field}
+                label={t('budgetSetups.form.amount')}
+                type="number"
+                required
+                fullWidth
+              />
             )}
           />
           <Controller
             control={control}
             name="note"
             render={({ field }) => (
-              <TextField {...field} label={t('budgetSetups.form.note')} multiline minRows={2} fullWidth />
+              <TextField
+                {...field}
+                label={t('budgetSetups.form.note')}
+                multiline
+                minRows={2}
+                fullWidth
+              />
             )}
           />
         </Stack>

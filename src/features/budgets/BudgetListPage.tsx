@@ -37,7 +37,12 @@ import {
 } from './budgetSlice';
 import BudgetFormDialog from './BudgetFormDialog';
 import BudgetGenerateDialog from './BudgetGenerateDialog';
-import type { BudgetDetailRequest, BudgetFormState, BudgetMutationPayload, BudgetRecord } from './types';
+import type {
+  BudgetDetailRequest,
+  BudgetFormState,
+  BudgetMutationPayload,
+  BudgetRecord,
+} from './types';
 import { getBudgetDetailKey } from './types';
 
 const getCurrentLocalDate = (): string => {
@@ -57,7 +62,11 @@ const buildBudgetFormDefaults = (
   budget: BudgetRecord | null,
   accountOptions: RootState['accounts']['data']
 ): BudgetFormState => ({
-  accountId: budget ? String(budget.accountId) : accountOptions[0] ? String(accountOptions[0].id) : '',
+  accountId: budget
+    ? String(budget.accountId)
+    : accountOptions[0]
+      ? String(accountOptions[0].id)
+      : '',
   date: budget?.date ?? getCurrentLocalDate(),
   amount: budget ? String(budget.amount) : '',
   description: budget?.description ?? '',
@@ -229,7 +238,13 @@ const BudgetListPage: React.FC = () => {
     }
   };
 
-  const handleGenerateSubmit = async ({ endDate, generateOnlyForFuture }: { endDate: string; generateOnlyForFuture: boolean; }) => {
+  const handleGenerateSubmit = async ({
+    endDate,
+    generateOnlyForFuture,
+  }: {
+    endDate: string;
+    generateOnlyForFuture: boolean;
+  }) => {
     if (!endDate) {
       setFormError(t('budgets.endDateRequired'));
       return;
@@ -252,7 +267,9 @@ const BudgetListPage: React.FC = () => {
       setGenerateDialogOpen(false);
       setActionMessage(t('budgets.generated', { count: createdCount }));
     } catch (generateError) {
-      setActionError(generateError instanceof Error ? generateError.message : String(generateError));
+      setActionError(
+        generateError instanceof Error ? generateError.message : String(generateError)
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -324,7 +341,9 @@ const BudgetListPage: React.FC = () => {
         </Alert>
       )}
 
-      {!loading && !error && data.length === 0 && <Alert severity="info">{t('budgets.empty')}</Alert>}
+      {!loading && !error && data.length === 0 && (
+        <Alert severity="info">{t('budgets.empty')}</Alert>
+      )}
 
       {data.length > 0 && (
         <>
@@ -348,7 +367,9 @@ const BudgetListPage: React.FC = () => {
                       <TableRow>
                         <TableCell>
                           <IconButton
-                            aria-label={isExpanded ? t('common.collapseRow') : t('common.expandRow')}
+                            aria-label={
+                              isExpanded ? t('common.collapseRow') : t('common.expandRow')
+                            }
                             onClick={() => handleToggleRow(row.year, row.month)}
                           >
                             {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -367,9 +388,11 @@ const BudgetListPage: React.FC = () => {
                                   {detailState.error}
                                 </Alert>
                               )}
-                              {detailState && !detailState.loading && detailState.data.length === 0 && (
-                                <Alert severity="info">{t('budgets.monthEmpty')}</Alert>
-                              )}
+                              {detailState &&
+                                !detailState.loading &&
+                                detailState.data.length === 0 && (
+                                  <Alert severity="info">{t('budgets.monthEmpty')}</Alert>
+                                )}
                               {detailState && detailState.data.length > 0 && (
                                 <Table size="small">
                                   <TableHead>
@@ -379,32 +402,51 @@ const BudgetListPage: React.FC = () => {
                                       <TableCell>{t('budgets.columns.description')}</TableCell>
                                       <TableCell>{t('budgets.columns.frequency')}</TableCell>
                                       <TableCell>{t('budgets.columns.processed')}</TableCell>
-                                      <TableCell align="right">{t('budgets.columns.amount')}</TableCell>
+                                      <TableCell align="right">
+                                        {t('budgets.columns.amount')}
+                                      </TableCell>
                                       <TableCell>{t('budgets.columns.note')}</TableCell>
-                                      <TableCell align="right">{t('budgets.columns.actions')}</TableCell>
+                                      <TableCell align="right">
+                                        {t('budgets.columns.actions')}
+                                      </TableCell>
                                     </TableRow>
                                   </TableHead>
                                   <TableBody>
                                     {detailState.data.map((budget) => (
                                       <TableRow key={budget.id}>
                                         <TableCell>{budget.date}</TableCell>
-                                        <TableCell>{budget.accountCode} - {budget.accountName}</TableCell>
+                                        <TableCell>
+                                          {budget.accountCode} - {budget.accountName}
+                                        </TableCell>
                                         <TableCell>{budget.description}</TableCell>
                                         <TableCell>
-                                          {budget.repeatFrequency || (budget.isRepeatle ? t('budgets.repeating') : t('budgets.oneTime'))}
+                                          {budget.repeatFrequency ||
+                                            (budget.isRepeatle
+                                              ? t('budgets.repeating')
+                                              : t('budgets.oneTime'))}
                                         </TableCell>
-                                        <TableCell>{budget.processed ? t('common.yes') : t('common.no')}</TableCell>
-                                        <TableCell align="right">{formatCurrency(budget.amount)}</TableCell>
-                                        <TableCell>{budget.note || t('common.notAvailable')}</TableCell>
+                                        <TableCell>
+                                          {budget.processed ? t('common.yes') : t('common.no')}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                          {formatCurrency(budget.amount)}
+                                        </TableCell>
+                                        <TableCell>
+                                          {budget.note || t('common.notAvailable')}
+                                        </TableCell>
                                         <TableCell align="right" sx={{ minWidth: 120 }}>
                                           <IconButton
-                                            aria-label={t('budgets.actions.editAria', { id: budget.id })}
+                                            aria-label={t('budgets.actions.editAria', {
+                                              id: budget.id,
+                                            })}
                                             onClick={() => handleEditClick(budget)}
                                           >
                                             <EditIcon />
                                           </IconButton>
                                           <IconButton
-                                            aria-label={t('budgets.actions.deleteAria', { id: budget.id })}
+                                            aria-label={t('budgets.actions.deleteAria', {
+                                              id: budget.id,
+                                            })}
                                             color="error"
                                             onClick={() => handleDeleteClick(budget)}
                                           >

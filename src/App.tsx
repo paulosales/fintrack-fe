@@ -8,6 +8,7 @@ import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
+import SpotlightSearch from './components/SpotlightSearch';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
@@ -17,9 +18,9 @@ const App: React.FC = () => {
       ? '/transaction-category-totals'
       : location.pathname === '/budget-setups'
         ? '/budget-setups'
-      : location.pathname === '/budgets'
-        ? '/budgets'
-        : '/transactions';
+        : location.pathname === '/budgets'
+          ? '/budgets'
+          : '/transactions';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             {t('app.title')}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <SpotlightSearch />
             <LanguageSelector />
             <ThemeToggle />
           </Box>
@@ -55,12 +57,7 @@ const App: React.FC = () => {
           <Tab component={RouterLink} to="/budgets" value="/budgets" label={t('nav.budgets')} />
         </Tabs>
       </AppBar>
-      <Container
-        maxWidth={false}
-        disableGutters
-        component="main"
-        sx={{ py: 4, px: 1.25, flex: 1 }}
-      >
+      <Container maxWidth={false} disableGutters component="main" sx={{ py: 4, px: 1.25, flex: 1 }}>
         <Routes>
           <Route path="/" element={<Navigate to="/transactions" replace />} />
           <Route path="/transactions" element={<TransactionList />} />

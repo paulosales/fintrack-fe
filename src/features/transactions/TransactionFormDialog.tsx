@@ -28,15 +28,8 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
-  const {
-    accountId,
-    transactionTypeId,
-    categoryIds,
-    datetime,
-    amount,
-    description,
-    note,
-  } = initialValues;
+  const { accountId, transactionTypeId, categoryIds, datetime, amount, description, note } =
+    initialValues;
   const categoryIdsKey = categoryIds.join(',');
   const { control, handleSubmit, reset } = useForm<TransactionFormState>({
     defaultValues: initialValues,
@@ -54,7 +47,17 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
         note,
       });
     }
-  }, [open, accountId, transactionTypeId, categoryIdsKey, datetime, amount, description, note, reset]);
+  }, [
+    open,
+    accountId,
+    transactionTypeId,
+    categoryIdsKey,
+    datetime,
+    amount,
+    description,
+    note,
+    reset,
+  ]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -62,13 +65,25 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
         {editingTransaction ? t('transactions.edit') : t('transactions.create')}
       </DialogTitle>
       <DialogContent>
-        <Stack component="form" id="transaction-form" spacing={2} sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          component="form"
+          id="transaction-form"
+          spacing={2}
+          sx={{ mt: 1 }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {formError && <Alert severity="error">{formError}</Alert>}
           <Controller
             control={control}
             name="accountId"
             render={({ field }) => (
-              <TextField {...field} select label={t('transactions.form.account')} required fullWidth>
+              <TextField
+                {...field}
+                select
+                label={t('transactions.form.account')}
+                required
+                fullWidth
+              >
                 {accounts.map((account) => (
                   <MenuItem key={account.id} value={String(account.id)}>
                     {account.code} - {account.name}
@@ -81,7 +96,13 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
             control={control}
             name="transactionTypeId"
             render={({ field }) => (
-              <TextField {...field} select label={t('transactions.form.transactionType')} required fullWidth>
+              <TextField
+                {...field}
+                select
+                label={t('transactions.form.transactionType')}
+                required
+                fullWidth
+              >
                 {transactionTypes.map((transactionType) => (
                   <MenuItem key={transactionType.id} value={String(transactionType.id)}>
                     {transactionType.name}
@@ -144,7 +165,13 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
             control={control}
             name="amount"
             render={({ field }) => (
-              <TextField {...field} label={t('transactions.form.amount')} type="number" required fullWidth />
+              <TextField
+                {...field}
+                label={t('transactions.form.amount')}
+                type="number"
+                required
+                fullWidth
+              />
             )}
           />
           <Controller
@@ -158,7 +185,13 @@ const TransactionFormDialog: React.FC<TransactionFormDialogProps> = ({
             control={control}
             name="note"
             render={({ field }) => (
-              <TextField {...field} label={t('transactions.form.note')} multiline minRows={2} fullWidth />
+              <TextField
+                {...field}
+                label={t('transactions.form.note')}
+                multiline
+                minRows={2}
+                fullWidth
+              />
             )}
           />
         </Stack>

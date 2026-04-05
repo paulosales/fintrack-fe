@@ -114,6 +114,11 @@
       "amount": "Valor"
     }
   },
+  "search": {
+    "open": "Abrir pesquisa",
+    "title": "Pesquisar",
+    "placeholder": "Digite para pesquisar..."
+  },
   "budgets": {
     "title": "Orçamento",
     "create": "Criar Orçamento",

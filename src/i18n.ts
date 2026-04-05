@@ -58,8 +58,7 @@ const normalizeLanguage = (value?: string | null): SupportedLanguage => {
 
 const savedLanguage =
   typeof window !== 'undefined' ? window.localStorage.getItem('fintrack-language') : null;
-const browserLanguage =
-  typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+const browserLanguage = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
 
 void i18n.use(initReactI18next).init({
   resources,
