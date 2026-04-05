@@ -263,7 +263,7 @@ const BudgetSetupListPage: React.FC = () => {
       {data.length > 0 && (
         <>
           <TableContainer component={Paper}>
-            <Table>
+            <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>{t('transactions.columns.id')}</TableCell>

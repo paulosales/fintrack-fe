@@ -188,7 +188,7 @@ const TransactionCategoryTotalsPage: React.FC = () => {
       {data.length > 0 && (
         <>
           <TableContainer component={Paper}>
-            <Table>
+            <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell />
