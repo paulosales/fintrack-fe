@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
+import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -46,7 +47,30 @@ const getCurrentLocalDateTime = (): string => {
 
 const toDateTimeLocalValue = (value: string): string => value.replace(' ', 'T').slice(0, 16);
 
+const buildTransactionFormDefaults = (
+  transaction: Transaction | null,
+  accountOptions: RootState['accounts']['data'],
+  transactionTypeOptions: RootState['transactionTypes']['data']
+): TransactionFormState => ({
+  accountId: transaction
+    ? String(transaction.accountId)
+    : accountOptions[0]
+      ? String(accountOptions[0].id)
+      : '',
+  transactionTypeId: transaction
+    ? String(transaction.transactionTypeId)
+    : transactionTypeOptions[0]
+      ? String(transactionTypeOptions[0].id)
+      : '',
+  categoryIds: transaction?.categoryIds ? transaction.categoryIds.split(',').filter(Boolean) : [],
+  datetime: transaction ? toDateTimeLocalValue(transaction.datetime) : getCurrentLocalDateTime(),
+  amount: transaction ? String(transaction.amount) : '',
+  description: transaction?.description ?? '',
+  note: transaction?.note ?? '',
+});
+
 const TransactionList: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { data, loading, error, pagination } = useSelector(
     (state: RootState) => state.transactions
@@ -78,15 +102,6 @@ const TransactionList: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [form, setForm] = useState<TransactionFormState>({
-    accountId: '',
-    transactionTypeId: '',
-    categoryIds: [],
-    datetime: getCurrentLocalDateTime(),
-    amount: '',
-    description: '',
-    note: '',
-  });
 
   useEffect(() => {
     dispatch(fetchAccounts());
@@ -158,45 +173,20 @@ const TransactionList: React.FC = () => {
 
   const getAccountName = (id: number): string => {
     const account = accounts.find((acc) => acc.id === id);
-    return account ? `${account.code} - ${account.name}` : `Account ${id}`;
-  };
-
-  const resetForm = (transaction: Transaction | null) => {
-    setForm({
-      accountId: transaction
-        ? String(transaction.accountId)
-        : accounts[0]
-          ? String(accounts[0].id)
-          : '',
-      transactionTypeId: transaction
-        ? String(transaction.transactionTypeId)
-        : transactionTypes[0]
-          ? String(transactionTypes[0].id)
-          : '',
-      categoryIds: transaction?.categoryIds
-        ? transaction.categoryIds.split(',').filter(Boolean)
-        : [],
-      datetime: transaction
-        ? toDateTimeLocalValue(transaction.datetime)
-        : getCurrentLocalDateTime(),
-      amount: transaction ? String(transaction.amount) : '',
-      description: transaction?.description ?? '',
-      note: transaction?.note ?? '',
-    });
-    setFormError(null);
+    return account ? `${account.code} - ${account.name}` : `${t('transactions.form.account')} ${id}`;
   };
 
   const handleCreateClick = () => {
     setEditingTransaction(null);
-    resetForm(null);
     setActionError(null);
+    setFormError(null);
     setDialogOpen(true);
   };
 
   const handleEditClick = (transaction: Transaction) => {
     setEditingTransaction(transaction);
-    resetForm(transaction);
     setActionError(null);
+    setFormError(null);
     setDialogOpen(true);
   };
 
@@ -210,34 +200,26 @@ const TransactionList: React.FC = () => {
     setFormError(null);
   };
 
-  const handleFormChange = (
-    field: keyof TransactionFormState,
-    value: TransactionFormState[keyof TransactionFormState]
-  ) => {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
-  };
-
-  const buildPayload = (): TransactionMutationPayload | null => {
-    const parsedAccountId = Number(form.accountId);
-    const parsedTransactionTypeId = Number(form.transactionTypeId);
-    const parsedCategoryIds = form.categoryIds.map(Number).filter((value) => !Number.isNaN(value));
-    const parsedAmount = Number(form.amount);
+  const buildPayload = (formValues: TransactionFormState): TransactionMutationPayload | null => {
+    const parsedAccountId = Number(formValues.accountId);
+    const parsedTransactionTypeId = Number(formValues.transactionTypeId);
+    const parsedCategoryIds = formValues.categoryIds
+      .map(Number)
+      .filter((value) => !Number.isNaN(value));
+    const parsedAmount = Number(formValues.amount);
 
     if (
       !parsedAccountId ||
       !parsedTransactionTypeId ||
-      !form.datetime ||
-      !form.description.trim()
+      !formValues.datetime ||
+      !formValues.description.trim()
     ) {
-      setFormError('Account, type, date, and description are required.');
+      setFormError(t('transactions.requiredError'));
       return null;
     }
 
     if (Number.isNaN(parsedAmount)) {
-      setFormError('Amount must be a valid number.');
+      setFormError(t('transactions.amountInvalid'));
       return null;
     }
 
@@ -247,15 +229,15 @@ const TransactionList: React.FC = () => {
       accountId: parsedAccountId,
       transactionTypeId: parsedTransactionTypeId,
       categoryIds: parsedCategoryIds,
-      datetime: form.datetime,
+      datetime: formValues.datetime,
       amount: parsedAmount,
-      description: form.description.trim(),
-      note: form.note.trim() || undefined,
+      description: formValues.description.trim(),
+      note: formValues.note.trim() || undefined,
     };
   };
 
-  const handleSubmit = async () => {
-    const payload = buildPayload();
+  const handleSubmit = async (formValues: TransactionFormState) => {
+    const payload = buildPayload(formValues);
 
     if (!payload) {
       return;
@@ -288,7 +270,7 @@ const TransactionList: React.FC = () => {
   };
 
   const handleDeleteClick = async (transaction: Transaction) => {
-    const confirmed = window.confirm(`Delete transaction ${transaction.id}?`);
+    const confirmed = window.confirm(t('transactions.deleteConfirm', { id: transaction.id }));
 
     if (!confirmed) {
       return;
@@ -321,10 +303,10 @@ const TransactionList: React.FC = () => {
         }}
       >
         <Typography variant="h4" component="h1">
-          Transaction List
+          {t('transactions.title')}
         </Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateClick}>
-          Create Transaction
+          {t('transactions.create')}
         </Button>
       </Box>
 
@@ -356,23 +338,23 @@ const TransactionList: React.FC = () => {
 
       {accountsError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load accounts: {accountsError}
+          {t('transactions.failedLoadAccounts', { error: accountsError })}
         </Alert>
       )}
 
       {transactionTypesError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load transaction types: {transactionTypesError}
+          {t('transactions.failedLoadTypes', { error: transactionTypesError })}
         </Alert>
       )}
 
       {categoriesError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load categories: {categoriesError}
+          {t('transactions.failedLoadCategories', { error: categoriesError })}
         </Alert>
       )}
 
-      {error && <Alert severity="error">Error: {error}</Alert>}
+      {error && <Alert severity="error">{t('transactions.error', { error })}</Alert>}
 
       {actionError && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -381,7 +363,7 @@ const TransactionList: React.FC = () => {
       )}
 
       {!loading && !error && data.length === 0 && (
-        <Alert severity="info">No transactions found.</Alert>
+        <Alert severity="info">{t('transactions.empty')}</Alert>
       )}
 
       {data.length > 0 && (
@@ -390,15 +372,15 @@ const TransactionList: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Account</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Amount</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Categories</TableCell>
-                  <TableCell>Note</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell>{t('transactions.columns.id')}</TableCell>
+                  <TableCell>{t('transactions.columns.account')}</TableCell>
+                  <TableCell>{t('transactions.columns.type')}</TableCell>
+                  <TableCell>{t('transactions.columns.date')}</TableCell>
+                  <TableCell>{t('transactions.columns.amount')}</TableCell>
+                  <TableCell>{t('transactions.columns.description')}</TableCell>
+                  <TableCell>{t('transactions.columns.categories')}</TableCell>
+                  <TableCell>{t('transactions.columns.note')}</TableCell>
+                  <TableCell align="right">{t('transactions.columns.actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -406,21 +388,21 @@ const TransactionList: React.FC = () => {
                   <TableRow key={tx.id}>
                     <TableCell>{tx.id}</TableCell>
                     <TableCell>{getAccountName(tx.accountId)}</TableCell>
-                    <TableCell>{tx.transactionTypeName || '-'}</TableCell>
+                    <TableCell>{tx.transactionTypeName || t('common.notAvailable')}</TableCell>
                     <TableCell>{formatDateTime(tx.datetime)}</TableCell>
                     <TableCell>{formatCurrency(tx.amount)}</TableCell>
                     <TableCell>{tx.description}</TableCell>
-                    <TableCell>{tx.categories || '-'}</TableCell>
-                    <TableCell>{tx.note || '-'}</TableCell>
+                    <TableCell>{tx.categories || t('common.notAvailable')}</TableCell>
+                    <TableCell>{tx.note || t('common.notAvailable')}</TableCell>
                     <TableCell align="right" sx={{ minWidth: 120 }}>
                       <IconButton
-                        aria-label={`edit transaction ${tx.id}`}
+                        aria-label={t('transactions.actions.editAria', { id: tx.id })}
                         onClick={() => handleEditClick(tx)}
                       >
                         <EditIcon />
                       </IconButton>
                       <IconButton
-                        aria-label={`delete transaction ${tx.id}`}
+                        aria-label={t('transactions.actions.deleteAria', { id: tx.id })}
                         color="error"
                         onClick={() => handleDeleteClick(tx)}
                       >
@@ -446,7 +428,7 @@ const TransactionList: React.FC = () => {
       <TransactionFormDialog
         open={dialogOpen}
         editingTransaction={editingTransaction}
-        form={form}
+        initialValues={buildTransactionFormDefaults(editingTransaction, accounts, transactionTypes)}
         formError={formError}
         isSubmitting={isSubmitting}
         accounts={accounts}
@@ -454,7 +436,6 @@ const TransactionList: React.FC = () => {
         categories={categories}
         onClose={handleDialogClose}
         onSubmit={handleSubmit}
-        onFormChange={handleFormChange}
       />
     </Container>
   );

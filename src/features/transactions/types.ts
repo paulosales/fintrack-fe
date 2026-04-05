@@ -75,6 +75,19 @@ export interface TransactionFormState {
   note: string;
 }
 
+export interface TransactionFormDialogProps {
+  open: boolean;
+  editingTransaction: Transaction | null;
+  initialValues: TransactionFormState;
+  formError: string | null;
+  isSubmitting: boolean;
+  accounts: Account[];
+  transactionTypes: TransactionType[];
+  categories: Category[];
+  onClose: () => void;
+  onSubmit: (values: TransactionFormState) => void;
+}
+
 export interface TransactionState {
   loading: boolean;
   error: string | null;

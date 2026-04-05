@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   Alert,
@@ -36,21 +38,11 @@ import type { RootState, AppDispatch } from '../../store';
 import { formatCurrency } from '../../utils/currencyUtils';
 import { formatDateTime } from '../../utils/dateUtils';
 
-const monthOptions = [
-  { value: '', label: 'All Months' },
-  { value: 1, label: 'January' },
-  { value: 2, label: 'February' },
-  { value: 3, label: 'March' },
-  { value: 4, label: 'April' },
-  { value: 5, label: 'May' },
-  { value: 6, label: 'June' },
-  { value: 7, label: 'July' },
-  { value: 8, label: 'August' },
-  { value: 9, label: 'September' },
-  { value: 10, label: 'October' },
-  { value: 11, label: 'November' },
-  { value: 12, label: 'December' },
-];
+interface TransactionCategoryTotalsFilterFormValues {
+  month: string;
+  year: string;
+  categoryId: string;
+}
 
 const buildDetailRequest = (
   row: TransactionCategoryTotal
@@ -72,6 +64,7 @@ const parseYear = (value: string): number | null => {
 };
 
 const TransactionCategoryTotalsPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const {
     data: categories,
@@ -81,13 +74,36 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   const { data, loading, error, detailsByKey, pagination } = useSelector(
     (state: RootState) => state.transactionCategoryTotals
   );
+  const { control } = useForm<TransactionCategoryTotalsFilterFormValues>({
+    defaultValues: {
+      month: '',
+      year: '',
+      categoryId: '',
+    },
+  });
   const [month, setMonth] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
-  const [yearInput, setYearInput] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
+
+  const values = useWatch({ control });
+  const monthOptions = [
+    { value: '', label: t('common.allMonths') },
+    { value: 1, label: t('months.january') },
+    { value: 2, label: t('months.february') },
+    { value: 3, label: t('months.march') },
+    { value: 4, label: t('months.april') },
+    { value: 5, label: t('months.may') },
+    { value: 6, label: t('months.june') },
+    { value: 7, label: t('months.july') },
+    { value: 8, label: t('months.august') },
+    { value: 9, label: t('months.september') },
+    { value: 10, label: t('months.october') },
+    { value: 11, label: t('months.november') },
+    { value: 12, label: t('months.december') },
+  ];
 
   const debouncedApplyYear = useDebouncedCallback((value: string) => {
     const nextYear = parseYear(value);
@@ -103,6 +119,30 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   useEffect(() => {
     dispatch(fetchTransactionCategoryTotals({ month, year, categoryId, page, pageSize }));
   }, [dispatch, month, year, categoryId, page, pageSize]);
+
+  useEffect(() => {
+    const nextMonth = values.month ? Number(values.month) : null;
+
+    if (nextMonth !== month) {
+      setMonth(nextMonth);
+      setPage(1);
+    }
+  }, [month, values.month]);
+
+  useEffect(() => {
+    const nextCategoryId = values.categoryId ? Number(values.categoryId) : null;
+
+    if (nextCategoryId !== categoryId) {
+      setCategoryId(nextCategoryId);
+      setPage(1);
+    }
+  }, [categoryId, values.categoryId]);
+
+  useEffect(() => {
+    debouncedApplyYear(values.year || '');
+  }, [debouncedApplyYear, values.year]);
+
+  useEffect(() => () => debouncedApplyYear.cancel(), [debouncedApplyYear]);
 
   const handleReload = () => {
     dispatch(fetchTransactionCategoryTotals({ month, year, categoryId, page, pageSize }));
@@ -131,90 +171,92 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Transactions By Category
+        {t('transactionCategoryTotals.title')}
       </Typography>
 
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <FormControl sx={{ minWidth: 220 }}>
-            <InputLabel>Select Month</InputLabel>
-            <Select
-              value={month ?? ''}
-              onChange={(event) => {
-                setMonth(event.target.value ? Number(event.target.value) : null);
-                setPage(1);
-              }}
-              label="Select Month"
-            >
-              {monthOptions.map((option) => (
-                <MenuItem key={String(option.value)} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
+            <InputLabel>{t('transactionCategoryTotals.filters.month')}</InputLabel>
+            <Controller
+              control={control}
+              name="month"
+              render={({ field }) => (
+                <Select {...field} label={t('transactionCategoryTotals.filters.month')}>
+                  {monthOptions.map((option) => (
+                    <MenuItem key={String(option.value)} value={String(option.value)}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
           </FormControl>
 
-          <TextField
-            label="Year"
-            type="number"
-            value={yearInput}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              setYearInput(nextValue);
-              debouncedApplyYear(nextValue);
-            }}
-            sx={{ width: 180 }}
+          <Controller
+            control={control}
+            name="year"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={t('transactionCategoryTotals.filters.year')}
+                type="number"
+                sx={{ width: 180 }}
+              />
+            )}
           />
 
           <FormControl sx={{ minWidth: 260 }}>
-            <InputLabel>Select Category</InputLabel>
-            <Select
-              value={categoryId ?? ''}
-              onChange={(event) => {
-                setCategoryId(event.target.value ? Number(event.target.value) : null);
-                setPage(1);
-              }}
-              label="Select Category"
-              disabled={categoriesLoading}
-            >
-              <MenuItem value="">
-                <em>All Categories</em>
-              </MenuItem>
-              {categoriesLoading ? (
-                <MenuItem disabled>
-                  <CircularProgress size={20} sx={{ mr: 1 }} />
-                  Loading categories...
-                </MenuItem>
-              ) : (
-                categories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
-                    {category.name}
+            <InputLabel>{t('transactionCategoryTotals.filters.category')}</InputLabel>
+            <Controller
+              control={control}
+              name="categoryId"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label={t('transactionCategoryTotals.filters.category')}
+                  disabled={categoriesLoading}
+                >
+                  <MenuItem value="">
+                    <em>{t('common.allCategories')}</em>
                   </MenuItem>
-                ))
+                  {categoriesLoading ? (
+                    <MenuItem disabled>
+                      <CircularProgress size={20} sx={{ mr: 1 }} />
+                      {t('common.loadingCategories')}
+                    </MenuItem>
+                  ) : (
+                    categories.map((category) => (
+                      <MenuItem key={category.id} value={String(category.id)}>
+                        {category.name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
               )}
-            </Select>
+            />
           </FormControl>
 
           <Button variant="contained" onClick={handleReload} disabled={loading}>
-            {loading ? <CircularProgress size={20} color="inherit" /> : 'Reload'}
+            {loading ? <CircularProgress size={20} color="inherit" /> : t('common.reload')}
           </Button>
         </Box>
       </Paper>
 
       {categoriesError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load categories: {categoriesError}
+          {t('transactionCategoryTotals.failedLoadCategories', { error: categoriesError })}
         </Alert>
       )}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load category totals: {error}
+          {t('transactionCategoryTotals.failedLoadTotals', { error })}
         </Alert>
       )}
 
       {!loading && !error && data.length === 0 && (
-        <Alert severity="info">No category totals found.</Alert>
+        <Alert severity="info">{t('transactionCategoryTotals.empty')}</Alert>
       )}
 
       {data.length > 0 && (
@@ -224,9 +266,9 @@ const TransactionCategoryTotalsPage: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  <TableCell>Month</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell align="right">Total</TableCell>
+                  <TableCell>{t('transactionCategoryTotals.columns.month')}</TableCell>
+                  <TableCell>{t('transactionCategoryTotals.columns.category')}</TableCell>
+                  <TableCell align="right">{t('transactionCategoryTotals.columns.total')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -245,7 +287,7 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                       <TableRow>
                         <TableCell sx={{ width: 72 }}>
                           <IconButton
-                            aria-label={expanded ? 'Collapse row' : 'Expand row'}
+                            aria-label={expanded ? t('common.collapseRow') : t('common.expandRow')}
                             size="small"
                             onClick={() => handleToggleRow(row)}
                           >
@@ -261,34 +303,34 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                           <Collapse in={expanded} timeout="auto" unmountOnExit>
                             <Box sx={{ m: 2 }}>
                               <Typography variant="h6" gutterBottom>
-                                Total Details
+                                {t('transactionCategoryTotals.title')}
                               </Typography>
 
                               {detailsState.loading && <CircularProgress size={24} />}
 
                               {detailsState.error && (
                                 <Alert severity="error" sx={{ mb: 2 }}>
-                                  Failed to load details: {detailsState.error}
+                                  {detailsState.error}
                                 </Alert>
                               )}
 
                               {!detailsState.loading &&
                                 !detailsState.error &&
                                 detailsState.data.length === 0 && (
-                                  <Alert severity="info">No detail rows found.</Alert>
+                                  <Alert severity="info">{t('transactionCategoryTotals.detailsEmpty')}</Alert>
                                 )}
 
                               {detailsState.data.length > 0 && (
                                 <Table size="small">
                                   <TableHead>
                                     <TableRow>
-                                      <TableCell>ID</TableCell>
-                                      <TableCell>Type</TableCell>
-                                      <TableCell>Description</TableCell>
-                                      <TableCell>Date</TableCell>
-                                      <TableCell>Note</TableCell>
-                                      <TableCell>Category</TableCell>
-                                      <TableCell align="right">Amount</TableCell>
+                                      <TableCell>{t('transactions.columns.id')}</TableCell>
+                                      <TableCell>{t('transactionCategoryTotals.columns.type')}</TableCell>
+                                      <TableCell>{t('transactionCategoryTotals.columns.description')}</TableCell>
+                                      <TableCell>{t('transactionCategoryTotals.columns.datetime')}</TableCell>
+                                      <TableCell>{t('transactionCategoryTotals.columns.note')}</TableCell>
+                                      <TableCell>{t('transactionCategoryTotals.columns.category')}</TableCell>
+                                      <TableCell align="right">{t('transactionCategoryTotals.columns.amount')}</TableCell>
                                     </TableRow>
                                   </TableHead>
                                   <TableBody>
@@ -298,7 +340,7 @@ const TransactionCategoryTotalsPage: React.FC = () => {
                                         <TableCell>{detail.type}</TableCell>
                                         <TableCell>{detail.description}</TableCell>
                                         <TableCell>{formatDateTime(detail.datetime)}</TableCell>
-                                        <TableCell>{detail.note || '-'}</TableCell>
+                                        <TableCell>{detail.note || t('common.notAvailable')}</TableCell>
                                         <TableCell>{detail.category}</TableCell>
                                         <TableCell align="right">
                                           {formatCurrency(detail.amount)}

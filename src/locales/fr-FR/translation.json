@@ -1,0 +1,161 @@
+{
+  "app": { "title": "Fintrack" },
+  "language": { "label": "Langue" },
+  "theme": {
+    "toggleAria": "changer le thème",
+    "switchToDark": "Passer au mode sombre",
+    "switchToLight": "Passer au mode clair"
+  },
+  "nav": {
+    "transactions": "Liste des transactions",
+    "transactionCategoryTotals": "Transactions par catégorie",
+    "budgets": "Budget"
+  },
+  "pagination": { "pageSize": "Taille de page", "items": "{{count}} éléments" },
+  "common": {
+    "cancel": "Annuler",
+    "reload": "Recharger",
+    "create": "Créer",
+    "saveChanges": "Enregistrer les modifications",
+    "generate": "Générer",
+    "allAccounts": "Tous les comptes",
+    "allTypes": "Tous les types",
+    "allCategories": "Toutes les catégories",
+    "allMonths": "Tous les mois",
+    "loadingAccounts": "Chargement des comptes...",
+    "loadingTypes": "Chargement des types...",
+    "loadingCategories": "Chargement des catégories...",
+    "yes": "Oui",
+    "no": "Non",
+    "notAvailable": "-",
+    "expandRow": "Développer la ligne",
+    "collapseRow": "Réduire la ligne"
+  },
+  "months": {
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Mai",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre"
+  },
+  "transactions": {
+    "title": "Liste des transactions",
+    "create": "Créer une transaction",
+    "edit": "Modifier la transaction",
+    "created": "Transaction créée.",
+    "updated": "Transaction mise à jour.",
+    "deleteConfirm": "Supprimer la transaction {{id}} ?",
+    "empty": "Aucune transaction trouvée.",
+    "requiredError": "Le compte, le type, la date et la description sont requis.",
+    "amountInvalid": "Le montant doit être un nombre valide.",
+    "failedLoadAccounts": "Échec du chargement des comptes : {{error}}",
+    "failedLoadTypes": "Échec du chargement des types de transaction : {{error}}",
+    "failedLoadCategories": "Échec du chargement des catégories : {{error}}",
+    "error": "Erreur : {{error}}",
+    "filters": {
+      "account": "Sélectionner un compte",
+      "type": "Sélectionner un type",
+      "category": "Sélectionner une catégorie",
+      "description": "Description",
+      "descriptionPlaceholder": "Filtrer par description"
+    },
+    "form": {
+      "account": "Compte",
+      "transactionType": "Type de transaction",
+      "categories": "Catégories",
+      "date": "Date",
+      "amount": "Montant",
+      "description": "Description",
+      "note": "Note"
+    },
+    "columns": {
+      "id": "ID",
+      "account": "Compte",
+      "type": "Type",
+      "date": "Date",
+      "amount": "Montant",
+      "description": "Description",
+      "categories": "Catégories",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier la transaction {{id}}",
+      "deleteAria": "supprimer la transaction {{id}}"
+    }
+  },
+  "transactionCategoryTotals": {
+    "title": "Transactions par catégorie",
+    "failedLoadCategories": "Échec du chargement des catégories : {{error}}",
+    "failedLoadTotals": "Échec du chargement des totaux par catégorie : {{error}}",
+    "empty": "Aucun total de catégorie trouvé.",
+    "detailsEmpty": "Aucun détail trouvé.",
+    "filters": { "month": "Sélectionner un mois", "year": "Année", "category": "Sélectionner une catégorie" },
+    "columns": {
+      "month": "Mois",
+      "category": "Catégorie",
+      "total": "Total",
+      "type": "Type",
+      "description": "Description",
+      "datetime": "Date",
+      "note": "Note",
+      "amount": "Montant"
+    }
+  },
+  "budgets": {
+    "title": "Budget",
+    "create": "Créer un budget",
+    "edit": "Modifier le budget",
+    "generate": "Générer les budgets",
+    "created": "Budget créé.",
+    "updated": "Budget mis à jour.",
+    "deleted": "Budget supprimé.",
+    "generated": "{{count}} budgets générés.",
+    "deleteConfirm": "Supprimer le budget {{id}} ?",
+    "empty": "Aucun budget trouvé.",
+    "monthEmpty": "Aucun budget trouvé pour ce mois.",
+    "requiredError": "Le compte, la date et la description sont requis.",
+    "amountInvalid": "Le montant doit être un nombre valide.",
+    "endDateRequired": "La date de fin est requise.",
+    "failedLoadAccounts": "Échec du chargement des comptes : {{error}}",
+    "failedLoadBudgets": "Échec du chargement des budgets : {{error}}",
+    "repeating": "Récurrent",
+    "oneTime": "Ponctuel",
+    "generateDialog": {
+      "title": "Générer les budgets",
+      "endDate": "Générer jusqu'au",
+      "futureOnly": "Générer uniquement pour l'avenir"
+    },
+    "form": {
+      "account": "Compte",
+      "date": "Date",
+      "amount": "Montant",
+      "description": "Description",
+      "note": "Note",
+      "processed": "Traité"
+    },
+    "columns": {
+      "month": "Mois",
+      "total": "Total",
+      "date": "Date",
+      "account": "Compte",
+      "description": "Description",
+      "frequency": "Fréquence",
+      "processed": "Traité",
+      "amount": "Montant",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier le budget {{id}}",
+      "deleteAria": "supprimer le budget {{id}}"
+    }
+  }
+}

@@ -1,4 +1,7 @@
 import React from 'react';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
@@ -17,86 +20,122 @@ import type { BudgetFormDialogProps } from './types';
 const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
   open,
   editingBudget,
-  form,
+  initialValues,
   formError,
   isSubmitting,
   accounts,
   isSetupLocked,
   onClose,
   onSubmit,
-  onFormChange,
 }) => {
+  const { t } = useTranslation();
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: initialValues,
+  });
+
+  useEffect(() => {
+    if (open) {
+      reset(initialValues);
+    }
+  }, [
+    open,
+    initialValues.accountId,
+    initialValues.date,
+    initialValues.amount,
+    initialValues.description,
+    initialValues.processed,
+    initialValues.note,
+    reset,
+  ]);
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{editingBudget ? 'Edit Budget' : 'Create Budget'}</DialogTitle>
+      <DialogTitle>{editingBudget ? t('budgets.edit') : t('budgets.create')}</DialogTitle>
       <DialogContent>
-        <Stack spacing={2} sx={{ mt: 1 }}>
+        <Stack component="form" id="budget-form" spacing={2} sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
           {formError && <Alert severity="error">{formError}</Alert>}
-          <TextField
-            select
-            label="Account"
-            value={form.accountId}
-            onChange={(event) => onFormChange('accountId', event.target.value)}
-            required
-            disabled={isSetupLocked}
-            fullWidth
-          >
-            {accounts.map((account) => (
-              <MenuItem key={account.id} value={String(account.id)}>
-                {account.code} - {account.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Date"
-            type="date"
-            value={form.date}
-            onChange={(event) => onFormChange('date', event.target.value)}
-            required
-            fullWidth
-            InputLabelProps={{ shrink: true }}
+          <Controller
+            control={control}
+            name="accountId"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                select
+                label={t('budgets.form.account')}
+                required
+                disabled={isSetupLocked}
+                fullWidth
+              >
+                {accounts.map((account) => (
+                  <MenuItem key={account.id} value={String(account.id)}>
+                    {account.code} - {account.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
           />
-          <TextField
-            label="Amount"
-            type="number"
-            value={form.amount}
-            onChange={(event) => onFormChange('amount', event.target.value)}
-            required
-            fullWidth
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={t('budgets.form.date')}
+                type="date"
+                required
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
           />
-          <TextField
-            label="Description"
-            value={form.description}
-            onChange={(event) => onFormChange('description', event.target.value)}
-            required
-            fullWidth
+          <Controller
+            control={control}
+            name="amount"
+            render={({ field }) => (
+              <TextField {...field} label={t('budgets.form.amount')} type="number" required fullWidth />
+            )}
           />
-          <TextField
-            label="Note"
-            value={form.note}
-            onChange={(event) => onFormChange('note', event.target.value)}
-            disabled={isSetupLocked}
-            multiline
-            minRows={2}
-            fullWidth
+          <Controller
+            control={control}
+            name="description"
+            render={({ field }) => (
+              <TextField {...field} label={t('budgets.form.description')} required fullWidth />
+            )}
+          />
+          <Controller
+            control={control}
+            name="note"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={t('budgets.form.note')}
+                disabled={isSetupLocked}
+                multiline
+                minRows={2}
+                fullWidth
+              />
+            )}
           />
           <FormControlLabel
             control={
-              <Checkbox
-                checked={form.processed}
-                onChange={(event) => onFormChange('processed', event.target.checked)}
+              <Controller
+                control={control}
+                name="processed"
+                render={({ field }) => (
+                  <Checkbox checked={field.value} onChange={(event) => field.onChange(event.target.checked)} />
+                )}
               />
             }
-            label="Processed"
+            label={t('budgets.form.processed')}
           />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={isSubmitting}>
-          Cancel
+          {t('common.cancel')}
         </Button>
-        <Button onClick={onSubmit} variant="contained" disabled={isSubmitting}>
-          {editingBudget ? 'Save Changes' : 'Create Budget'}
+        <Button type="submit" form="budget-form" variant="contained" disabled={isSubmitting}>
+          {editingBudget ? t('common.saveChanges') : t('budgets.create')}
         </Button>
       </DialogActions>
     </Dialog>

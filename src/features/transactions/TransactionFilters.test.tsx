@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import TransactionFilters from './TransactionFilters';
 import type { TransactionFiltersProps } from './types';
@@ -39,13 +39,20 @@ describe('TransactionFilters', () => {
     vi.useRealTimers();
   });
 
-  it('forwards description input changes immediately', () => {
+  it('forwards description input changes after the debounce window', async () => {
+    vi.useFakeTimers();
     const props = createProps();
 
     render(<TransactionFilters {...props} />);
 
     fireEvent.change(screen.getByLabelText('Description'), {
       target: { value: 'Coffee' },
+    });
+
+    expect(props.actions.onDescriptionChange).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(600);
     });
 
     expect(props.actions.onDescriptionChange).toHaveBeenCalledWith('Coffee');

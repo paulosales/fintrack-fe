@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   FormControl,
@@ -28,6 +29,8 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   onPageChange,
   onPageSizeChange,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -41,10 +44,10 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel>Page Size</InputLabel>
+          <InputLabel>{t('pagination.pageSize')}</InputLabel>
           <Select
             value={pageSize}
-            label="Page Size"
+            label={t('pagination.pageSize')}
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
           >
             {pageSizeOptions.map((option) => (
@@ -54,7 +57,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
             ))}
           </Select>
         </FormControl>
-        <Typography variant="body2">{totalCount} items</Typography>
+        <Typography variant="body2">{t('pagination.items', { count: totalCount })}</Typography>
       </Box>
 
       <Pagination

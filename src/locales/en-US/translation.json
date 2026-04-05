@@ -1,0 +1,172 @@
+{
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "theme": {
+    "toggleAria": "toggle theme",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  },
+  "nav": {
+    "transactions": "Transaction List",
+    "transactionCategoryTotals": "Transactions By Category",
+    "budgets": "Budget"
+  },
+  "pagination": {
+    "pageSize": "Page Size",
+    "items": "{{count}} items"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "reload": "Reload",
+    "create": "Create",
+    "saveChanges": "Save Changes",
+    "generate": "Generate",
+    "allAccounts": "All Accounts",
+    "allTypes": "All Types",
+    "allCategories": "All Categories",
+    "allMonths": "All Months",
+    "loadingAccounts": "Loading accounts...",
+    "loadingTypes": "Loading types...",
+    "loadingCategories": "Loading categories...",
+    "yes": "Yes",
+    "no": "No",
+    "notAvailable": "-",
+    "expandRow": "Expand row",
+    "collapseRow": "Collapse row"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "transactions": {
+    "title": "Transaction List",
+    "create": "Create Transaction",
+    "edit": "Edit Transaction",
+    "created": "Transaction created.",
+    "updated": "Transaction updated.",
+    "deleteConfirm": "Delete transaction {{id}}?",
+    "empty": "No transactions found.",
+    "requiredError": "Account, type, date, and description are required.",
+    "amountInvalid": "Amount must be a valid number.",
+    "failedLoadAccounts": "Failed to load accounts: {{error}}",
+    "failedLoadTypes": "Failed to load transaction types: {{error}}",
+    "failedLoadCategories": "Failed to load categories: {{error}}",
+    "error": "Error: {{error}}",
+    "filters": {
+      "account": "Select Account",
+      "type": "Select Type",
+      "category": "Select Category",
+      "description": "Description",
+      "descriptionPlaceholder": "Filter by description"
+    },
+    "form": {
+      "account": "Account",
+      "transactionType": "Transaction Type",
+      "categories": "Categories",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "note": "Note"
+    },
+    "columns": {
+      "id": "ID",
+      "account": "Account",
+      "type": "Type",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "categories": "Categories",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit transaction {{id}}",
+      "deleteAria": "delete transaction {{id}}"
+    }
+  },
+  "transactionCategoryTotals": {
+    "title": "Transactions By Category",
+    "failedLoadCategories": "Failed to load categories: {{error}}",
+    "failedLoadTotals": "Failed to load category totals: {{error}}",
+    "empty": "No category totals found.",
+    "detailsEmpty": "No details found.",
+    "filters": {
+      "month": "Select Month",
+      "year": "Year",
+      "category": "Select Category"
+    },
+    "columns": {
+      "month": "Month",
+      "category": "Category",
+      "total": "Total",
+      "type": "Type",
+      "description": "Description",
+      "datetime": "Date",
+      "note": "Note",
+      "amount": "Amount"
+    }
+  },
+  "budgets": {
+    "title": "Budget",
+    "create": "Create Budget",
+    "edit": "Edit Budget",
+    "generate": "Generate Budgets",
+    "created": "Budget created.",
+    "updated": "Budget updated.",
+    "deleted": "Budget deleted.",
+    "generated": "Generated {{count}} budgets.",
+    "deleteConfirm": "Delete budget {{id}}?",
+    "empty": "No budgets found.",
+    "monthEmpty": "No budgets found for this month.",
+    "requiredError": "Account, date, and description are required.",
+    "amountInvalid": "Amount must be a valid number.",
+    "endDateRequired": "End date is required.",
+    "failedLoadAccounts": "Failed to load accounts: {{error}}",
+    "failedLoadBudgets": "Failed to load budgets: {{error}}",
+    "repeating": "Repeating",
+    "oneTime": "One-time",
+    "generateDialog": {
+      "title": "Generate Budgets",
+      "endDate": "Generate Until",
+      "futureOnly": "Generate only for the future"
+    },
+    "form": {
+      "account": "Account",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "note": "Note",
+      "processed": "Processed"
+    },
+    "columns": {
+      "month": "Month",
+      "total": "Total",
+      "date": "Date",
+      "account": "Account",
+      "description": "Description",
+      "frequency": "Frequency",
+      "processed": "Processed",
+      "amount": "Amount",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit budget {{id}}",
+      "deleteAria": "delete budget {{id}}"
+    }
+  }
+}

@@ -73,26 +73,22 @@ export interface BudgetGeneratePayload {
 export interface BudgetFormDialogProps {
   open: boolean;
   editingBudget: BudgetRecord | null;
-  form: BudgetFormState;
+  initialValues: BudgetFormState;
   formError: string | null;
   isSubmitting: boolean;
   accounts: Account[];
   isSetupLocked: boolean;
   onClose: () => void;
-  onSubmit: () => void;
-  onFormChange: (field: keyof BudgetFormState, value: BudgetFormState[keyof BudgetFormState]) => void;
+  onSubmit: (values: BudgetFormState) => void;
 }
 
 export interface BudgetGenerateDialogProps {
   open: boolean;
-  endDate: string;
-  generateOnlyForFuture: boolean;
+  initialValues: BudgetGeneratePayload;
   formError: string | null;
   isSubmitting: boolean;
   onClose: () => void;
-  onEndDateChange: (value: string) => void;
-  onGenerateOnlyForFutureChange: (value: boolean) => void;
-  onSubmit: () => void;
+  onSubmit: (values: BudgetGeneratePayload) => void;
 }
 
 export const getBudgetDetailKey = ({ year, month }: BudgetDetailRequest): string =>

@@ -1,12 +1,15 @@
 import React from 'react';
 import { Box, Container, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/material';
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TransactionList from './features/transactions/TransactionList';
 import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/TransactionCategoryTotalsPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
+import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const currentTab =
     location.pathname === '/transaction-category-totals'
@@ -20,24 +23,27 @@ const App: React.FC = () => {
       <AppBar position="static">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h1" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
-            Fintrack
+            {t('app.title')}
           </Typography>
-          <ThemeToggle />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <LanguageSelector />
+            <ThemeToggle />
+          </Box>
         </Toolbar>
         <Tabs value={currentTab} textColor="inherit" indicatorColor="secondary" sx={{ px: 2 }}>
           <Tab
             component={RouterLink}
             to="/transactions"
             value="/transactions"
-            label="Transaction List"
+            label={t('nav.transactions')}
           />
           <Tab
             component={RouterLink}
             to="/transaction-category-totals"
             value="/transaction-category-totals"
-            label="Transactions By Category"
+            label={t('nav.transactionCategoryTotals')}
           />
-          <Tab component={RouterLink} to="/budgets" value="/budgets" label="Budget" />
+          <Tab component={RouterLink} to="/budgets" value="/budgets" label={t('nav.budgets')} />
         </Tabs>
       </AppBar>
       <Container maxWidth="lg" component="main" sx={{ py: 4, flex: 1 }}>

@@ -8,6 +8,7 @@ import { store } from './store';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { lightTheme, darkTheme } from './theme/themes';
 import App from './App';
+import './i18n';
 import './index.css';
 
 const ThemedApp: React.FC = () => {

@@ -1,0 +1,165 @@
+{
+  "app": { "title": "Fintrack" },
+  "language": { "label": "语言" },
+  "theme": {
+    "toggleAria": "切换主题",
+    "switchToDark": "切换到深色模式",
+    "switchToLight": "切换到浅色模式"
+  },
+  "nav": {
+    "transactions": "交易列表",
+    "transactionCategoryTotals": "按类别查看交易",
+    "budgets": "预算"
+  },
+  "pagination": { "pageSize": "每页数量", "items": "{{count}} 项" },
+  "common": {
+    "cancel": "取消",
+    "reload": "重新加载",
+    "create": "创建",
+    "saveChanges": "保存更改",
+    "generate": "生成",
+    "allAccounts": "所有账户",
+    "allTypes": "所有类型",
+    "allCategories": "所有类别",
+    "allMonths": "所有月份",
+    "loadingAccounts": "正在加载账户...",
+    "loadingTypes": "正在加载类型...",
+    "loadingCategories": "正在加载类别...",
+    "yes": "是",
+    "no": "否",
+    "notAvailable": "-",
+    "expandRow": "展开行",
+    "collapseRow": "收起行"
+  },
+  "months": {
+    "january": "一月",
+    "february": "二月",
+    "march": "三月",
+    "april": "四月",
+    "may": "五月",
+    "june": "六月",
+    "july": "七月",
+    "august": "八月",
+    "september": "九月",
+    "october": "十月",
+    "november": "十一月",
+    "december": "十二月"
+  },
+  "transactions": {
+    "title": "交易列表",
+    "create": "创建交易",
+    "edit": "编辑交易",
+    "created": "交易已创建。",
+    "updated": "交易已更新。",
+    "deleteConfirm": "删除交易 {{id}}？",
+    "empty": "未找到交易。",
+    "requiredError": "账户、类型、日期和描述为必填项。",
+    "amountInvalid": "金额必须是有效数字。",
+    "failedLoadAccounts": "加载账户失败：{{error}}",
+    "failedLoadTypes": "加载交易类型失败：{{error}}",
+    "failedLoadCategories": "加载类别失败：{{error}}",
+    "error": "错误：{{error}}",
+    "filters": {
+      "account": "选择账户",
+      "type": "选择类型",
+      "category": "选择类别",
+      "description": "描述",
+      "descriptionPlaceholder": "按描述筛选"
+    },
+    "form": {
+      "account": "账户",
+      "transactionType": "交易类型",
+      "categories": "类别",
+      "date": "日期",
+      "amount": "金额",
+      "description": "描述",
+      "note": "备注"
+    },
+    "columns": {
+      "id": "ID",
+      "account": "账户",
+      "type": "类型",
+      "date": "日期",
+      "amount": "金额",
+      "description": "描述",
+      "categories": "类别",
+      "note": "备注",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑交易 {{id}}",
+      "deleteAria": "删除交易 {{id}}"
+    }
+  },
+  "transactionCategoryTotals": {
+    "title": "按类别查看交易",
+    "failedLoadCategories": "加载类别失败：{{error}}",
+    "failedLoadTotals": "加载类别汇总失败：{{error}}",
+    "empty": "未找到类别汇总。",
+    "detailsEmpty": "未找到明细。",
+    "filters": {
+      "month": "选择月份",
+      "year": "年份",
+      "category": "选择类别"
+    },
+    "columns": {
+      "month": "月份",
+      "category": "类别",
+      "total": "合计",
+      "type": "类型",
+      "description": "描述",
+      "datetime": "日期",
+      "note": "备注",
+      "amount": "金额"
+    }
+  },
+  "budgets": {
+    "title": "预算",
+    "create": "创建预算",
+    "edit": "编辑预算",
+    "generate": "生成预算",
+    "created": "预算已创建。",
+    "updated": "预算已更新。",
+    "deleted": "预算已删除。",
+    "generated": "已生成 {{count}} 条预算。",
+    "deleteConfirm": "删除预算 {{id}}？",
+    "empty": "未找到预算。",
+    "monthEmpty": "该月份没有预算记录。",
+    "requiredError": "账户、日期和描述为必填项。",
+    "amountInvalid": "金额必须是有效数字。",
+    "endDateRequired": "结束日期为必填项。",
+    "failedLoadAccounts": "加载账户失败：{{error}}",
+    "failedLoadBudgets": "加载预算失败：{{error}}",
+    "repeating": "重复",
+    "oneTime": "一次性",
+    "generateDialog": {
+      "title": "生成预算",
+      "endDate": "生成至",
+      "futureOnly": "仅为未来生成"
+    },
+    "form": {
+      "account": "账户",
+      "date": "日期",
+      "amount": "金额",
+      "description": "描述",
+      "note": "备注",
+      "processed": "已处理"
+    },
+    "columns": {
+      "month": "月份",
+      "total": "合计",
+      "date": "日期",
+      "account": "账户",
+      "description": "描述",
+      "frequency": "频率",
+      "processed": "已处理",
+      "amount": "金额",
+      "note": "备注",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑预算 {{id}}",
+      "deleteAria": "删除预算 {{id}}"
+    }
+  }
+}
