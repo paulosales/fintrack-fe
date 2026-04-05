@@ -5,12 +5,10 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   Stack,
   TextField,
 } from '@mui/material';
@@ -25,15 +23,41 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
+  const formatYMD = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  const now = new Date();
+  const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+  const lastOfThreeMonthsAhead = new Date(
+    threeMonthsAhead.getFullYear(),
+    threeMonthsAhead.getMonth() + 1,
+    0
+  );
+
+  const defaults = {
+    startDate: formatYMD(firstOfThisMonth),
+    endDate: formatYMD(lastOfThreeMonthsAhead),
+    ...(initialValues || {}),
+  };
+
   const { control, handleSubmit, reset } = useForm({
-    defaultValues: initialValues,
+    defaultValues: defaults,
   });
 
   useEffect(() => {
     if (open) {
-      reset(initialValues);
+      reset({
+        startDate: defaults.startDate,
+        endDate: defaults.endDate,
+        ...(initialValues || {}),
+      });
     }
-  }, [open, initialValues.endDate, initialValues.generateOnlyForFuture, reset]);
+  }, [open, initialValues, defaults.startDate, defaults.endDate, reset]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
@@ -49,6 +73,20 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
           {formError && <Alert severity="error">{formError}</Alert>}
           <Controller
             control={control}
+            name="startDate"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={t('budgets.generateDialog.startDate', { defaultValue: 'Generates from' })}
+                type="date"
+                required
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
+          />
+          <Controller
+            control={control}
             name="endDate"
             render={({ field }) => (
               <TextField
@@ -60,21 +98,6 @@ const BudgetGenerateDialog: React.FC<BudgetGenerateDialogProps> = ({
                 InputLabelProps={{ shrink: true }}
               />
             )}
-          />
-          <FormControlLabel
-            control={
-              <Controller
-                control={control}
-                name="generateOnlyForFuture"
-                render={({ field }) => (
-                  <Checkbox
-                    checked={field.value}
-                    onChange={(event) => field.onChange(event.target.checked)}
-                  />
-                )}
-              />
-            }
-            label={t('budgets.generateDialog.futureOnly')}
           />
         </Stack>
       </DialogContent>

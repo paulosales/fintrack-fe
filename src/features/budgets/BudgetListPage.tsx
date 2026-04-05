@@ -239,11 +239,11 @@ const BudgetListPage: React.FC = () => {
   };
 
   const handleGenerateSubmit = async ({
+    startDate,
     endDate,
-    generateOnlyForFuture,
   }: {
+    startDate: string;
     endDate: string;
-    generateOnlyForFuture: boolean;
   }) => {
     if (!endDate) {
       setFormError(t('budgets.endDateRequired'));
@@ -258,8 +258,8 @@ const BudgetListPage: React.FC = () => {
     try {
       const createdCount = await dispatch(
         generateBudgets({
+          startDate,
           endDate,
-          generateOnlyForFuture,
         })
       ).unwrap();
       reloadBudgetMonths(1);
@@ -279,13 +279,15 @@ const BudgetListPage: React.FC = () => {
     const request = { year, month };
     const key = getBudgetDetailKey(request);
     const isExpanded = expandedKeys[key] === true;
+    const nextExpanded = !isExpanded;
 
     setExpandedKeys((current) => ({
       ...current,
-      [key]: !isExpanded,
+      [key]: nextExpanded,
     }));
 
-    if (!isExpanded) {
+    // Always refresh details when the month row is expanded to show up-to-date data
+    if (nextExpanded) {
       dispatch(fetchBudgetDetails(request));
     }
   };
@@ -496,10 +498,6 @@ const BudgetListPage: React.FC = () => {
 
       <BudgetGenerateDialog
         open={generateDialogOpen}
-        initialValues={{
-          endDate: getCurrentLocalDate(),
-          generateOnlyForFuture: true,
-        }}
         formError={formError}
         isSubmitting={isSubmitting}
         onClose={handleGenerateDialogClose}

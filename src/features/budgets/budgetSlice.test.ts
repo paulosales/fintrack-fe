@@ -66,8 +66,8 @@ describe('budgetSlice', () => {
     const store = configureStore({ reducer: { budgets: budgetReducer } });
     await store.dispatch(
       generateBudgets({
+        startDate: '2026-01-01',
         endDate: '2026-12-31',
-        generateOnlyForFuture: true,
       })
     );
 
@@ -77,8 +77,8 @@ describe('budgetSlice', () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        startDate: '2026-01-01',
         endDate: '2026-12-31',
-        generateOnlyForFuture: true,
       }),
     });
   });

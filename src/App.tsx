@@ -28,7 +28,12 @@ const App: React.FC = () => {
       <AppBar position="static">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box component="img" src={fintrackIcon} alt={t('app.title')} sx={{ width: 32, height: 32 }} />
+            <Box
+              component="img"
+              src={fintrackIcon}
+              alt={t('app.title')}
+              sx={{ width: 32, height: 32 }}
+            />
             <Typography variant="h1" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
               {t('app.title')}
             </Typography>

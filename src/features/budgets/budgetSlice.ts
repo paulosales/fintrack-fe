@@ -288,6 +288,47 @@ const budgetSlice = createSlice({
           error: payload?.error || (action.payload as string) || 'API call failed',
         };
       });
+    builder.addCase(deleteBudget.fulfilled, (state, action: PayloadAction<number>) => {
+      const deletedId = action.payload;
+      Object.keys(state.detailsByKey).forEach((key) => {
+        const detail = state.detailsByKey[key];
+        if (detail && detail.data && detail.data.length > 0) {
+          const filtered = detail.data.filter((b) => b.id !== deletedId);
+          if (filtered.length !== detail.data.length) {
+            state.detailsByKey[key] = {
+              ...detail,
+              data: filtered,
+            };
+          }
+        }
+      });
+    });
+    builder.addCase(createBudget.fulfilled, (state, action: PayloadAction<BudgetRecord>) => {
+      const created = action.payload;
+      if (!created || !created.date) return;
+
+      const parts = created.date.split('-').map(Number);
+      if (parts.length < 2) return;
+
+      const year = parts[0];
+      const month = parts[1];
+      const key = getBudgetDetailKey({ year, month });
+
+      const existing = state.detailsByKey[key];
+      if (!existing) {
+        // details not loaded for this month; nothing to update
+        return;
+      }
+
+      const newData = [...existing.data, created];
+      // keep ascending by date then id
+      newData.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id));
+
+      state.detailsByKey[key] = {
+        ...existing,
+        data: newData,
+      };
+    });
   },
 });
 

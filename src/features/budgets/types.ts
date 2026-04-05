@@ -66,8 +66,8 @@ export interface BudgetMutationPayload {
 }
 
 export interface BudgetGeneratePayload {
+  startDate: string;
   endDate: string;
-  generateOnlyForFuture: boolean;
 }
 
 export interface BudgetFormDialogProps {
@@ -84,7 +84,7 @@ export interface BudgetFormDialogProps {
 
 export interface BudgetGenerateDialogProps {
   open: boolean;
-  initialValues: BudgetGeneratePayload;
+  initialValues?: BudgetGeneratePayload;
   formError: string | null;
   isSubmitting: boolean;
   onClose: () => void;

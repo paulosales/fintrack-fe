@@ -138,13 +138,15 @@ const TransactionCategoryTotalsPage: React.FC = () => {
     const request = buildDetailRequest(row);
     const key = getTransactionCategoryDetailKey(request);
     const isExpanded = expandedKeys[key] === true;
+    const nextExpanded = !isExpanded;
 
     setExpandedKeys((current) => ({
       ...current,
-      [key]: !isExpanded,
+      [key]: nextExpanded,
     }));
 
-    if (!isExpanded) {
+    // Always refresh details when the row becomes expanded to ensure data is up-to-date
+    if (nextExpanded) {
       dispatch(fetchTransactionCategoryTotalDetails(request));
     }
   };
