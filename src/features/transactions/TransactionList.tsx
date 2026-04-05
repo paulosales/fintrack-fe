@@ -96,7 +96,7 @@ const TransactionList: React.FC = () => {
   const [descriptionInput, setDescriptionInput] = useState('');
   const [description, setDescription] = useState('');
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [formError, setFormError] = useState<string | null>(null);

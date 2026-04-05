@@ -76,7 +76,7 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   const [year, setYear] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
   const monthOptions = [
     { value: '', label: t('common.allMonths') },

@@ -70,7 +70,7 @@ const BudgetSetupListPage: React.FC = () => {
   } = useSelector((state: RootState) => state.accounts);
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBudgetSetup, setEditingBudgetSetup] = useState<BudgetSetupRecord | null>(null);
   const [formError, setFormError] = useState<string | null>(null);

@@ -12,7 +12,6 @@ import {
   Button,
   CircularProgress,
   Collapse,
-  Container,
   IconButton,
   Paper,
   Table,
@@ -87,7 +86,7 @@ const BudgetListPage: React.FC = () => {
   } = useSelector((state: RootState) => state.accounts);
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
