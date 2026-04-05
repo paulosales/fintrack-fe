@@ -45,6 +45,7 @@ const BudgetFormDialog: React.FC<BudgetFormDialogProps> = ({
     initialValues.description,
     initialValues.processed,
     initialValues.note,
+    initialValues,
     reset,
   ]);
 
