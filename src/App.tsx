@@ -3,6 +3,7 @@ import { Box, Container, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/mat
 import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import TransactionList from './features/transactions/TransactionList';
 import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/TransactionCategoryTotalsPage';
+import BudgetListPage from './features/budgets/BudgetListPage';
 import ThemeToggle from './components/ThemeToggle';
 
 const App: React.FC = () => {
@@ -10,7 +11,9 @@ const App: React.FC = () => {
   const currentTab =
     location.pathname === '/transaction-category-totals'
       ? '/transaction-category-totals'
-      : '/transactions';
+      : location.pathname === '/budgets'
+        ? '/budgets'
+        : '/transactions';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -34,6 +37,7 @@ const App: React.FC = () => {
             value="/transaction-category-totals"
             label="Transactions By Category"
           />
+          <Tab component={RouterLink} to="/budgets" value="/budgets" label="Budget" />
         </Tabs>
       </AppBar>
       <Container maxWidth="lg" component="main" sx={{ py: 4, flex: 1 }}>
@@ -41,6 +45,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/transactions" replace />} />
           <Route path="/transactions" element={<TransactionList />} />
           <Route path="/transaction-category-totals" element={<TransactionCategoryTotalsPage />} />
+          <Route path="/budgets" element={<BudgetListPage />} />
           <Route path="*" element={<Navigate to="/transactions" replace />} />
         </Routes>
       </Container>
