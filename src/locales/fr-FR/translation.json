@@ -9,6 +9,7 @@
   "nav": {
     "transactions": "Liste des transactions",
     "transactionCategoryTotals": "Transactions par catégorie",
+    "budgetSetups": "Configuration du budget",
     "budgets": "Budget"
   },
   "pagination": { "pageSize": "Taille de page", "items": "{{count}} éléments" },
@@ -156,6 +157,47 @@
     "actions": {
       "editAria": "modifier le budget {{id}}",
       "deleteAria": "supprimer le budget {{id}}"
+    }
+  },
+  "budgetSetups": {
+    "title": "Configuration du budget",
+    "create": "Créer une configuration de budget",
+    "edit": "Modifier la configuration du budget",
+    "created": "Configuration du budget créée.",
+    "updated": "Configuration du budget mise à jour.",
+    "deleted": "Configuration du budget supprimée.",
+    "deleteConfirm": "Supprimer la configuration du budget {{id}} ?",
+    "empty": "Aucune configuration de budget trouvée.",
+    "requiredError": "Le compte, la date et la description sont requis.",
+    "amountInvalid": "Le montant doit être un nombre valide.",
+    "repeatFrequencyRequired": "La fréquence est requise pour les configurations récurrentes.",
+    "failedLoadAccounts": "Échec du chargement des comptes : {{error}}",
+    "failedLoadBudgetSetups": "Échec du chargement des configurations du budget : {{error}}",
+    "form": {
+      "account": "Compte",
+      "date": "Date",
+      "isRepeatle": "Récurrent",
+      "repeatFrequency": "Fréquence",
+      "noRepeatFrequency": "Aucune fréquence",
+      "endDate": "Date de fin",
+      "description": "Description",
+      "amount": "Montant",
+      "note": "Note"
+    },
+    "columns": {
+      "account": "Compte",
+      "date": "Date",
+      "isRepeatle": "Récurrent",
+      "repeatFrequency": "Fréquence",
+      "endDate": "Date de fin",
+      "description": "Description",
+      "amount": "Montant",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier la configuration du budget {{id}}",
+      "deleteAria": "supprimer la configuration du budget {{id}}"
     }
   }
 }

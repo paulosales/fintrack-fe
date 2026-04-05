@@ -5,6 +5,7 @@ import transactionTypesReducer from '../features/transactionTypes/transactionTyp
 import categoriesReducer from '../features/categories/categoriesSlice';
 import transactionCategoryTotalsReducer from '../features/transactionCategoryTotals/transactionCategoryTotalsSlice';
 import budgetsReducer from '../features/budgets/budgetSlice';
+import budgetSetupsReducer from '../features/budgetSetups/budgetSetupSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     categories: categoriesReducer,
     transactionCategoryTotals: transactionCategoryTotalsReducer,
     budgets: budgetsReducer,
+    budgetSetups: budgetSetupsReducer,
   },
 });
 

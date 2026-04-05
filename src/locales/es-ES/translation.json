@@ -9,6 +9,7 @@
   "nav": {
     "transactions": "Lista de transacciones",
     "transactionCategoryTotals": "Transacciones por categoría",
+    "budgetSetups": "Configuración de presupuesto",
     "budgets": "Presupuesto"
   },
   "pagination": { "pageSize": "Tamaño de página", "items": "{{count}} elementos" },
@@ -160,6 +161,47 @@
     "actions": {
       "editAria": "editar presupuesto {{id}}",
       "deleteAria": "eliminar presupuesto {{id}}"
+    }
+  },
+  "budgetSetups": {
+    "title": "Configuración de presupuesto",
+    "create": "Crear configuración de presupuesto",
+    "edit": "Editar configuración de presupuesto",
+    "created": "Configuración de presupuesto creada.",
+    "updated": "Configuración de presupuesto actualizada.",
+    "deleted": "Configuración de presupuesto eliminada.",
+    "deleteConfirm": "¿Eliminar la configuración de presupuesto {{id}}?",
+    "empty": "No se encontraron configuraciones de presupuesto.",
+    "requiredError": "La cuenta, la fecha y la descripción son obligatorias.",
+    "amountInvalid": "El importe debe ser un número válido.",
+    "repeatFrequencyRequired": "La frecuencia es obligatoria para las configuraciones recurrentes.",
+    "failedLoadAccounts": "Error al cargar las cuentas: {{error}}",
+    "failedLoadBudgetSetups": "Error al cargar las configuraciones de presupuesto: {{error}}",
+    "form": {
+      "account": "Cuenta",
+      "date": "Fecha",
+      "isRepeatle": "Recurrente",
+      "repeatFrequency": "Frecuencia",
+      "noRepeatFrequency": "Sin frecuencia",
+      "endDate": "Fecha final",
+      "description": "Descripción",
+      "amount": "Importe",
+      "note": "Nota"
+    },
+    "columns": {
+      "account": "Cuenta",
+      "date": "Fecha",
+      "isRepeatle": "Recurrente",
+      "repeatFrequency": "Frecuencia",
+      "endDate": "Fecha final",
+      "description": "Descripción",
+      "amount": "Importe",
+      "note": "Nota",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "editAria": "editar configuración de presupuesto {{id}}",
+      "deleteAria": "eliminar configuración de presupuesto {{id}}"
     }
   }
 }

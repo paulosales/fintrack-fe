@@ -9,6 +9,7 @@
   "nav": {
     "transactions": "Lista de Transações",
     "transactionCategoryTotals": "Transações por Categoria",
+    "budgetSetups": "Configuração de Orçamento",
     "budgets": "Orçamento"
   },
   "pagination": { "pageSize": "Tamanho da página", "items": "{{count}} itens" },
@@ -160,6 +161,47 @@
     "actions": {
       "editAria": "editar orçamento {{id}}",
       "deleteAria": "excluir orçamento {{id}}"
+    }
+  },
+  "budgetSetups": {
+    "title": "Configuração de Orçamento",
+    "create": "Criar Configuração de Orçamento",
+    "edit": "Editar Configuração de Orçamento",
+    "created": "Configuração de orçamento criada.",
+    "updated": "Configuração de orçamento atualizada.",
+    "deleted": "Configuração de orçamento excluída.",
+    "deleteConfirm": "Excluir configuração de orçamento {{id}}?",
+    "empty": "Nenhuma configuração de orçamento encontrada.",
+    "requiredError": "Conta, data e descrição são obrigatórios.",
+    "amountInvalid": "O valor deve ser um número válido.",
+    "repeatFrequencyRequired": "A frequência é obrigatória para configurações recorrentes.",
+    "failedLoadAccounts": "Falha ao carregar contas: {{error}}",
+    "failedLoadBudgetSetups": "Falha ao carregar configurações de orçamento: {{error}}",
+    "form": {
+      "account": "Conta",
+      "date": "Data",
+      "isRepeatle": "Recorrente",
+      "repeatFrequency": "Frequência",
+      "noRepeatFrequency": "Sem frequência",
+      "endDate": "Data final",
+      "description": "Descrição",
+      "amount": "Valor",
+      "note": "Observação"
+    },
+    "columns": {
+      "account": "Conta",
+      "date": "Data",
+      "isRepeatle": "Recorrente",
+      "repeatFrequency": "Frequência",
+      "endDate": "Data final",
+      "description": "Descrição",
+      "amount": "Valor",
+      "note": "Observação",
+      "actions": "Ações"
+    },
+    "actions": {
+      "editAria": "editar configuração de orçamento {{id}}",
+      "deleteAria": "excluir configuração de orçamento {{id}}"
     }
   }
 }

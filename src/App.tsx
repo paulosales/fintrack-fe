@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import TransactionList from './features/transactions/TransactionList';
 import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/TransactionCategoryTotalsPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
+import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 
@@ -14,6 +15,8 @@ const App: React.FC = () => {
   const currentTab =
     location.pathname === '/transaction-category-totals'
       ? '/transaction-category-totals'
+      : location.pathname === '/budget-setups'
+        ? '/budget-setups'
       : location.pathname === '/budgets'
         ? '/budgets'
         : '/transactions';
@@ -43,6 +46,12 @@ const App: React.FC = () => {
             value="/transaction-category-totals"
             label={t('nav.transactionCategoryTotals')}
           />
+          <Tab
+            component={RouterLink}
+            to="/budget-setups"
+            value="/budget-setups"
+            label={t('nav.budgetSetups')}
+          />
           <Tab component={RouterLink} to="/budgets" value="/budgets" label={t('nav.budgets')} />
         </Tabs>
       </AppBar>
@@ -56,6 +65,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/transactions" replace />} />
           <Route path="/transactions" element={<TransactionList />} />
           <Route path="/transaction-category-totals" element={<TransactionCategoryTotalsPage />} />
+          <Route path="/budget-setups" element={<BudgetSetupListPage />} />
           <Route path="/budgets" element={<BudgetListPage />} />
           <Route path="*" element={<Navigate to="/transactions" replace />} />
         </Routes>

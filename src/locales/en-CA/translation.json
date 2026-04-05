@@ -9,6 +9,7 @@
   "nav": {
     "transactions": "Transaction List",
     "transactionCategoryTotals": "Transactions By Category",
+    "budgetSetups": "Budget Setup",
     "budgets": "Budget"
   },
   "pagination": { "pageSize": "Page Size", "items": "{{count}} items" },
@@ -156,6 +157,47 @@
     "actions": {
       "editAria": "edit budget {{id}}",
       "deleteAria": "delete budget {{id}}"
+    }
+  },
+  "budgetSetups": {
+    "title": "Budget Setup",
+    "create": "Create Budget Setup",
+    "edit": "Edit Budget Setup",
+    "created": "Budget setup created.",
+    "updated": "Budget setup updated.",
+    "deleted": "Budget setup deleted.",
+    "deleteConfirm": "Delete budget setup {{id}}?",
+    "empty": "No budget setups found.",
+    "requiredError": "Account, date, and description are required.",
+    "amountInvalid": "Amount must be a valid number.",
+    "repeatFrequencyRequired": "Repeat frequency is required for repeating budget setups.",
+    "failedLoadAccounts": "Failed to load accounts: {{error}}",
+    "failedLoadBudgetSetups": "Failed to load budget setups: {{error}}",
+    "form": {
+      "account": "Account",
+      "date": "Date",
+      "isRepeatle": "Repeating",
+      "repeatFrequency": "Repeat Frequency",
+      "noRepeatFrequency": "No Repeat Frequency",
+      "endDate": "End Date",
+      "description": "Description",
+      "amount": "Amount",
+      "note": "Note"
+    },
+    "columns": {
+      "account": "Account",
+      "date": "Date",
+      "isRepeatle": "Repeating",
+      "repeatFrequency": "Frequency",
+      "endDate": "End Date",
+      "description": "Description",
+      "amount": "Amount",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit budget setup {{id}}",
+      "deleteAria": "delete budget setup {{id}}"
     }
   }
 }
