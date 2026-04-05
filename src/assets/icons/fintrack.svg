@@ -1,0 +1,24 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="200" height="200" fill="#333333"/>
+
+  <!-- Axes -->
+  <line x1="20" y1="180" x2="180" y2="180" stroke="#E5E7EB" stroke-width="2"/>
+  <line x1="20" y1="180" x2="20" y2="20" stroke="#E5E7EB" stroke-width="2"/>
+
+  <!-- Grid lines -->
+  <line x1="20" y1="140" x2="180" y2="140" stroke="#F3F4F6" stroke-width="1"/>
+  <line x1="20" y1="100" x2="180" y2="100" stroke="#F3F4F6" stroke-width="1"/>
+  <line x1="20" y1="60" x2="180" y2="60" stroke="#F3F4F6" stroke-width="1"/>
+
+  <!-- Line chart -->
+  <polyline 
+    fill="none" 
+    stroke="#10B981" 
+    stroke-width="3"
+    points="20,160 60,130 100,140 140,90 180,50" 
+  />
+
+  <!-- Data point highlight -->
+  <circle cx="180" cy="50" r="4" fill="#10B981"/>
+</svg>

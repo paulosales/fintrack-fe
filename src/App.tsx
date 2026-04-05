@@ -8,6 +8,7 @@ import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
+import fintrackIcon from './assets/icons/fintrack.svg';
 import SpotlightSearch from './components/SpotlightSearch';
 
 const App: React.FC = () => {
@@ -26,9 +27,12 @@ const App: React.FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AppBar position="static">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h1" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
-            {t('app.title')}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box component="img" src={fintrackIcon} alt={t('app.title')} sx={{ width: 32, height: 32 }} />
+            <Typography variant="h1" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
+              {t('app.title')}
+            </Typography>
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <SpotlightSearch />
             <LanguageSelector />
