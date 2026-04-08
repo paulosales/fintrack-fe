@@ -1,25 +1,13 @@
 import React from 'react';
-import { Controller, type Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, CircularProgress, Paper, TextField, Autocomplete } from '@mui/material';
-import type { Category } from '../../models/categories';
+import { TransactionCategoryTotalsFiltersProps } from './types';
 
 export interface TransactionCategoryTotalsFilterFormValues {
   month: string;
   year: string;
   categoryId: string;
-}
-
-interface TransactionCategoryTotalsFiltersProps {
-  control: Control<TransactionCategoryTotalsFilterFormValues>;
-  monthOptions: Array<{ value: string | number; label: string }>;
-  categories: Category[];
-  categoriesLoading: boolean;
-  loading: boolean;
-  onMonthChange: (value: string) => void;
-  onYearChange: (value: string) => void;
-  onCategoryChange: (value: string) => void;
-  onReload: () => void;
 }
 
 const TransactionCategoryTotalsFilters: React.FC<TransactionCategoryTotalsFiltersProps> = ({

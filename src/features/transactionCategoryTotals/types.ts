@@ -1,5 +1,7 @@
 import type { Category } from '../../models/categories';
 import type { PaginationMeta } from '../../types/pagination';
+import { type Control } from 'react-hook-form';
+import { TransactionCategoryTotalsFilterFormValues } from './TransactionCategoryTotalsFilters';
 
 export interface TransactionCategoryTotalsFilters {
   month: number | null;
@@ -61,3 +63,15 @@ export const getTransactionCategoryDetailKey = ({
   month,
   categoryId,
 }: TransactionCategoryTotalDetailRequest): string => `${year}-${month}-${categoryId}`;
+
+export interface TransactionCategoryTotalsFiltersProps {
+  control: Control<TransactionCategoryTotalsFilterFormValues>;
+  monthOptions: Array<{ value: string | number; label: string }>;
+  categories: Category[];
+  categoriesLoading: boolean;
+  loading: boolean;
+  onMonthChange: (value: string) => void;
+  onYearChange: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+  onReload: () => void;
+}
