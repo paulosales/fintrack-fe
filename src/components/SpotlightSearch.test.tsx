@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import SpotlightSearch from './SpotlightSearch';
 import { I18nextProvider } from 'react-i18next';
@@ -36,7 +37,9 @@ describe('SpotlightSearch', () => {
   it('toggles dialog with keyboard shortcut (Ctrl/Cmd+K)', () => {
     // simulate Ctrl/Cmd+K
     const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
-    window.dispatchEvent(event);
+    act(() => {
+      window.dispatchEvent(event);
+    });
     // dialog should open
     const dialog = screen.queryByRole('dialog');
     // Since opening is async/focus, check presence or null — at least ensure no error

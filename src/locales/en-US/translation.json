@@ -97,7 +97,8 @@
     "actions": {
       "editAria": "edit transaction {{id}}",
       "deleteAria": "delete transaction {{id}}"
-    }
+    },
+    "subTransactions": "Sub transactions"
   },
   "transactionCategoryTotals": {
     "title": "Transactions By Category",

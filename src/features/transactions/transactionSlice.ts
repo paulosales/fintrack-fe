@@ -5,14 +5,22 @@ import type {
   TransactionMutationPayload,
   TransactionState,
 } from './types';
+import type { SubTransaction, TransactionDetailsState } from './types';
 import { defaultPagination } from '../../types/pagination';
 
 const initialState: TransactionState = {
   loading: false,
   error: null,
+  detailsByTransactionId: {},
   data: [],
   pagination: defaultPagination,
 };
+
+const initialDetailsState = (): TransactionDetailsState => ({
+  loading: false,
+  error: null,
+  data: [],
+});
 
 interface TransactionsPayload {
   data: Transaction[];
@@ -86,6 +94,172 @@ export const fetchTransactions = createAsyncThunk(
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'API call failed';
       return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const fetchSubTransactions = createAsyncThunk(
+  'transactions/fetchSubTransactions',
+  async (transactionId: number, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions`);
+
+      if (!response.ok) {
+        const text = await response.text();
+        return rejectWithValue(`HTTP ${response.status}: ${text}`);
+      }
+
+      const payload = (await response.json()) as { success: boolean; data?: any[]; error?: string };
+
+      if (!payload.success) {
+        return rejectWithValue(payload.error || 'Unknown error');
+      }
+
+      // normalize fields if necessary
+      const data = (payload.data || []).map((d) => ({
+        id: d.id,
+        transactionId: d.transaction_id ?? d.transactionId,
+        productCode: d.product_code ?? d.productCode ?? null,
+        amount: d.amount,
+        description: d.description,
+        note: d.note ?? null,
+      }));
+
+      return { transactionId, data };
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
+    }
+  }
+);
+
+export const updateSubTransaction = createAsyncThunk(
+  'transactions/updateSubTransaction',
+  async (
+    {
+      id,
+      transactionId,
+      payload,
+    }: {
+      id: number;
+      transactionId: number;
+      payload: {
+        productCode?: string | null;
+        amount: number;
+        description: string;
+        note?: string | null;
+      };
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_code: payload.productCode,
+          amount: payload.amount,
+          description: payload.description,
+          note: payload.note,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        return rejectWithValue(`HTTP ${response.status}: ${text}`);
+      }
+
+      const json = await response.json();
+      if (!json.success) return rejectWithValue(json.error || 'Unknown error');
+
+      const d = json.data;
+      return {
+        transactionId: d.transaction_id ?? d.transactionId,
+        data: {
+          id: d.id,
+          transactionId: d.transaction_id ?? d.transactionId,
+          productCode: d.product_code ?? d.productCode ?? null,
+          amount: d.amount,
+          description: d.description,
+          note: d.note ?? null,
+        },
+      };
+    } catch (err: unknown) {
+      return rejectWithValue(err instanceof Error ? err.message : 'API call failed');
+    }
+  }
+);
+
+export const deleteSubTransaction = createAsyncThunk(
+  'transactions/deleteSubTransaction',
+  async ({ id, transactionId }: { id: number; transactionId: number }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return rejectWithValue(`HTTP ${response.status}: ${text}`);
+      }
+      const json = await response.json();
+      if (!json.success) return rejectWithValue(json.error || 'Unknown error');
+      return { id, transactionId };
+    } catch (err: unknown) {
+      return rejectWithValue(err instanceof Error ? err.message : 'API call failed');
+    }
+  }
+);
+
+export const createSubTransaction = createAsyncThunk(
+  'transactions/createSubTransaction',
+  async (
+    {
+      transactionId,
+      payload,
+    }: {
+      transactionId: number;
+      payload: {
+        productCode?: string | null;
+        amount: number;
+        description: string;
+        note?: string | null;
+      };
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_code: payload.productCode,
+          amount: payload.amount,
+          description: payload.description,
+          note: payload.note,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        return rejectWithValue(`HTTP ${response.status}: ${text}`);
+      }
+
+      const json = await response.json();
+      if (!json.success) return rejectWithValue(json.error || 'Unknown error');
+
+      const d = json.data;
+      return {
+        transactionId,
+        data: {
+          id: d.id,
+          transactionId: d.transaction_id ?? d.transactionId,
+          productCode: d.product_code ?? d.productCode ?? null,
+          amount: d.amount,
+          description: d.description,
+          note: d.note ?? null,
+        },
+      };
+    } catch (err: unknown) {
+      return rejectWithValue(err instanceof Error ? err.message : 'API call failed');
     }
   }
 );
@@ -187,6 +361,88 @@ const transactionSlice = createSlice({
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      });
+    builder
+      .addCase(fetchSubTransactions.pending, (state, action) => {
+        const id = String(action.meta.arg);
+        (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+        (state as any).detailsByTransactionId[id] = {
+          ...((state as any).detailsByTransactionId[id] || initialDetailsState()),
+          loading: true,
+          error: null,
+        } as TransactionDetailsState;
+      })
+      .addCase(
+        fetchSubTransactions.fulfilled,
+        (state, action: PayloadAction<{ transactionId: number; data: SubTransaction[] }>) => {
+          const id = String(action.payload.transactionId);
+          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+          (state as any).detailsByTransactionId[id] = {
+            loading: false,
+            error: null,
+            data: action.payload.data,
+          } as TransactionDetailsState;
+        }
+      )
+      .addCase(
+        updateSubTransaction.fulfilled,
+        (state, action: PayloadAction<{ transactionId: number; data: SubTransaction }>) => {
+          const id = String(action.payload.transactionId);
+          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+          const existing = (state as any).detailsByTransactionId[id] || { data: [] };
+          const dataArr = existing.data || [];
+          const idx = dataArr.findIndex((s: any) => s.id === action.payload.data.id);
+          if (idx >= 0) {
+            dataArr[idx] = action.payload.data;
+          } else {
+            dataArr.push(action.payload.data);
+          }
+          (state as any).detailsByTransactionId[id] = {
+            loading: false,
+            error: null,
+            data: dataArr,
+          };
+        }
+      )
+      .addCase(
+        createSubTransaction.fulfilled,
+        (state, action: PayloadAction<{ transactionId: number; data: SubTransaction }>) => {
+          const id = String(action.payload.transactionId);
+          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+          const existing = (state as any).detailsByTransactionId[id] || { data: [] };
+          const dataArr = existing.data || [];
+          dataArr.push(action.payload.data);
+          (state as any).detailsByTransactionId[id] = {
+            loading: false,
+            error: null,
+            data: dataArr,
+          };
+        }
+      )
+      .addCase(
+        deleteSubTransaction.fulfilled,
+        (state, action: PayloadAction<{ id: number; transactionId: number }>) => {
+          const { id: deletedId, transactionId } = action.payload;
+          const key = String(transactionId);
+          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+          const detail = (state as any).detailsByTransactionId[key];
+          if (detail && Array.isArray(detail.data)) {
+            (state as any).detailsByTransactionId[key] = {
+              ...detail,
+              data: detail.data.filter((s: any) => s.id !== deletedId),
+            };
+          }
+        }
+      )
+      .addCase(fetchSubTransactions.rejected, (state, action) => {
+        const transactionId = action.meta.arg as number;
+        const id = String(transactionId);
+        (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
+        (state as any).detailsByTransactionId[id] = {
+          ...((state as any).detailsByTransactionId[id] || initialDetailsState()),
+          loading: false,
+          error: (action.payload as string) || 'API call failed',
+        } as TransactionDetailsState;
       });
   },
 });

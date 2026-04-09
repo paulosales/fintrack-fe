@@ -90,7 +90,8 @@
     "actions": {
       "editAria": "editar transação {{id}}",
       "deleteAria": "eliminar transação {{id}}"
-    }
+    },
+    "subTransactions": "Subtransações"
   },
   "transactionCategoryTotals": {
     "title": "Transações por Categoria",

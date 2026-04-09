@@ -90,7 +90,8 @@
     "actions": {
       "editAria": "编辑交易 {{id}}",
       "deleteAria": "删除交易 {{id}}"
-    }
+    },
+    "subTransactions": "子交易"
   },
   "transactionCategoryTotals": {
     "title": "按类别查看交易",

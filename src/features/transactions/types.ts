@@ -92,5 +92,21 @@ export interface TransactionState {
   loading: boolean;
   error: string | null;
   data: Transaction[];
+  detailsByTransactionId: Record<number, TransactionDetailsState>;
   pagination: PaginationMeta;
+}
+
+export interface SubTransaction {
+  id: number;
+  transactionId: number;
+  productCode?: string | null;
+  amount: number;
+  description: string;
+  note?: string | null;
+}
+
+export interface TransactionDetailsState {
+  loading: boolean;
+  error: string | null;
+  data: SubTransaction[];
 }

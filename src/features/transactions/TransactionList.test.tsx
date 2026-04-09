@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { act } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer from './transactionSlice';
@@ -91,10 +92,40 @@ describe('TransactionList', () => {
 
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true, data, pagination: defaultPagination }),
-      })
+      vi
+        .fn()
+        // accounts
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }] }) })
+        // transaction types
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 1, code: 'INCOME', name: 'Income' }] }) })
+        // categories
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 1, name: 'Groceries' }] }) })
+        // first call: list transactions
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data, pagination: defaultPagination }),
+        })
+        // second call: fetch sub-transactions for transaction id 1
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            success: true,
+            data: [
+              {
+                id: 10,
+                transaction_id: 1,
+                product_code: 'P1',
+                amount: 5.0,
+                description: 'Sub item',
+                note: null,
+              },
+            ],
+          }),
+        })
+        // third call: delete sub transaction
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true }) })
+        // fourth call: fetch sub-transactions after delete returns empty
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [] }) })
     );
     renderWithStore({
       transactions: { loading: false, error: null, data: [], pagination: defaultPagination },
@@ -112,5 +143,30 @@ describe('TransactionList', () => {
     expect(screen.getByText('2026-04-03 00:00:00')).toBeInTheDocument();
     expect(screen.getByLabelText('edit transaction 1')).toBeInTheDocument();
     expect(screen.getByLabelText('delete transaction 1')).toBeInTheDocument();
+    // expand row
+    const expand = screen.getByLabelText('Expand row');
+    act(() => {
+      expand.click();
+    });
+    expect(await screen.findByText('Sub item')).toBeInTheDocument();
+
+    // ensure edit/delete buttons present for sub-transaction
+    expect(screen.getByLabelText('edit sub 10')).toBeInTheDocument();
+    expect(screen.getByLabelText('delete sub 10')).toBeInTheDocument();
+
+    // delete sub transaction
+    const delBtn = screen.getByLabelText('delete sub 10');
+    // confirm dialog is window.confirm; stub to return true
+    const origConfirm = window.confirm;
+    // @ts-ignore
+    window.confirm = () => true;
+    act(() => {
+      delBtn.click();
+    });
+    // wait for the sub item to be removed
+    await waitFor(() => expect(screen.queryByText('Sub item')).not.toBeInTheDocument());
+    // restore confirm
+    // @ts-ignore
+    window.confirm = origConfirm;
   });
 });

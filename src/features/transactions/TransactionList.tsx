@@ -3,24 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import {
-  createTransaction,
-  deleteTransaction,
-  fetchTransactions,
-  updateTransaction,
-} from './transactionSlice';
-import { fetchAccounts } from '../accounts/accountsSlice';
-import { fetchCategories } from '../categories/categoriesSlice';
-import { fetchTransactionTypes } from '../transactionTypes/transactionTypesSlice';
-import TransactionFormDialog from './TransactionFormDialog';
-import TransactionFilters from './TransactionFilters';
-import PaginationControls from '../../components/PaginationControls';
-import type { Transaction, TransactionFormState, TransactionMutationPayload } from './types';
-import type { RootState, AppDispatch } from '../../store';
-import { formatCurrency } from '../../utils/currencyUtils';
-import { formatDateTime } from '../../utils/dateUtils';
+import DeleteIconSmall from '@mui/icons-material/DeleteOutline';
 import {
   Alert,
   Box,
@@ -34,13 +21,38 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
+
+import type { Transaction, TransactionFormState } from './types';
+import type { RootState, AppDispatch } from '../../store';
+import TransactionFormDialog from './TransactionFormDialog';
+import TransactionFilters from './TransactionFilters';
+import PaginationControls from '../../components/PaginationControls';
+import { formatCurrency } from '../../utils/currencyUtils';
+import { formatDateTime } from '../../utils/dateUtils';
+import {
+  createTransaction,
+  deleteTransaction,
+  fetchTransactions,
+  fetchSubTransactions,
+  updateTransaction,
+  updateSubTransaction,
+  deleteSubTransaction,
+  createSubTransaction,
+} from './transactionSlice';
+import { fetchAccounts } from '../accounts/accountsSlice';
+import { fetchCategories } from '../categories/categoriesSlice';
+import { fetchTransactionTypes } from '../transactionTypes/transactionTypesSlice';
 
 const getCurrentLocalDateTime = (): string => {
   const date = new Date();
   const offset = date.getTimezoneOffset();
   const localDate = new Date(date.getTime() - offset * 60 * 1000);
-
   return localDate.toISOString().slice(0, 16);
 };
 
@@ -71,24 +83,19 @@ const buildTransactionFormDefaults = (
 const TransactionList: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const { data, loading, error, pagination } = useSelector(
-    (state: RootState) => state.transactions
-  );
-  const {
-    data: accounts,
-    loading: accountsLoading,
-    error: accountsError,
-  } = useSelector((state: RootState) => state.accounts);
-  const {
-    data: transactionTypes,
-    loading: transactionTypesLoading,
-    error: transactionTypesError,
-  } = useSelector((state: RootState) => state.transactionTypes);
-  const {
-    data: categories,
-    loading: categoriesLoading,
-    error: categoriesError,
-  } = useSelector((state: RootState) => state.categories);
+
+  const { data, loading, error, pagination } = useSelector((s: RootState) => s.transactions);
+  const accountsState = useSelector((s: RootState) => s.accounts);
+  const categoriesState = useSelector((s: RootState) => s.categories);
+  const transactionTypesState = useSelector((s: RootState) => s.transactionTypes);
+  const subTransactionsByTransactionId = useSelector(
+    (s: RootState) => s.transactions.detailsByTransactionId
+  ) || {};
+
+  const accounts = accountsState.data;
+  const transactionTypes = transactionTypesState.data;
+  const categories = categoriesState.data;
+
   const [accountId, setAccountId] = useState<number | null>(null);
   const [transactionTypeId, setTransactionTypeId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
@@ -96,11 +103,13 @@ const TransactionList: React.FC = () => {
   const [description, setDescription] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<number[]>([]);
 
   useEffect(() => {
     dispatch(fetchAccounts());
@@ -141,40 +150,32 @@ const TransactionList: React.FC = () => {
     );
   };
 
-  const handleReload = () => {
-    reloadTransactions();
-  };
+  const handleReload = () => reloadTransactions();
 
   const handleAccountChange = (nextAccountId: number | null) => {
     setAccountId(nextAccountId);
     setPage(1);
   };
-
-  const handleTransactionTypeChange = (nextTransactionTypeId: number | null) => {
-    setTransactionTypeId(nextTransactionTypeId);
+  const handleTransactionTypeChange = (next: number | null) => {
+    setTransactionTypeId(next);
     setPage(1);
   };
-
-  const handleCategoryChange = (nextCategoryId: number | null) => {
-    setCategoryId(nextCategoryId);
+  const handleCategoryChange = (next: number | null) => {
+    setCategoryId(next);
     setPage(1);
   };
-
   const handleDescriptionChange = (nextDescription: string) => {
     setDescriptionInput(nextDescription);
     debouncedApplyDescription(nextDescription);
   };
-
   const handlePageSizeChange = (nextPageSize: number) => {
     setPageSize(nextPageSize);
     setPage(1);
   };
 
-  const getAccountName = (id: number): string => {
-    const account = accounts.find((acc) => acc.id === id);
-    return account
-      ? `${account.code} - ${account.name}`
-      : `${t('transactions.form.account')} ${id}`;
+  const getAccountName = (id: number) => {
+    const acc = accounts.find((a) => a.id === id);
+    return acc ? `${acc.code} - ${acc.name}` : `${t('transactions.form.account')} ${id}`;
   };
 
   const handleCreateClick = () => {
@@ -184,29 +185,24 @@ const TransactionList: React.FC = () => {
     setDialogOpen(true);
   };
 
-  const handleEditClick = (transaction: Transaction) => {
-    setEditingTransaction(transaction);
+  const handleEditClick = (tx: Transaction) => {
+    setEditingTransaction(tx);
     setActionError(null);
     setFormError(null);
     setDialogOpen(true);
   };
 
   const handleDialogClose = () => {
-    if (isSubmitting) {
-      return;
-    }
-
+    if (isSubmitting) return;
     setDialogOpen(false);
     setEditingTransaction(null);
     setFormError(null);
   };
 
-  const buildPayload = (formValues: TransactionFormState): TransactionMutationPayload | null => {
+  const buildPayload = (formValues: TransactionFormState) => {
     const parsedAccountId = Number(formValues.accountId);
     const parsedTransactionTypeId = Number(formValues.transactionTypeId);
-    const parsedCategoryIds = formValues.categoryIds
-      .map(Number)
-      .filter((value) => !Number.isNaN(value));
+    const parsedCategoryIds = formValues.categoryIds.map(Number).filter((v) => !Number.isNaN(v));
     const parsedAmount = Number(formValues.amount);
 
     if (
@@ -218,14 +214,12 @@ const TransactionList: React.FC = () => {
       setFormError(t('transactions.requiredError'));
       return null;
     }
-
     if (Number.isNaN(parsedAmount)) {
       setFormError(t('transactions.amountInvalid'));
       return null;
     }
 
     setFormError(null);
-
     return {
       accountId: parsedAccountId,
       transactionTypeId: parsedTransactionTypeId,
@@ -234,37 +228,27 @@ const TransactionList: React.FC = () => {
       amount: parsedAmount,
       description: formValues.description.trim(),
       note: formValues.note.trim() || undefined,
-    };
+    } as const;
   };
 
   const handleSubmit = async (formValues: TransactionFormState) => {
     const payload = buildPayload(formValues);
-
-    if (!payload) {
-      return;
-    }
-
+    if (!payload) return;
     setIsSubmitting(true);
     setActionError(null);
-
     try {
       if (editingTransaction) {
         await dispatch(updateTransaction({ id: editingTransaction.id, payload })).unwrap();
         reloadTransactions();
       } else {
         await dispatch(createTransaction(payload)).unwrap();
-
-        if (page !== 1) {
-          setPage(1);
-        } else {
-          reloadTransactions(1);
-        }
+        if (page !== 1) setPage(1);
+        else reloadTransactions(1);
       }
-
       setDialogOpen(false);
       setEditingTransaction(null);
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : String(submitError));
+    } catch (err: unknown) {
+      setActionError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -272,23 +256,87 @@ const TransactionList: React.FC = () => {
 
   const handleDeleteClick = async (transaction: Transaction) => {
     const confirmed = window.confirm(t('transactions.deleteConfirm', { id: transaction.id }));
-
-    if (!confirmed) {
-      return;
-    }
-
+    if (!confirmed) return;
     setActionError(null);
-
     try {
       await dispatch(deleteTransaction(transaction.id)).unwrap();
+      if (data.length === 1 && page > 1) setPage(page - 1);
+      else reloadTransactions();
+    } catch (err: unknown) {
+      setActionError(err instanceof Error ? err.message : String(err));
+    }
+  };
 
-      if (data.length === 1 && page > 1) {
-        setPage(page - 1);
-      } else {
-        reloadTransactions();
-      }
-    } catch (deleteError) {
-      setActionError(deleteError instanceof Error ? deleteError.message : String(deleteError));
+  const toggleExpand = (tx: Transaction) => {
+    const isExpanded = expandedIds.includes(tx.id);
+    if (isExpanded) setExpandedIds(expandedIds.filter((id) => id !== tx.id));
+    else {
+      setExpandedIds([...expandedIds, tx.id]);
+      void dispatch(fetchSubTransactions(tx.id));
+    }
+  };
+
+  const [editingSub, setEditingSub] = useState<any | null>(null);
+  const [creatingSubFor, setCreatingSubFor] = useState<number | null>(null);
+  const [newSubValues, setNewSubValues] = useState({
+    productCode: '',
+    description: '',
+    amount: '',
+    note: '',
+  });
+  const handleEditSub = (st: any) => setEditingSub(st);
+  const handleDeleteSub = async (subId: number, transactionId: number) => {
+    const confirmed = window.confirm('Delete sub-transaction ' + subId + '?');
+    if (!confirmed) return;
+    try {
+      await dispatch(deleteSubTransaction({ id: subId, transactionId })).unwrap();
+      void dispatch(fetchSubTransactions(transactionId));
+    } catch (e) {
+      // ignore
+    }
+  };
+  const handleSaveSub = async (values: any) => {
+    try {
+      await dispatch(
+        updateSubTransaction({
+          id: values.id,
+          transactionId: values.transactionId,
+          payload: {
+            productCode: values.productCode,
+            amount: Number(values.amount),
+            description: values.description,
+            note: values.note,
+          },
+        })
+      ).unwrap();
+      setEditingSub(null);
+      void dispatch(fetchSubTransactions(values.transactionId));
+    } catch (e) {
+      // noop
+    }
+  };
+
+  const handleOpenCreateSub = (transactionId: number) => {
+    setCreatingSubFor(transactionId);
+    setNewSubValues({ productCode: '', description: '', amount: '', note: '' });
+  };
+
+  const handleCancelCreateSub = () => setCreatingSubFor(null);
+
+  const handleCreateSub = async () => {
+    if (!creatingSubFor) return;
+    try {
+      const payload = {
+        productCode: newSubValues.productCode || null,
+        amount: Number(newSubValues.amount || 0),
+        description: newSubValues.description || '',
+        note: newSubValues.note || null,
+      };
+      await dispatch(createSubTransaction({ transactionId: creatingSubFor, payload })).unwrap();
+      void dispatch(fetchSubTransactions(creatingSubFor));
+      setCreatingSubFor(null);
+    } catch (e) {
+      // ignore for now
     }
   };
 
@@ -323,9 +371,9 @@ const TransactionList: React.FC = () => {
         }}
         options={{ accounts, transactionTypes, categories }}
         loadingState={{
-          accounts: accountsLoading,
-          transactionTypes: transactionTypesLoading,
-          categories: categoriesLoading,
+          accounts: accountsState.loading,
+          transactionTypes: transactionTypesState.loading,
+          categories: categoriesState.loading,
           transactions: loading,
         }}
         actions={{
@@ -337,26 +385,22 @@ const TransactionList: React.FC = () => {
         }}
       />
 
-      {accountsError && (
+      {accountsState.error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {t('transactions.failedLoadAccounts', { error: accountsError })}
+          {t('transactions.failedLoadAccounts', { error: accountsState.error })}
         </Alert>
       )}
-
-      {transactionTypesError && (
+      {transactionTypesState.error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {t('transactions.failedLoadTypes', { error: transactionTypesError })}
+          {t('transactions.failedLoadTypes', { error: transactionTypesState.error })}
         </Alert>
       )}
-
-      {categoriesError && (
+      {categoriesState.error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {t('transactions.failedLoadCategories', { error: categoriesError })}
+          {t('transactions.failedLoadCategories', { error: categoriesState.error })}
         </Alert>
       )}
-
       {error && <Alert severity="error">{t('transactions.error', { error })}</Alert>}
-
       {actionError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {actionError}
@@ -373,7 +417,8 @@ const TransactionList: React.FC = () => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>{t('transactions.columns.id')}</TableCell>
+                  <TableCell />
+                  <TableCell>ID</TableCell>
                   <TableCell>{t('transactions.columns.account')}</TableCell>
                   <TableCell>{t('transactions.columns.type')}</TableCell>
                   <TableCell>{t('transactions.columns.date')}</TableCell>
@@ -386,35 +431,115 @@ const TransactionList: React.FC = () => {
               </TableHead>
               <TableBody>
                 {data.map((tx: Transaction) => (
-                  <TableRow key={tx.id}>
-                    <TableCell>{tx.id}</TableCell>
-                    <TableCell>{getAccountName(tx.accountId)}</TableCell>
-                    <TableCell>{tx.transactionTypeName || t('common.notAvailable')}</TableCell>
-                    <TableCell>{formatDateTime(tx.datetime)}</TableCell>
-                    <TableCell>{formatCurrency(tx.amount)}</TableCell>
-                    <TableCell>{tx.description}</TableCell>
-                    <TableCell>{tx.categories || t('common.notAvailable')}</TableCell>
-                    <TableCell>{tx.note || t('common.notAvailable')}</TableCell>
-                    <TableCell align="right" sx={{ minWidth: 120 }}>
-                      <IconButton
-                        aria-label={t('transactions.actions.editAria', { id: tx.id })}
-                        onClick={() => handleEditClick(tx)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        aria-label={t('transactions.actions.deleteAria', { id: tx.id })}
-                        color="error"
-                        onClick={() => handleDeleteClick(tx)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+                  <React.Fragment key={tx.id}>
+                    <TableRow>
+                      <TableCell sx={{ width: 56 }}>
+                        <IconButton
+                          aria-label={
+                            expandedIds.includes(tx.id)
+                              ? t('common.collapseRow')
+                              : t('common.expandRow')
+                          }
+                          size="small"
+                          onClick={() => toggleExpand(tx)}
+                        >
+                          {expandedIds.includes(tx.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>{tx.id}</TableCell>
+                      <TableCell>{getAccountName(tx.accountId)}</TableCell>
+                      <TableCell>{tx.transactionTypeName || t('common.notAvailable')}</TableCell>
+                      <TableCell>{formatDateTime(tx.datetime)}</TableCell>
+                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
+                      <TableCell>{tx.description}</TableCell>
+                      <TableCell>{tx.categories || t('common.notAvailable')}</TableCell>
+                      <TableCell>{tx.note || t('common.notAvailable')}</TableCell>
+                      <TableCell align="right" sx={{ minWidth: 120 }}>
+                        <IconButton
+                          aria-label={t('transactions.actions.editAria', { id: tx.id })}
+                          onClick={() => handleEditClick(tx)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label={t('transactions.actions.deleteAria', { id: tx.id })}
+                          color="error"
+                          onClick={() => handleDeleteClick(tx)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+
+                    {expandedIds.includes(tx.id) && (
+                      <TableRow>
+                        <TableCell colSpan={10} sx={{ backgroundColor: 'background.paper' }}>
+                          <Typography variant="subtitle2">
+                            {t('transactions.subTransactions') || 'Sub transactions'}
+                          </Typography>
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Product</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Amount</TableCell>
+                                <TableCell>Note</TableCell>
+                                <TableCell align="right">Actions</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {(subTransactionsByTransactionId[String(tx.id)]?.data || []).map(
+                                (st: any) => (
+                                  <TableRow key={st.id}>
+                                    <TableCell>{st.id}</TableCell>
+                                    <TableCell>{st.productCode || '-'}</TableCell>
+                                    <TableCell>{st.description}</TableCell>
+                                    <TableCell>{formatCurrency(st.amount)}</TableCell>
+                                    <TableCell>{st.note || '-'}</TableCell>
+                                    <TableCell align="right">
+                                      <IconButton
+                                        aria-label={`edit sub ${st.id}`}
+                                        size="small"
+                                        onClick={() =>
+                                          handleEditSub({ ...st, transactionId: tx.id })
+                                        }
+                                      >
+                                        <EditIcon fontSize="small" />
+                                      </IconButton>
+                                      <IconButton
+                                        aria-label={`delete sub ${st.id}`}
+                                        size="small"
+                                        onClick={() => handleDeleteSub(st.id, tx.id)}
+                                      >
+                                        <DeleteIconSmall fontSize="small" />
+                                      </IconButton>
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
+                              <TableRow>
+                                <TableCell colSpan={6}>
+                                  <Button
+                                    size="small"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => handleOpenCreateSub(tx.id)}
+                                  >
+                                    Add sub-transaction
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+
           <PaginationControls
             page={pagination.page}
             pageSize={pagination.pageSize}
@@ -438,6 +563,85 @@ const TransactionList: React.FC = () => {
         onClose={handleDialogClose}
         onSubmit={handleSubmit}
       />
+
+      <Dialog open={Boolean(editingSub)} onClose={() => setEditingSub(null)}>
+        <DialogTitle>Edit Sub-transaction</DialogTitle>
+        <DialogContent>
+          {editingSub && (
+            <Box
+              component="form"
+              id="sub-edit-form"
+              sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
+            >
+              <TextField
+                label="Product Code"
+                value={editingSub.productCode ?? ''}
+                onChange={(e) => setEditingSub({ ...editingSub, productCode: e.target.value })}
+              />
+              <TextField
+                label="Description"
+                value={editingSub.description}
+                onChange={(e) => setEditingSub({ ...editingSub, description: e.target.value })}
+              />
+              <TextField
+                label="Amount"
+                type="number"
+                value={String(editingSub.amount ?? '')}
+                onChange={(e) => setEditingSub({ ...editingSub, amount: e.target.value })}
+              />
+              <TextField
+                label="Note"
+                value={editingSub.note ?? ''}
+                onChange={(e) => setEditingSub({ ...editingSub, note: e.target.value })}
+              />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditingSub(null)}>Cancel</Button>
+          <Button onClick={() => editingSub && handleSaveSub(editingSub)} variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={Boolean(creatingSubFor)} onClose={handleCancelCreateSub}>
+        <DialogTitle>Create Sub-transaction</DialogTitle>
+        <DialogContent>
+          <Box
+            component="form"
+            id="sub-create-form"
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
+          >
+            <TextField
+              label="Product Code"
+              value={newSubValues.productCode}
+              onChange={(e) => setNewSubValues({ ...newSubValues, productCode: e.target.value })}
+            />
+            <TextField
+              label="Description"
+              value={newSubValues.description}
+              onChange={(e) => setNewSubValues({ ...newSubValues, description: e.target.value })}
+            />
+            <TextField
+              label="Amount"
+              type="number"
+              value={newSubValues.amount}
+              onChange={(e) => setNewSubValues({ ...newSubValues, amount: e.target.value })}
+            />
+            <TextField
+              label="Note"
+              value={newSubValues.note}
+              onChange={(e) => setNewSubValues({ ...newSubValues, note: e.target.value })}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelCreateSub}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreateSub}>
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
