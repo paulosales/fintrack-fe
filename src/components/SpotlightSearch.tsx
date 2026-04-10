@@ -31,6 +31,7 @@ const navItems = (t: (k: string) => string) => [
     label: t('nav.transactionCategoryTotals'),
     path: '/transaction-category-totals',
   },
+  { key: 'categories', label: t('nav.categories'), path: '/categories' },
   { key: 'budgetSetups', label: t('nav.budgetSetups'), path: '/budget-setups' },
   { key: 'budgets', label: t('nav.budgets'), path: '/budgets' },
 ];

@@ -9,12 +9,14 @@
   "nav": {
     "transactions": "交易列表",
     "transactionCategoryTotals": "按类别查看交易",
+    "categories": "类别",
     "budgetSetups": "预算配置",
     "budgets": "预算"
   },
   "pagination": { "pageSize": "每页数量", "items": "{{count}} 项" },
   "common": {
     "cancel": "取消",
+    "delete": "删除",
     "reload": "重新加载",
     "create": "创建",
     "saveChanges": "保存更改",
@@ -167,6 +169,30 @@
     "actions": {
       "editAria": "编辑预算 {{id}}",
       "deleteAria": "删除预算 {{id}}"
+    }
+  },
+  "categories": {
+    "title": "类别",
+    "create": "创建类别",
+    "edit": "编辑类别",
+    "created": "类别已创建。",
+    "updated": "类别已更新。",
+    "deleted": "类别已删除。",
+    "deleteConfirm": "删除类别 {{id}}？",
+    "empty": "未找到类别。",
+    "requiredError": "类别名称为必填项。",
+    "failedLoadCategories": "加载类别失败：{{error}}",
+    "form": {
+      "name": "名称"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "名称",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑类别 {{id}}",
+      "deleteAria": "删除类别 {{id}}"
     }
   },
   "budgetSetups": {

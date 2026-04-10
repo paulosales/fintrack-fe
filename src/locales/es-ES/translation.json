@@ -9,12 +9,14 @@
   "nav": {
     "transactions": "Lista de transacciones",
     "transactionCategoryTotals": "Transacciones por categoría",
+    "categories": "Categorías",
     "budgetSetups": "Configuración de presupuesto",
     "budgets": "Presupuesto"
   },
   "pagination": { "pageSize": "Tamaño de página", "items": "{{count}} elementos" },
   "common": {
     "cancel": "Cancelar",
+    "delete": "Eliminar",
     "reload": "Recargar",
     "create": "Crear",
     "saveChanges": "Guardar cambios",
@@ -167,6 +169,30 @@
     "actions": {
       "editAria": "editar presupuesto {{id}}",
       "deleteAria": "eliminar presupuesto {{id}}"
+    }
+  },
+  "categories": {
+    "title": "Categorías",
+    "create": "Crear Categoría",
+    "edit": "Editar Categoría",
+    "created": "Categoría creada.",
+    "updated": "Categoría actualizada.",
+    "deleted": "Categoría eliminada.",
+    "deleteConfirm": "¿Eliminar la categoría {{id}}?",
+    "empty": "No se encontraron categorías.",
+    "requiredError": "El nombre de la categoría es obligatorio.",
+    "failedLoadCategories": "Error al cargar las categorías: {{error}}",
+    "form": {
+      "name": "Nombre"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Nombre",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "editAria": "editar categoría {{id}}",
+      "deleteAria": "eliminar categoría {{id}}"
     }
   },
   "budgetSetups": {

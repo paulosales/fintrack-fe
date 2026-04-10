@@ -9,12 +9,14 @@
   "nav": {
     "transactions": "Liste des transactions",
     "transactionCategoryTotals": "Transactions par catégorie",
+    "categories": "Catégories",
     "budgetSetups": "Configuration du budget",
     "budgets": "Budget"
   },
   "pagination": { "pageSize": "Taille de page", "items": "{{count}} éléments" },
   "common": {
     "cancel": "Annuler",
+    "delete": "Supprimer",
     "reload": "Recharger",
     "create": "Créer",
     "saveChanges": "Enregistrer les modifications",
@@ -163,6 +165,30 @@
     "actions": {
       "editAria": "modifier le budget {{id}}",
       "deleteAria": "supprimer le budget {{id}}"
+    }
+  },
+  "categories": {
+    "title": "Catégories",
+    "create": "Créer une Catégorie",
+    "edit": "Modifier la Catégorie",
+    "created": "Catégorie créée.",
+    "updated": "Catégorie mise à jour.",
+    "deleted": "Catégorie supprimée.",
+    "deleteConfirm": "Supprimer la catégorie {{id}} ?",
+    "empty": "Aucune catégorie trouvée.",
+    "requiredError": "Le nom de la catégorie est requis.",
+    "failedLoadCategories": "Échec du chargement des catégories : {{error}}",
+    "form": {
+      "name": "Nom"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Nom",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier la catégorie {{id}}",
+      "deleteAria": "supprimer la catégorie {{id}}"
     }
   },
   "budgetSetups": {
