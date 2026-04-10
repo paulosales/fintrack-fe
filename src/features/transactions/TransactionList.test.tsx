@@ -65,7 +65,7 @@ describe('TransactionList', () => {
       })
     );
     renderWithStore({
-      transactions: { loading: false, error: null, data: [], pagination: defaultPagination },
+      transactions: { loading: false, error: null, data: [], detailsByTransactionId: {}, pagination: defaultPagination },
       accounts: mockAccountsState,
       categories: mockCategoriesState,
       transactionTypes: mockTransactionTypesState,
@@ -140,7 +140,7 @@ describe('TransactionList', () => {
         .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [] }) })
     );
     renderWithStore({
-      transactions: { loading: false, error: null, data: [], pagination: defaultPagination },
+      transactions: { loading: false, error: null, data: [], detailsByTransactionId: {}, pagination: defaultPagination },
       accounts: mockAccountsState,
       categories: mockCategoriesState,
       transactionTypes: mockTransactionTypesState,
@@ -170,7 +170,7 @@ describe('TransactionList', () => {
     const delBtn = screen.getByLabelText('delete sub 10');
     // confirm dialog is window.confirm; stub to return true
     const origConfirm = window.confirm;
-    // @ts-ignore
+    
     window.confirm = () => true;
     act(() => {
       delBtn.click();
@@ -178,7 +178,7 @@ describe('TransactionList', () => {
     // wait for the sub item to be removed
     await waitFor(() => expect(screen.queryByText('Sub item')).not.toBeInTheDocument());
     // restore confirm
-    // @ts-ignore
+
     window.confirm = origConfirm;
   });
 });
