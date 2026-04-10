@@ -1,8 +1,8 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import TransactionFormDialog from './TransactionFormDialog';
 import { TransactionType } from '../../models/transactionTypes';
+import { Transaction } from './types';
 
 const accounts = [
   { id: 1, code: 'A1', accountTypeId: 1, name: 'Account 1' },
@@ -55,7 +55,6 @@ describe('TransactionFormDialog', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     // react-hook-form passes (values, event) — assert first arg
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(onSubmit.mock.calls[0][0]).toEqual(initialValues);
   });
 
@@ -70,7 +69,7 @@ describe('TransactionFormDialog', () => {
       note: '',
     };
 
-    const editing = {
+    const editing: Transaction = {
       id: 1,
       accountId: 1,
       transactionTypeId: 1,
@@ -79,7 +78,7 @@ describe('TransactionFormDialog', () => {
       amount: 0,
       description: '',
       fingerprint: 'f',
-    } as any;
+    };
 
     render(
       <TransactionFormDialog

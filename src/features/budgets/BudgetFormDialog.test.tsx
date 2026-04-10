@@ -45,7 +45,7 @@ describe('BudgetFormDialog', () => {
     // react-hook-form passes (values, event) — assert the first arg matches
     // access the first call and its first argument
     // vitest's vi.fn stores calls on `mock.calls`
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(onSubmit.mock.calls[0][0]).toEqual(initialValues);
   });
 
