@@ -95,11 +95,23 @@ describe('TransactionList', () => {
       vi
         .fn()
         // accounts
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }] }) })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            success: true,
+            data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }],
+          }),
+        })
         // transaction types
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 1, code: 'INCOME', name: 'Income' }] }) })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data: [{ id: 1, code: 'INCOME', name: 'Income' }] }),
+        })
         // categories
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [{ id: 1, name: 'Groceries' }] }) })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data: [{ id: 1, name: 'Groceries' }] }),
+        })
         // first call: list transactions
         .mockResolvedValueOnce({
           ok: true,

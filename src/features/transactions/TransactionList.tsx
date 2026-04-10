@@ -28,7 +28,7 @@ import {
   TextField,
 } from '@mui/material';
 
-import type { Transaction, TransactionFormState } from './types';
+import type { SubTransaction, Transaction, TransactionFormState } from './types';
 import type { RootState, AppDispatch } from '../../store';
 import TransactionFormDialog from './TransactionFormDialog';
 import TransactionFilters from './TransactionFilters';
@@ -84,13 +84,14 @@ const TransactionList: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
-  const { data, loading, error, pagination } = useSelector((s: RootState) => s.transactions);
-  const accountsState = useSelector((s: RootState) => s.accounts);
-  const categoriesState = useSelector((s: RootState) => s.categories);
-  const transactionTypesState = useSelector((s: RootState) => s.transactionTypes);
-  const subTransactionsByTransactionId = useSelector(
-    (s: RootState) => s.transactions.detailsByTransactionId
-  ) || {};
+  const { data, loading, error, pagination } = useSelector(
+    (state: RootState) => state.transactions
+  );
+  const accountsState = useSelector((state: RootState) => state.accounts);
+  const categoriesState = useSelector((state: RootState) => state.categories);
+  const transactionTypesState = useSelector((state: RootState) => state.transactionTypes);
+  const subTransactionsByTransactionId =
+    useSelector((state: RootState) => state.transactions.detailsByTransactionId) || {};
 
   const accounts = accountsState.data;
   const transactionTypes = transactionTypesState.data;
@@ -276,7 +277,7 @@ const TransactionList: React.FC = () => {
     }
   };
 
-  const [editingSub, setEditingSub] = useState<any | null>(null);
+  const [editingSub, setEditingSub] = useState<SubTransaction | null>(null);
   const [creatingSubFor, setCreatingSubFor] = useState<number | null>(null);
   const [newSubValues, setNewSubValues] = useState({
     productCode: '',
@@ -284,7 +285,7 @@ const TransactionList: React.FC = () => {
     amount: '',
     note: '',
   });
-  const handleEditSub = (st: any) => setEditingSub(st);
+  const handleEditSub = (subTransaction: SubTransaction) => setEditingSub(subTransaction);
   const handleDeleteSub = async (subId: number, transactionId: number) => {
     const confirmed = window.confirm('Delete sub-transaction ' + subId + '?');
     if (!confirmed) return;
@@ -295,7 +296,7 @@ const TransactionList: React.FC = () => {
       // ignore
     }
   };
-  const handleSaveSub = async (values: any) => {
+  const handleSaveSub = async (values: SubTransaction) => {
     try {
       await dispatch(
         updateSubTransaction({
@@ -489,28 +490,28 @@ const TransactionList: React.FC = () => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {(subTransactionsByTransactionId[String(tx.id)]?.data || []).map(
-                                (st: any) => (
-                                  <TableRow key={st.id}>
-                                    <TableCell>{st.id}</TableCell>
-                                    <TableCell>{st.productCode || '-'}</TableCell>
-                                    <TableCell>{st.description}</TableCell>
-                                    <TableCell>{formatCurrency(st.amount)}</TableCell>
-                                    <TableCell>{st.note || '-'}</TableCell>
+                              {(subTransactionsByTransactionId[tx.id]?.data || []).map(
+                                (subTransaction: SubTransaction) => (
+                                  <TableRow key={subTransaction.id}>
+                                    <TableCell>{subTransaction.id}</TableCell>
+                                    <TableCell>{subTransaction.productCode || '-'}</TableCell>
+                                    <TableCell>{subTransaction.description}</TableCell>
+                                    <TableCell>{formatCurrency(subTransaction.amount)}</TableCell>
+                                    <TableCell>{subTransaction.note || '-'}</TableCell>
                                     <TableCell align="right">
                                       <IconButton
-                                        aria-label={`edit sub ${st.id}`}
+                                        aria-label={`edit sub ${subTransaction.id}`}
                                         size="small"
                                         onClick={() =>
-                                          handleEditSub({ ...st, transactionId: tx.id })
+                                          handleEditSub({ ...subTransaction, transactionId: tx.id })
                                         }
                                       >
                                         <EditIcon fontSize="small" />
                                       </IconButton>
                                       <IconButton
-                                        aria-label={`delete sub ${st.id}`}
+                                        aria-label={`delete sub ${subTransaction.id}`}
                                         size="small"
-                                        onClick={() => handleDeleteSub(st.id, tx.id)}
+                                        onClick={() => handleDeleteSub(subTransaction.id, tx.id)}
                                       >
                                         <DeleteIconSmall fontSize="small" />
                                       </IconButton>
@@ -587,7 +588,9 @@ const TransactionList: React.FC = () => {
                 label="Amount"
                 type="number"
                 value={String(editingSub.amount ?? '')}
-                onChange={(e) => setEditingSub({ ...editingSub, amount: e.target.value })}
+                onChange={(e) =>
+                  setEditingSub({ ...editingSub, amount: Number.parseFloat(e.target.value) })
+                }
               />
               <TextField
                 label="Note"

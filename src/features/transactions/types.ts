@@ -92,8 +92,8 @@ export interface TransactionState {
   loading: boolean;
   error: string | null;
   data: Transaction[];
-  detailsByTransactionId: Record<number, TransactionDetailsState>;
   pagination: PaginationMeta;
+  detailsByTransactionId: Record<number, TransactionDetailsState>;
 }
 
 export interface SubTransaction {
