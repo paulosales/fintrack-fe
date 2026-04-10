@@ -28,6 +28,7 @@ import {
   TextField,
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 
 import type { SubTransaction, Transaction, TransactionFormState } from './types';
 import type { RootState, AppDispatch } from '../../store';
@@ -112,6 +113,10 @@ const TransactionList: React.FC = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedIds, setExpandedIds] = useState<number[]>([]);
+
+  const closeFeedback = () => {
+    setActionError(null);
+  };
 
   useEffect(() => {
     dispatch(fetchAccounts());
@@ -350,7 +355,7 @@ const TransactionList: React.FC = () => {
       ).unwrap();
       setEditingSub(null);
       void dispatch(fetchSubTransactions(values.transactionId));
-    } catch (e) {
+    } catch {
       // noop
     }
   };
@@ -374,7 +379,7 @@ const TransactionList: React.FC = () => {
       await dispatch(createSubTransaction({ transactionId: creatingSubFor, payload })).unwrap();
       void dispatch(fetchSubTransactions(creatingSubFor));
       setCreatingSubFor(null);
-    } catch (e) {
+    } catch {
       // ignore for now
     }
   };
@@ -440,12 +445,6 @@ const TransactionList: React.FC = () => {
         </Alert>
       )}
       {error && <Alert severity="error">{t('transactions.error', { error })}</Alert>}
-      {actionError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {actionError}
-        </Alert>
-      )}
-
       {!loading && !error && data.length === 0 && (
         <Alert severity="info">{t('transactions.empty')}</Alert>
       )}
@@ -691,6 +690,13 @@ const TransactionList: React.FC = () => {
         cancelText={t('common.no') || 'Cancel'}
         onCancel={closeConfirm}
         onConfirm={handleConfirm}
+      />
+
+      <FeedbackSnackbar
+        open={Boolean(actionError)}
+        message={actionError || ''}
+        severity="error"
+        onClose={closeFeedback}
       />
     </Box>
   );

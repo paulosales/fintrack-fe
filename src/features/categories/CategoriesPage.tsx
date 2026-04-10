@@ -20,6 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 import type { Category, CategoryMutationPayload } from '../../models/categories';
 import type { AppDispatch, RootState } from '../../store';
 import CategoryFormDialog from './CategoryFormDialog';
@@ -42,6 +43,11 @@ const CategoriesPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmPayload, setConfirmPayload] = useState<Category | null>(null);
+
+  const closeFeedback = () => {
+    setActionError(null);
+    setActionMessage(null);
+  };
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -171,25 +177,15 @@ const CategoriesPage: React.FC = () => {
         </Alert>
       )}
 
-      {actionError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {actionError}
-        </Alert>
-      )}
-
-      {actionMessage && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {actionMessage}
-        </Alert>
-      )}
-
       {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {!loading && !error && data.length === 0 && <Alert severity="info">{t('categories.empty')}</Alert>}
+      {!loading && !error && data.length === 0 && (
+        <Alert severity="info">{t('categories.empty')}</Alert>
+      )}
 
       {!loading && data.length > 0 && (
         <TableContainer component={Paper}>
@@ -246,6 +242,13 @@ const CategoriesPage: React.FC = () => {
         cancelText={t('common.cancel')}
         onCancel={closeConfirm}
         onConfirm={handleConfirm}
+      />
+
+      <FeedbackSnackbar
+        open={Boolean(actionError || actionMessage)}
+        message={actionError || actionMessage || ''}
+        severity={actionError ? 'error' : 'success'}
+        onClose={closeFeedback}
       />
     </Box>
   );

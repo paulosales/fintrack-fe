@@ -20,11 +20,11 @@ const App: React.FC = () => {
       ? '/transaction-category-totals'
       : location.pathname === '/categories'
         ? '/categories'
-      : location.pathname === '/budget-setups'
-        ? '/budget-setups'
-        : location.pathname === '/budgets'
-          ? '/budgets'
-          : '/transactions';
+        : location.pathname === '/budget-setups'
+          ? '/budget-setups'
+          : location.pathname === '/budgets'
+            ? '/budgets'
+            : '/transactions';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -60,7 +60,12 @@ const App: React.FC = () => {
             value="/transaction-category-totals"
             label={t('nav.transactionCategoryTotals')}
           />
-          <Tab component={RouterLink} to="/categories" value="/categories" label={t('nav.categories')} />
+          <Tab
+            component={RouterLink}
+            to="/categories"
+            value="/categories"
+            label={t('nav.categories')}
+          />
           <Tab
             component={RouterLink}
             to="/budget-setups"

@@ -59,7 +59,13 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
             control={control}
             name="name"
             render={({ field }) => (
-              <TextField {...field} label={t('categories.form.name')} required fullWidth autoFocus />
+              <TextField
+                {...field}
+                label={t('categories.form.name')}
+                required
+                fullWidth
+                autoFocus
+              />
             )}
           />
         </Stack>

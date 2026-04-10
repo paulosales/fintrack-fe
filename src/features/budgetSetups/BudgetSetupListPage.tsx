@@ -19,6 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import PaginationControls from '../../components/PaginationControls';
 import { formatCurrency } from '../../utils/currencyUtils';
@@ -195,6 +196,11 @@ const BudgetSetupListPage: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload>(null);
 
+  const closeFeedback = () => {
+    setActionError(null);
+    setActionMessage(null);
+  };
+
   const openConfirm = (payload: NonNullable<ConfirmPayload>) => {
     setConfirmPayload(payload);
     setConfirmOpen(true);
@@ -255,18 +261,6 @@ const BudgetSetupListPage: React.FC = () => {
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {t('budgetSetups.failedLoadBudgetSetups', { error })}
-        </Alert>
-      )}
-
-      {actionError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {actionError}
-        </Alert>
-      )}
-
-      {actionMessage && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {actionMessage}
         </Alert>
       )}
 
@@ -358,6 +352,13 @@ const BudgetSetupListPage: React.FC = () => {
         accounts={accounts}
         onClose={handleDialogClose}
         onSubmit={handleSubmit}
+      />
+
+      <FeedbackSnackbar
+        open={Boolean(actionError || actionMessage)}
+        message={actionError || actionMessage || ''}
+        severity={actionError ? 'error' : 'success'}
+        onClose={closeFeedback}
       />
     </Box>
   );
