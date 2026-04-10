@@ -18,6 +18,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import PaginationControls from '../../components/PaginationControls';
 import { formatCurrency } from '../../utils/currencyUtils';
@@ -183,27 +184,40 @@ const BudgetSetupListPage: React.FC = () => {
   };
 
   const handleDeleteClick = async (budgetSetup: BudgetSetupRecord) => {
-    const confirmed = window.confirm(t('budgetSetups.deleteConfirm', { id: budgetSetup.id }));
+    openConfirm({
+      id: budgetSetup.id,
+      title: t('budgetSetups.deleteConfirm', { id: budgetSetup.id }),
+      content: t('budgetSetups.deleteConfirm', { id: budgetSetup.id }),
+    });
+  };
 
-    if (!confirmed) {
-      return;
-    }
+  type ConfirmPayload = { id: number; title?: string; content?: string } | null;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload>(null);
 
+  const openConfirm = (payload: NonNullable<ConfirmPayload>) => {
+    setConfirmPayload(payload);
+    setConfirmOpen(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmPayload(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmPayload) return closeConfirm();
     setActionError(null);
     setActionMessage(null);
-
     try {
-      await dispatch(deleteBudgetSetup(budgetSetup.id)).unwrap();
-
-      if (data.length === 1 && page > 1) {
-        setPage(page - 1);
-      } else {
-        reloadBudgetSetups();
-      }
-
+      await dispatch(deleteBudgetSetup(confirmPayload.id)).unwrap();
+      if (data.length === 1 && page > 1) setPage(page - 1);
+      else reloadBudgetSetups();
       setActionMessage(t('budgetSetups.deleted'));
     } catch (deleteError) {
       setActionError(deleteError instanceof Error ? deleteError.message : String(deleteError));
+    } finally {
+      closeConfirm();
     }
   };
 
@@ -324,6 +338,16 @@ const BudgetSetupListPage: React.FC = () => {
           />
         </>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={confirmPayload?.title}
+        content={confirmPayload?.content}
+        confirmText={t('common.yes') || 'Delete'}
+        cancelText={t('common.no') || 'Cancel'}
+        onCancel={closeConfirm}
+        onConfirm={handleConfirm}
+      />
 
       <BudgetSetupFormDialog
         open={dialogOpen}

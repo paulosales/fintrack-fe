@@ -22,6 +22,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import PaginationControls from '../../components/PaginationControls';
 import type { RootState, AppDispatch } from '../../store';
@@ -212,28 +213,42 @@ const BudgetListPage: React.FC = () => {
   };
 
   const handleDeleteClick = async (budget: BudgetRecord) => {
-    const confirmed = window.confirm(t('budgets.deleteConfirm', { id: budget.id }));
+    openConfirm({
+      id: budget.id,
+      date: budget.date,
+      title: t('budgets.deleteConfirm', { id: budget.id }),
+      content: t('budgets.deleteConfirm', { id: budget.id }),
+    });
+  };
 
-    if (!confirmed) {
-      return;
-    }
+  type ConfirmPayload = { id: number; date?: string; title?: string; content?: string } | null;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload>(null);
 
+  const openConfirm = (payload: NonNullable<ConfirmPayload>) => {
+    setConfirmPayload(payload);
+    setConfirmOpen(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmPayload(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmPayload) return closeConfirm();
     setActionError(null);
     setActionMessage(null);
-
     try {
-      await dispatch(deleteBudget(budget.id)).unwrap();
-
-      if (data.length === 1 && page > 1) {
-        setPage(page - 1);
-      } else {
-        reloadBudgetMonths();
-      }
-
-      refreshMonthDetails(getMonthRequestFromDate(budget.date));
+      await dispatch(deleteBudget(confirmPayload.id)).unwrap();
+      if (data.length === 1 && page > 1) setPage(page - 1);
+      else reloadBudgetMonths();
+      if (confirmPayload.date) refreshMonthDetails(getMonthRequestFromDate(confirmPayload.date));
       setActionMessage(t('budgets.deleted'));
     } catch (deleteError) {
       setActionError(deleteError instanceof Error ? deleteError.message : String(deleteError));
+    } finally {
+      closeConfirm();
     }
   };
 
@@ -501,6 +516,19 @@ const BudgetListPage: React.FC = () => {
         isSubmitting={isSubmitting}
         onClose={handleGenerateDialogClose}
         onSubmit={handleGenerateSubmit}
+      />
+      <ConfirmDialog
+        open={confirmOpen}
+        title={
+          confirmPayload?.title ?? t('budgets.deleteConfirm', { id: confirmPayload?.id ?? '' })
+        }
+        content={
+          confirmPayload?.content ?? t('budgets.deleteConfirm', { id: confirmPayload?.id ?? '' })
+        }
+        confirmText={t('common.yes') || 'Delete'}
+        cancelText={t('common.no') || 'Cancel'}
+        onCancel={closeConfirm}
+        onConfirm={handleConfirm}
       />
     </Box>
   );

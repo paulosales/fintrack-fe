@@ -27,6 +27,7 @@ import {
   DialogActions,
   TextField,
 } from '@mui/material';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 import type { SubTransaction, Transaction, TransactionFormState } from './types';
 import type { RootState, AppDispatch } from '../../store';
@@ -255,16 +256,54 @@ const TransactionList: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = async (transaction: Transaction) => {
-    const confirmed = window.confirm(t('transactions.deleteConfirm', { id: transaction.id }));
-    if (!confirmed) return;
+  const handleDeleteClick = (transaction: Transaction) => {
+    openConfirm({
+      kind: 'transaction',
+      id: transaction.id,
+      transactionId: transaction.id,
+      title: t('transactions.deleteConfirm', { id: transaction.id }),
+      content: t('transactions.deleteConfirm', { id: transaction.id }),
+    });
+  };
+
+  type ConfirmPayload =
+    | { kind: 'transaction'; id: number; transactionId: number; title?: string; content?: string }
+    | { kind: 'sub'; id: number; transactionId: number; title?: string; content?: string };
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload | null>(null);
+
+  const openConfirm = (payload: ConfirmPayload) => {
+    setConfirmPayload(payload);
+    setConfirmOpen(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmPayload(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmPayload) return closeConfirm();
     setActionError(null);
     try {
-      await dispatch(deleteTransaction(transaction.id)).unwrap();
-      if (data.length === 1 && page > 1) setPage(page - 1);
-      else reloadTransactions();
+      if (confirmPayload.kind === 'transaction') {
+        await dispatch(deleteTransaction(confirmPayload.id)).unwrap();
+        if (data.length === 1 && page > 1) setPage(page - 1);
+        else reloadTransactions();
+      } else {
+        await dispatch(
+          deleteSubTransaction({
+            id: confirmPayload.id,
+            transactionId: confirmPayload.transactionId,
+          })
+        ).unwrap();
+        void dispatch(fetchSubTransactions(confirmPayload.transactionId));
+      }
     } catch (err: unknown) {
       setActionError(err instanceof Error ? err.message : String(err));
+    } finally {
+      closeConfirm();
     }
   };
 
@@ -286,15 +325,14 @@ const TransactionList: React.FC = () => {
     note: '',
   });
   const handleEditSub = (subTransaction: SubTransaction) => setEditingSub(subTransaction);
-  const handleDeleteSub = async (subId: number, transactionId: number) => {
-    const confirmed = window.confirm('Delete sub-transaction ' + subId + '?');
-    if (!confirmed) return;
-    try {
-      await dispatch(deleteSubTransaction({ id: subId, transactionId })).unwrap();
-      void dispatch(fetchSubTransactions(transactionId));
-    } catch (e) {
-      // ignore
-    }
+  const handleDeleteSub = (subId: number, transactionId: number) => {
+    openConfirm({
+      kind: 'sub',
+      id: subId,
+      transactionId,
+      title: `Delete sub-transaction ${subId}?`,
+      content: `Delete sub-transaction ${subId}?`,
+    });
   };
   const handleSaveSub = async (values: SubTransaction) => {
     try {
@@ -645,6 +683,15 @@ const TransactionList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ConfirmDialog
+        open={confirmOpen}
+        title={confirmPayload?.title}
+        content={confirmPayload?.content}
+        confirmText={t('common.yes') || 'Delete'}
+        cancelText={t('common.no') || 'Cancel'}
+        onCancel={closeConfirm}
+        onConfirm={handleConfirm}
+      />
     </Box>
   );
 };
