@@ -103,6 +103,8 @@ export interface SubTransaction {
   amount: number;
   description: string;
   note?: string | null;
+  categoryIds?: string | null;
+  categories?: string | null;
 }
 
 export interface TransactionDetailsState {

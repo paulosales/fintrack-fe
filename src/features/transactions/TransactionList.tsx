@@ -266,6 +266,9 @@ const TransactionList: React.FC = () => {
             amount: Number(values.amount),
             description: values.description,
             note: values.note,
+            categoryIds: values.categoryIds
+              ? values.categoryIds.split(',').map(Number).filter((v) => !Number.isNaN(v))
+              : [],
           },
         })
       ).unwrap();
@@ -293,6 +296,9 @@ const TransactionList: React.FC = () => {
         amount: Number(values.amount || 0),
         description: values.description || '',
         note: values.note || null,
+        categoryIds: values.categoryIds
+          ? values.categoryIds.map(Number).filter((v) => !Number.isNaN(v))
+          : [],
       };
       await dispatch(createSubTransaction({ transactionId: creatingSubFor, payload })).unwrap();
       void dispatch(fetchSubTransactions(creatingSubFor));
@@ -394,6 +400,7 @@ const TransactionList: React.FC = () => {
         key={editingSub?.id ?? 'new'}
         open={subDialogOpen}
         editing={editingSub}
+        categories={categories}
         onClose={handleCloseSubDialog}
         onSave={handleSaveSub}
         onCreate={handleCreateSub}

@@ -45,6 +45,7 @@ const SubTransactionTable: React.FC<SubTransactionTableProps> = ({
             <TableCell>Product</TableCell>
             <TableCell>Description</TableCell>
             <TableCell>Amount</TableCell>
+            <TableCell>Categories</TableCell>
             <TableCell>Note</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -56,6 +57,7 @@ const SubTransactionTable: React.FC<SubTransactionTableProps> = ({
               <TableCell>{sub.productCode || '-'}</TableCell>
               <TableCell>{sub.description}</TableCell>
               <TableCell>{formatCurrency(sub.amount)}</TableCell>
+              <TableCell>{sub.categories || '-'}</TableCell>
               <TableCell>{sub.note || '-'}</TableCell>
               <TableCell align="right">
                 <IconButton
@@ -76,7 +78,7 @@ const SubTransactionTable: React.FC<SubTransactionTableProps> = ({
             </TableRow>
           ))}
           <TableRow>
-            <TableCell colSpan={6}>
+            <TableCell colSpan={7}>
               <Button
                 size="small"
                 startIcon={<AddIcon />}

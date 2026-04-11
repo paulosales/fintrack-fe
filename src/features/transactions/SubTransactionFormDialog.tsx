@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -8,6 +10,9 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import type { Category } from '../../models/categories';
 import type { SubTransaction } from './types';
 
 export interface SubTransactionFormValues {
@@ -15,11 +20,13 @@ export interface SubTransactionFormValues {
   description: string;
   amount: string;
   note: string;
+  categoryIds: string[];
 }
 
 interface SubTransactionFormDialogProps {
   open: boolean;
   editing: SubTransaction | null;
+  categories: Category[];
   onClose: () => void;
   onSave: (values: SubTransaction) => void;
   onCreate: (values: SubTransactionFormValues) => void;
@@ -30,6 +37,7 @@ const emptyForm: SubTransactionFormValues = {
   description: '',
   amount: '',
   note: '',
+  categoryIds: [],
 };
 
 const deriveInitialValues = (editing: SubTransaction | null): SubTransactionFormValues => {
@@ -39,6 +47,7 @@ const deriveInitialValues = (editing: SubTransaction | null): SubTransactionForm
       description: editing.description,
       amount: String(editing.amount ?? ''),
       note: editing.note ?? '',
+      categoryIds: editing.categoryIds ? editing.categoryIds.split(',').filter(Boolean) : [],
     };
   }
   return emptyForm;
@@ -47,15 +56,23 @@ const deriveInitialValues = (editing: SubTransaction | null): SubTransactionForm
 const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
   open,
   editing,
+  categories,
   onClose,
   onSave,
   onCreate,
 }) => {
+  const { t } = useTranslation();
   const [values, setValues] = useState<SubTransactionFormValues>(() => deriveInitialValues(editing));
 
   const handleChange = (field: keyof SubTransactionFormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues((prev) => ({ ...prev, [field]: e.target.value }));
   };
+
+  const selectedCategories: Category[] = Array.isArray(values.categoryIds)
+    ? values.categoryIds
+        .map((id) => categories.find((c) => c.id === Number(id)))
+        .filter((c): c is Category => Boolean(c))
+    : [];
 
   const handleSubmit = () => {
     if (editing) {
@@ -65,6 +82,7 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
         description: values.description,
         amount: Number.parseFloat(values.amount),
         note: values.note,
+        categoryIds: values.categoryIds.join(','),
       });
     } else {
       onCreate(values);
@@ -103,6 +121,36 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
             label="Note"
             value={values.note}
             onChange={handleChange('note')}
+          />
+          <Autocomplete<Category, true, false, false>
+            multiple
+            disableCloseOnSelect
+            options={categories}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(opt, val) => opt.id === val.id}
+            value={selectedCategories}
+            onChange={(_, newVal: Category[]) =>
+              setValues((prev) => ({ ...prev, categoryIds: newVal.map((c) => String(c.id)) }))
+            }
+            limitTags={2}
+            renderOption={(props, option, { selected }) => (
+              <li {...props} key={option.id}>
+                {selected ? (
+                  <CheckBoxIcon fontSize="small" style={{ marginRight: 8 }} />
+                ) : (
+                  <CheckBoxOutlineBlankIcon fontSize="small" style={{ marginRight: 8 }} />
+                )}
+                {option.name}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={t('transactions.form.categories')}
+                placeholder={t('transactions.form.categories')}
+                fullWidth
+              />
+            )}
           />
         </Box>
       </DialogContent>

@@ -109,23 +109,13 @@ export const fetchSubTransactions = createAsyncThunk(
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
       }
 
-      const payload = (await response.json()) as { success: boolean; data?: any[]; error?: string };
+      const payload = (await response.json()) as { success: boolean; data?: SubTransaction[]; error?: string };
 
       if (!payload.success) {
         return rejectWithValue(payload.error || 'Unknown error');
       }
 
-      // normalize fields if necessary
-      const data = (payload.data || []).map((d) => ({
-        id: d.id,
-        transactionId: d.transaction_id ?? d.transactionId,
-        productCode: d.product_code ?? d.productCode ?? null,
-        amount: d.amount,
-        description: d.description,
-        note: d.note ?? null,
-      }));
-
-      return { transactionId, data };
+      return { transactionId, data: payload.data || [] };
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
     }
@@ -147,6 +137,7 @@ export const updateSubTransaction = createAsyncThunk(
         amount: number;
         description: string;
         note?: string | null;
+        categoryIds?: number[];
       };
     },
     { rejectWithValue }
@@ -155,12 +146,7 @@ export const updateSubTransaction = createAsyncThunk(
       const response = await fetch(`/api/transactions/${transactionId}/sub_transactions/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_code: payload.productCode,
-          amount: payload.amount,
-          description: payload.description,
-          note: payload.note,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -171,17 +157,9 @@ export const updateSubTransaction = createAsyncThunk(
       const json = await response.json();
       if (!json.success) return rejectWithValue(json.error || 'Unknown error');
 
-      const d = json.data;
       return {
-        transactionId: d.transaction_id ?? d.transactionId,
-        data: {
-          id: d.id,
-          transactionId: d.transaction_id ?? d.transactionId,
-          productCode: d.product_code ?? d.productCode ?? null,
-          amount: d.amount,
-          description: d.description,
-          note: d.note ?? null,
-        },
+        transactionId: json.data.transactionId,
+        data: json.data,
       };
     } catch (err: unknown) {
       return rejectWithValue(err instanceof Error ? err.message : 'API call failed');
@@ -222,6 +200,7 @@ export const createSubTransaction = createAsyncThunk(
         amount: number;
         description: string;
         note?: string | null;
+        categoryIds?: number[];
       };
     },
     { rejectWithValue }
@@ -230,12 +209,7 @@ export const createSubTransaction = createAsyncThunk(
       const response = await fetch(`/api/transactions/${transactionId}/sub_transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_code: payload.productCode,
-          amount: payload.amount,
-          description: payload.description,
-          note: payload.note,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -246,17 +220,9 @@ export const createSubTransaction = createAsyncThunk(
       const json = await response.json();
       if (!json.success) return rejectWithValue(json.error || 'Unknown error');
 
-      const d = json.data;
       return {
         transactionId,
-        data: {
-          id: d.id,
-          transactionId: d.transaction_id ?? d.transactionId,
-          productCode: d.product_code ?? d.productCode ?? null,
-          amount: d.amount,
-          description: d.description,
-          note: d.note ?? null,
-        },
+        data: json.data,
       };
     } catch (err: unknown) {
       return rejectWithValue(err instanceof Error ? err.message : 'API call failed');
