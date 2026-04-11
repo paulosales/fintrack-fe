@@ -7,7 +7,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIconSmall from '@mui/icons-material/DeleteOutline';
 import {
   Alert,
   Box,
@@ -21,16 +20,14 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 
 import type { SubTransaction, Transaction, TransactionFormState } from './types';
+import SubTransactionTable from './SubTransactionTable';
+import SubTransactionFormDialog from './SubTransactionFormDialog';
+import type { SubTransactionFormValues } from './SubTransactionFormDialog';
 import type { RootState, AppDispatch } from '../../store';
 import TransactionFormDialog from './TransactionFormDialog';
 import TransactionFilters from './TransactionFilters';
@@ -323,13 +320,11 @@ const TransactionList: React.FC = () => {
 
   const [editingSub, setEditingSub] = useState<SubTransaction | null>(null);
   const [creatingSubFor, setCreatingSubFor] = useState<number | null>(null);
-  const [newSubValues, setNewSubValues] = useState({
-    productCode: '',
-    description: '',
-    amount: '',
-    note: '',
-  });
+
+  const subDialogOpen = Boolean(editingSub) || Boolean(creatingSubFor);
+
   const handleEditSub = (subTransaction: SubTransaction) => setEditingSub(subTransaction);
+
   const handleDeleteSub = (subId: number, transactionId: number) => {
     openConfirm({
       kind: 'sub',
@@ -339,6 +334,7 @@ const TransactionList: React.FC = () => {
       content: `Delete sub-transaction ${subId}?`,
     });
   };
+
   const handleSaveSub = async (values: SubTransaction) => {
     try {
       await dispatch(
@@ -362,19 +358,21 @@ const TransactionList: React.FC = () => {
 
   const handleOpenCreateSub = (transactionId: number) => {
     setCreatingSubFor(transactionId);
-    setNewSubValues({ productCode: '', description: '', amount: '', note: '' });
   };
 
-  const handleCancelCreateSub = () => setCreatingSubFor(null);
+  const handleCloseSubDialog = () => {
+    setEditingSub(null);
+    setCreatingSubFor(null);
+  };
 
-  const handleCreateSub = async () => {
+  const handleCreateSub = async (values: SubTransactionFormValues) => {
     if (!creatingSubFor) return;
     try {
       const payload = {
-        productCode: newSubValues.productCode || null,
-        amount: Number(newSubValues.amount || 0),
-        description: newSubValues.description || '',
-        note: newSubValues.note || null,
+        productCode: values.productCode || null,
+        amount: Number(values.amount || 0),
+        description: values.description || '',
+        note: values.note || null,
       };
       await dispatch(createSubTransaction({ transactionId: creatingSubFor, payload })).unwrap();
       void dispatch(fetchSubTransactions(creatingSubFor));
@@ -512,63 +510,13 @@ const TransactionList: React.FC = () => {
                     {expandedIds.includes(tx.id) && (
                       <TableRow>
                         <TableCell colSpan={10} sx={{ backgroundColor: 'background.paper' }}>
-                          <Typography variant="subtitle2">
-                            {t('transactions.subTransactions') || 'Sub transactions'}
-                          </Typography>
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Product</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Note</TableCell>
-                                <TableCell align="right">Actions</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {(subTransactionsByTransactionId[tx.id]?.data || []).map(
-                                (subTransaction: SubTransaction) => (
-                                  <TableRow key={subTransaction.id}>
-                                    <TableCell>{subTransaction.id}</TableCell>
-                                    <TableCell>{subTransaction.productCode || '-'}</TableCell>
-                                    <TableCell>{subTransaction.description}</TableCell>
-                                    <TableCell>{formatCurrency(subTransaction.amount)}</TableCell>
-                                    <TableCell>{subTransaction.note || '-'}</TableCell>
-                                    <TableCell align="right">
-                                      <IconButton
-                                        aria-label={`edit sub ${subTransaction.id}`}
-                                        size="small"
-                                        onClick={() =>
-                                          handleEditSub({ ...subTransaction, transactionId: tx.id })
-                                        }
-                                      >
-                                        <EditIcon fontSize="small" />
-                                      </IconButton>
-                                      <IconButton
-                                        aria-label={`delete sub ${subTransaction.id}`}
-                                        size="small"
-                                        onClick={() => handleDeleteSub(subTransaction.id, tx.id)}
-                                      >
-                                        <DeleteIconSmall fontSize="small" />
-                                      </IconButton>
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              )}
-                              <TableRow>
-                                <TableCell colSpan={6}>
-                                  <Button
-                                    size="small"
-                                    startIcon={<AddIcon />}
-                                    onClick={() => handleOpenCreateSub(tx.id)}
-                                  >
-                                    Add sub-transaction
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            </TableBody>
-                          </Table>
+                          <SubTransactionTable
+                            transactionId={tx.id}
+                            subTransactions={subTransactionsByTransactionId[tx.id]?.data || []}
+                            onEdit={handleEditSub}
+                            onDelete={handleDeleteSub}
+                            onCreate={handleOpenCreateSub}
+                          />
                         </TableCell>
                       </TableRow>
                     )}
@@ -602,86 +550,13 @@ const TransactionList: React.FC = () => {
         onSubmit={handleSubmit}
       />
 
-      <Dialog open={Boolean(editingSub)} onClose={() => setEditingSub(null)}>
-        <DialogTitle>Edit Sub-transaction</DialogTitle>
-        <DialogContent>
-          {editingSub && (
-            <Box
-              component="form"
-              id="sub-edit-form"
-              sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
-            >
-              <TextField
-                label="Product Code"
-                value={editingSub.productCode ?? ''}
-                onChange={(e) => setEditingSub({ ...editingSub, productCode: e.target.value })}
-              />
-              <TextField
-                label="Description"
-                value={editingSub.description}
-                onChange={(e) => setEditingSub({ ...editingSub, description: e.target.value })}
-              />
-              <TextField
-                label="Amount"
-                type="number"
-                value={String(editingSub.amount ?? '')}
-                onChange={(e) =>
-                  setEditingSub({ ...editingSub, amount: Number.parseFloat(e.target.value) })
-                }
-              />
-              <TextField
-                label="Note"
-                value={editingSub.note ?? ''}
-                onChange={(e) => setEditingSub({ ...editingSub, note: e.target.value })}
-              />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditingSub(null)}>Cancel</Button>
-          <Button onClick={() => editingSub && handleSaveSub(editingSub)} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={Boolean(creatingSubFor)} onClose={handleCancelCreateSub}>
-        <DialogTitle>Create Sub-transaction</DialogTitle>
-        <DialogContent>
-          <Box
-            component="form"
-            id="sub-create-form"
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
-          >
-            <TextField
-              label="Product Code"
-              value={newSubValues.productCode}
-              onChange={(e) => setNewSubValues({ ...newSubValues, productCode: e.target.value })}
-            />
-            <TextField
-              label="Description"
-              value={newSubValues.description}
-              onChange={(e) => setNewSubValues({ ...newSubValues, description: e.target.value })}
-            />
-            <TextField
-              label="Amount"
-              type="number"
-              value={newSubValues.amount}
-              onChange={(e) => setNewSubValues({ ...newSubValues, amount: e.target.value })}
-            />
-            <TextField
-              label="Note"
-              value={newSubValues.note}
-              onChange={(e) => setNewSubValues({ ...newSubValues, note: e.target.value })}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelCreateSub}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreateSub}>
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SubTransactionFormDialog
+        open={subDialogOpen}
+        editing={editingSub}
+        onClose={handleCloseSubDialog}
+        onSave={handleSaveSub}
+        onCreate={handleCreateSub}
+      />
       <ConfirmDialog
         open={confirmOpen}
         title={confirmPayload?.title}
