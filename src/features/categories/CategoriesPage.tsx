@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 import type { Category, CategoryMutationPayload } from '../../models/categories';
 import type { AppDispatch, RootState } from '../../store';
 import CategoryFormDialog from './CategoryFormDialog';
@@ -41,8 +42,9 @@ const CategoriesPage: React.FC = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmPayload, setConfirmPayload] = useState<Category | null>(null);
+
+  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
+    useConfirmDialog<Category>();
 
   const closeFeedback = () => {
     setActionError(null);
@@ -121,15 +123,9 @@ const CategoriesPage: React.FC = () => {
   };
 
   const handleDeleteClick = (category: Category) => {
-    setConfirmPayload(category);
-    setConfirmOpen(true);
+    openConfirm(category);
     setActionError(null);
     setActionMessage(null);
-  };
-
-  const closeConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmPayload(null);
   };
 
   const handleConfirm = async () => {

@@ -1,43 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import {
-  Alert,
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, Typography } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 
 import type { SubTransaction, Transaction, TransactionFormState } from './types';
-import SubTransactionTable from './SubTransactionTable';
 import SubTransactionFormDialog from './SubTransactionFormDialog';
 import type { SubTransactionFormValues } from './SubTransactionFormDialog';
 import type { RootState, AppDispatch } from '../../store';
 import TransactionFormDialog from './TransactionFormDialog';
 import TransactionFilters from './TransactionFilters';
-import PaginationControls from '../../components/PaginationControls';
-import { formatCurrency } from '../../utils/currencyUtils';
-import { formatDateTime } from '../../utils/dateUtils';
+import TransactionTable from './TransactionTable';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
+import useTransactionFilters from './useTransactionFilters';
 import {
   createTransaction,
   deleteTransaction,
-  fetchTransactions,
   fetchSubTransactions,
   updateTransaction,
   updateSubTransaction,
@@ -96,13 +76,19 @@ const TransactionList: React.FC = () => {
   const transactionTypes = transactionTypesState.data;
   const categories = categoriesState.data;
 
-  const [accountId, setAccountId] = useState<number | null>(null);
-  const [transactionTypeId, setTransactionTypeId] = useState<number | null>(null);
-  const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [descriptionInput, setDescriptionInput] = useState('');
-  const [description, setDescription] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
+  const {
+    filters,
+    setPage,
+    reloadTransactions,
+    handleReload,
+    handleAccountChange,
+    handleTransactionTypeChange,
+    handleCategoryChange,
+    handleDescriptionChange,
+    handlePageSizeChange,
+  } = useTransactionFilters();
+
+  const { page } = filters;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -120,62 +106,6 @@ const TransactionList: React.FC = () => {
     dispatch(fetchTransactionTypes());
     dispatch(fetchCategories());
   }, [dispatch]);
-
-  const debouncedApplyDescription = useDebouncedCallback((nextDescription: string) => {
-    setDescription(nextDescription);
-    setPage(1);
-  }, 600);
-
-  useEffect(() => () => debouncedApplyDescription.cancel(), [debouncedApplyDescription]);
-
-  useEffect(() => {
-    dispatch(
-      fetchTransactions({
-        accountId,
-        transactionTypeId,
-        categoryId,
-        description,
-        page,
-        pageSize,
-      })
-    );
-  }, [dispatch, accountId, transactionTypeId, categoryId, description, page, pageSize]);
-
-  const reloadTransactions = (nextPage = page) => {
-    dispatch(
-      fetchTransactions({
-        accountId,
-        transactionTypeId,
-        categoryId,
-        description,
-        page: nextPage,
-        pageSize,
-      })
-    );
-  };
-
-  const handleReload = () => reloadTransactions();
-
-  const handleAccountChange = (nextAccountId: number | null) => {
-    setAccountId(nextAccountId);
-    setPage(1);
-  };
-  const handleTransactionTypeChange = (next: number | null) => {
-    setTransactionTypeId(next);
-    setPage(1);
-  };
-  const handleCategoryChange = (next: number | null) => {
-    setCategoryId(next);
-    setPage(1);
-  };
-  const handleDescriptionChange = (nextDescription: string) => {
-    setDescriptionInput(nextDescription);
-    debouncedApplyDescription(nextDescription);
-  };
-  const handlePageSizeChange = (nextPageSize: number) => {
-    setPageSize(nextPageSize);
-    setPage(1);
-  };
 
   const getAccountName = (id: number) => {
     const acc = accounts.find((a) => a.id === id);
@@ -272,18 +202,8 @@ const TransactionList: React.FC = () => {
     | { kind: 'transaction'; id: number; transactionId: number; title?: string; content?: string }
     | { kind: 'sub'; id: number; transactionId: number; title?: string; content?: string };
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload | null>(null);
-
-  const openConfirm = (payload: ConfirmPayload) => {
-    setConfirmPayload(payload);
-    setConfirmOpen(true);
-  };
-
-  const closeConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmPayload(null);
-  };
+  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
+    useConfirmDialog<ConfirmPayload>();
 
   const handleConfirm = async () => {
     if (!confirmPayload) return closeConfirm();
@@ -402,15 +322,7 @@ const TransactionList: React.FC = () => {
       </Box>
 
       <TransactionFilters
-        filters={{
-          accountId,
-          transactionTypeId,
-          categoryId,
-          description,
-          descriptionInput,
-          page,
-          pageSize,
-        }}
+        filters={filters}
         options={{ accounts, transactionTypes, categories }}
         loadingState={{
           accounts: accountsState.loading,
@@ -448,93 +360,21 @@ const TransactionList: React.FC = () => {
       )}
 
       {data.length > 0 && (
-        <>
-          <TableContainer component={Paper}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell />
-                  <TableCell>ID</TableCell>
-                  <TableCell>{t('transactions.columns.account')}</TableCell>
-                  <TableCell>{t('transactions.columns.type')}</TableCell>
-                  <TableCell>{t('transactions.columns.date')}</TableCell>
-                  <TableCell>{t('transactions.columns.amount')}</TableCell>
-                  <TableCell>{t('transactions.columns.description')}</TableCell>
-                  <TableCell>{t('transactions.columns.categories')}</TableCell>
-                  <TableCell>{t('transactions.columns.note')}</TableCell>
-                  <TableCell align="right">{t('transactions.columns.actions')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.map((tx: Transaction) => (
-                  <React.Fragment key={tx.id}>
-                    <TableRow>
-                      <TableCell sx={{ width: 56 }}>
-                        <IconButton
-                          aria-label={
-                            expandedIds.includes(tx.id)
-                              ? t('common.collapseRow')
-                              : t('common.expandRow')
-                          }
-                          size="small"
-                          onClick={() => toggleExpand(tx)}
-                        >
-                          {expandedIds.includes(tx.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>{tx.id}</TableCell>
-                      <TableCell>{getAccountName(tx.accountId)}</TableCell>
-                      <TableCell>{tx.transactionTypeName || t('common.notAvailable')}</TableCell>
-                      <TableCell>{formatDateTime(tx.datetime)}</TableCell>
-                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
-                      <TableCell>{tx.description}</TableCell>
-                      <TableCell>{tx.categories || t('common.notAvailable')}</TableCell>
-                      <TableCell>{tx.note || t('common.notAvailable')}</TableCell>
-                      <TableCell align="right" sx={{ minWidth: 120 }}>
-                        <IconButton
-                          aria-label={t('transactions.actions.editAria', { id: tx.id })}
-                          onClick={() => handleEditClick(tx)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          aria-label={t('transactions.actions.deleteAria', { id: tx.id })}
-                          color="error"
-                          onClick={() => handleDeleteClick(tx)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-
-                    {expandedIds.includes(tx.id) && (
-                      <TableRow>
-                        <TableCell colSpan={10} sx={{ backgroundColor: 'background.paper' }}>
-                          <SubTransactionTable
-                            transactionId={tx.id}
-                            subTransactions={subTransactionsByTransactionId[tx.id]?.data || []}
-                            onEdit={handleEditSub}
-                            onDelete={handleDeleteSub}
-                            onCreate={handleOpenCreateSub}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <PaginationControls
-            page={pagination.page}
-            pageSize={pagination.pageSize}
-            totalCount={pagination.totalCount}
-            totalPages={pagination.totalPages}
-            onPageChange={setPage}
-            onPageSizeChange={handlePageSizeChange}
-          />
-        </>
+        <TransactionTable
+          transactions={data}
+          expandedIds={expandedIds}
+          subTransactionsByTransactionId={subTransactionsByTransactionId}
+          pagination={pagination}
+          getAccountName={getAccountName}
+          onToggleExpand={toggleExpand}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+          onEditSub={handleEditSub}
+          onDeleteSub={handleDeleteSub}
+          onCreateSub={handleOpenCreateSub}
+          onPageChange={setPage}
+          onPageSizeChange={handlePageSizeChange}
+        />
       )}
 
       <TransactionFormDialog
@@ -551,6 +391,7 @@ const TransactionList: React.FC = () => {
       />
 
       <SubTransactionFormDialog
+        key={editingSub?.id ?? 'new'}
         open={subDialogOpen}
         editing={editingSub}
         onClose={handleCloseSubDialog}

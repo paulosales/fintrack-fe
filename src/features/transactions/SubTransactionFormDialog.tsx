@@ -76,7 +76,7 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
   const submitLabel = isEditing ? 'Save' : 'Create';
 
   return (
-    <Dialog key={editing?.id ?? 'new'} open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Box

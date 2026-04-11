@@ -95,54 +95,65 @@ describe('TransactionList', () => {
       },
     ];
 
+    let subCallCount = 0;
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        // accounts
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            success: true,
-            data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }],
-          }),
-        })
-        // transaction types
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ success: true, data: [{ id: 1, code: 'INCOME', name: 'Income' }] }),
-        })
-        // categories
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ success: true, data: [{ id: 1, name: 'Groceries' }] }),
-        })
-        // first call: list transactions
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ success: true, data, pagination: defaultPagination }),
-        })
-        // second call: fetch sub-transactions for transaction id 1
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            success: true,
-            data: [
-              {
-                id: 10,
-                transaction_id: 1,
-                product_code: 'P1',
-                amount: 5.0,
-                description: 'Sub item',
-                note: null,
-              },
-            ],
-          }),
-        })
-        // third call: delete sub transaction
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true }) })
-        // fourth call: fetch sub-transactions after delete returns empty
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: [] }) })
+      vi.fn((url: string, opts?: RequestInit) => {
+        if (url.includes('/transactions') && !url.includes('/sub')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ success: true, data, pagination: defaultPagination }),
+          });
+        }
+        if (url.includes('/accounts')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              success: true,
+              data: [{ id: 123, code: 'CHK-001', name: 'Checking Account', accountTypeId: 1 }],
+            }),
+          });
+        }
+        if (url.includes('/transaction-types')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              success: true,
+              data: [{ id: 1, code: 'INCOME', name: 'Income' }],
+            }),
+          });
+        }
+        if (url.includes('/categories')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ success: true, data: [{ id: 1, name: 'Groceries' }] }),
+          });
+        }
+        if (url.includes('/sub')) {
+          if (opts?.method === 'DELETE') {
+            return Promise.resolve({ ok: true, json: async () => ({ success: true }) });
+          }
+          subCallCount++;
+          const subData =
+            subCallCount <= 1
+              ? [
+                  {
+                    id: 10,
+                    transaction_id: 1,
+                    product_code: 'P1',
+                    amount: 5.0,
+                    description: 'Sub item',
+                    note: null,
+                  },
+                ]
+              : [];
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ success: true, data: subData }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ success: true }) });
+      })
     );
     renderWithStore({
       transactions: {

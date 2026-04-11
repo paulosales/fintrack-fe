@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import PaginationControls from '../../components/PaginationControls';
 import { formatCurrency } from '../../utils/currencyUtils';
@@ -184,6 +185,10 @@ const BudgetSetupListPage: React.FC = () => {
     }
   };
 
+  type ConfirmPayload = { id: number; title?: string; content?: string };
+  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
+    useConfirmDialog<ConfirmPayload>();
+
   const handleDeleteClick = async (budgetSetup: BudgetSetupRecord) => {
     openConfirm({
       id: budgetSetup.id,
@@ -192,23 +197,9 @@ const BudgetSetupListPage: React.FC = () => {
     });
   };
 
-  type ConfirmPayload = { id: number; title?: string; content?: string } | null;
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmPayload, setConfirmPayload] = useState<ConfirmPayload>(null);
-
   const closeFeedback = () => {
     setActionError(null);
     setActionMessage(null);
-  };
-
-  const openConfirm = (payload: NonNullable<ConfirmPayload>) => {
-    setConfirmPayload(payload);
-    setConfirmOpen(true);
-  };
-
-  const closeConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmPayload(null);
   };
 
   const handleConfirm = async () => {
