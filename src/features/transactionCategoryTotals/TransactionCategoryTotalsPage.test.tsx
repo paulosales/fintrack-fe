@@ -38,10 +38,6 @@ describe('TransactionCategoryTotalsPage', () => {
         .fn()
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
           json: async () => ({
             success: true,
             data: [
@@ -61,6 +57,10 @@ describe('TransactionCategoryTotalsPage', () => {
               totalPages: 1,
             },
           }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
         })
     );
 
@@ -86,10 +86,6 @@ describe('TransactionCategoryTotalsPage', () => {
         .fn()
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
           json: async () => ({
             success: true,
             data: [
@@ -109,6 +105,10 @@ describe('TransactionCategoryTotalsPage', () => {
               totalPages: 1,
             },
           }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
         })
         .mockResolvedValueOnce({
           ok: true,

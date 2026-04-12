@@ -215,8 +215,12 @@ const BudgetListPage: React.FC = () => {
   };
 
   type ConfirmPayload = { id: number; date?: string; title?: string; content?: string };
-  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
-    useConfirmDialog<ConfirmPayload>();
+  const {
+    open: confirmOpen,
+    payload: confirmPayload,
+    openConfirm,
+    closeConfirm,
+  } = useConfirmDialog<ConfirmPayload>();
 
   const handleDeleteClick = async (budget: BudgetRecord) => {
     openConfirm({

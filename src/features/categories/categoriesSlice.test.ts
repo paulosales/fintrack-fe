@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import reducer, {
+  CategoriesState,
   clearCategories,
   createCategory,
   deleteCategory,
@@ -16,11 +17,11 @@ describe('categoriesSlice reducers', () => {
   });
 
   it('clearCategories resets state', () => {
-    const populated = {
+    const populated: CategoriesState = {
       loading: true,
       error: 'err',
-      data: [{ id: 1, name: 'A', code: 'A' }],
-    } as any;
+      data: [{ id: 1, name: 'A' }],
+    };
     const next = reducer(populated, clearCategories());
     expect(next.loading).toBe(false);
     expect(next.error).toBeNull();
@@ -34,7 +35,7 @@ describe('categoriesSlice reducers', () => {
   });
 
   it('handles fetchCategories.fulfilled', () => {
-    const payload = [{ id: 1, name: 'Food', code: 'FOOD' }];
+    const payload = [{ id: 1, name: 'Food' }];
     const next = reducer(undefined, { type: fetchCategories.fulfilled.type, payload });
     expect(next.loading).toBe(false);
     expect(next.data).toEqual(payload);
@@ -42,7 +43,7 @@ describe('categoriesSlice reducers', () => {
 
   it('handles fetchCategories.rejected', () => {
     const action = { type: fetchCategories.rejected.type, payload: 'Network error' };
-    const next = reducer(undefined, action as any);
+    const next = reducer(undefined, action);
     expect(next.loading).toBe(false);
     expect(next.error).toBe('Network error');
   });
@@ -66,7 +67,7 @@ describe('categoriesSlice reducers', () => {
       ],
     };
 
-    const next = reducer(populated as any, {
+    const next = reducer(populated, {
       type: updateCategory.fulfilled.type,
       payload: { id: 1, name: 'Bills' },
     });
@@ -87,7 +88,7 @@ describe('categoriesSlice reducers', () => {
       ],
     };
 
-    const next = reducer(populated as any, {
+    const next = reducer(populated, {
       type: deleteCategory.fulfilled.type,
       payload: 1,
     });

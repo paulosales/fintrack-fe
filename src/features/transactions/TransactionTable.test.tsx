@@ -59,7 +59,12 @@ describe('TransactionTable', () => {
   });
 
   it('renders pagination controls', () => {
-    render(<TransactionTable {...defaultProps} pagination={{ ...pagination, totalCount: 50, totalPages: 5 }} />);
+    render(
+      <TransactionTable
+        {...defaultProps}
+        pagination={{ ...pagination, totalCount: 50, totalPages: 5 }}
+      />
+    );
     // PaginationControls renders a page size combobox and an items count
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByText(/50 items/i)).toBeInTheDocument();

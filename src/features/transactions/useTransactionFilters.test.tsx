@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -28,7 +29,11 @@ beforeEach(() => {
     'fetch',
     vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ success: true, data: [], meta: { page: 1, pageSize: 50, totalCount: 0, totalPages: 0 } }),
+      json: async () => ({
+        success: true,
+        data: [],
+        meta: { page: 1, pageSize: 50, totalCount: 0, totalPages: 0 },
+      }),
     })
   );
 });

@@ -49,7 +49,10 @@ const useSubTransactionActions = () => {
             description: values.description,
             note: values.note,
             categoryIds: values.categoryIds
-              ? values.categoryIds.split(',').map(Number).filter((v) => !Number.isNaN(v))
+              ? values.categoryIds
+                  .split(',')
+                  .map(Number)
+                  .filter((v) => !Number.isNaN(v))
               : [],
           },
         })

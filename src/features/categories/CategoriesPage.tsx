@@ -1,151 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Typography } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
-import useConfirmDialog from '../../hooks/useConfirmDialog';
-import type { Category, CategoryMutationPayload } from '../../models/categories';
 import type { AppDispatch, RootState } from '../../store';
 import CategoryFormDialog from './CategoryFormDialog';
-import { createCategory, deleteCategory, fetchCategories, updateCategory } from './categoriesSlice';
-
-const buildCategoryFormDefaults = (category: Category | null): CategoryMutationPayload => ({
-  name: category?.name ?? '',
-});
+import CategoryTable from './CategoryTable';
+import useCategoryActions, { buildCategoryFormDefaults } from './useCategoryActions';
+import { fetchCategories } from './categoriesSlice';
 
 const CategoriesPage: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { data, loading, error } = useSelector((state: RootState) => state.categories);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
-    useConfirmDialog<Category>();
-
-  const closeFeedback = () => {
-    setActionError(null);
-    setActionMessage(null);
-  };
+  const {
+    dialogOpen,
+    editingCategory,
+    formError,
+    isSubmitting,
+    actionError,
+    actionMessage,
+    closeFeedback,
+    confirmOpen,
+    confirmPayload,
+    closeConfirm,
+    handleCreateClick,
+    handleEditClick,
+    handleDialogClose,
+    handleSubmit,
+    handleDeleteClick,
+    handleConfirm,
+  } = useCategoryActions();
 
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
-
-  const handleCreateClick = () => {
-    setEditingCategory(null);
-    setFormError(null);
-    setActionError(null);
-    setActionMessage(null);
-    setDialogOpen(true);
-  };
-
-  const handleEditClick = (category: Category) => {
-    setEditingCategory(category);
-    setFormError(null);
-    setActionError(null);
-    setActionMessage(null);
-    setDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    setDialogOpen(false);
-    setEditingCategory(null);
-    setFormError(null);
-  };
-
-  const buildPayload = (formValues: CategoryMutationPayload): CategoryMutationPayload | null => {
-    const name = formValues.name.trim();
-
-    if (!name) {
-      setFormError(t('categories.requiredError'));
-      return null;
-    }
-
-    setFormError(null);
-    return { name };
-  };
-
-  const handleSubmit = async (formValues: CategoryMutationPayload) => {
-    const payload = buildPayload(formValues);
-
-    if (!payload) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setActionError(null);
-    setActionMessage(null);
-
-    try {
-      if (editingCategory) {
-        await dispatch(updateCategory({ id: editingCategory.id, payload })).unwrap();
-        setActionMessage(t('categories.updated'));
-      } else {
-        await dispatch(createCategory(payload)).unwrap();
-        setActionMessage(t('categories.created'));
-      }
-
-      setDialogOpen(false);
-      setEditingCategory(null);
-    } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : String(submitError));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteClick = (category: Category) => {
-    openConfirm(category);
-    setActionError(null);
-    setActionMessage(null);
-  };
-
-  const handleConfirm = async () => {
-    if (!confirmPayload) {
-      closeConfirm();
-      return;
-    }
-
-    setActionError(null);
-    setActionMessage(null);
-
-    try {
-      await dispatch(deleteCategory(confirmPayload.id)).unwrap();
-      setActionMessage(t('categories.deleted'));
-    } catch (deleteError) {
-      setActionError(deleteError instanceof Error ? deleteError.message : String(deleteError));
-    } finally {
-      closeConfirm();
-    }
-  };
 
   return (
     <Box>
@@ -184,40 +76,7 @@ const CategoriesPage: React.FC = () => {
       )}
 
       {!loading && data.length > 0 && (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>{t('categories.columns.id')}</TableCell>
-                <TableCell>{t('categories.columns.name')}</TableCell>
-                <TableCell align="right">{t('categories.columns.actions')}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>{category.id}</TableCell>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell align="right" sx={{ minWidth: 120 }}>
-                    <IconButton
-                      aria-label={t('categories.actions.editAria', { id: category.id })}
-                      onClick={() => handleEditClick(category)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label={t('categories.actions.deleteAria', { id: category.id })}
-                      color="error"
-                      onClick={() => handleDeleteClick(category)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <CategoryTable categories={data} onEdit={handleEditClick} onDelete={handleDeleteClick} />
       )}
 
       <CategoryFormDialog

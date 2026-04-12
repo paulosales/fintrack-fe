@@ -69,7 +69,15 @@ function useTransactionFilters() {
   };
 
   return {
-    filters: { accountId, transactionTypeId, categoryId, description, descriptionInput, page, pageSize },
+    filters: {
+      accountId,
+      transactionTypeId,
+      categoryId,
+      description,
+      descriptionInput,
+      page,
+      pageSize,
+    },
     setPage,
     reloadTransactions,
     handleReload,

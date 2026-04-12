@@ -37,10 +37,6 @@ describe('BudgetSetupListPage', () => {
         .fn()
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
           json: async () => ({
             success: true,
             data: [
@@ -65,6 +61,10 @@ describe('BudgetSetupListPage', () => {
               totalPages: 1,
             },
           }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true, data: [], pagination: defaultPagination }),
         })
     );
 

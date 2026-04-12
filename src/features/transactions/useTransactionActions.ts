@@ -69,8 +69,12 @@ const useTransactionActions = ({
   const [actionError, setActionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { open: confirmOpen, payload: confirmPayload, openConfirm, closeConfirm } =
-    useConfirmDialog<ConfirmPayload>();
+  const {
+    open: confirmOpen,
+    payload: confirmPayload,
+    openConfirm,
+    closeConfirm,
+  } = useConfirmDialog<ConfirmPayload>();
 
   const closeFeedback = () => setActionError(null);
 

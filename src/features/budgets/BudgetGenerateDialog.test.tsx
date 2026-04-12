@@ -60,7 +60,6 @@ describe('BudgetGenerateDialog', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     // react-hook-form calls onSubmit with (values, event) — assert first arg
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(onSubmit.mock.calls[0][0]).toEqual(initialValues);
   });
 });

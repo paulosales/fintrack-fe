@@ -62,11 +62,14 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
   onCreate,
 }) => {
   const { t } = useTranslation();
-  const [values, setValues] = useState<SubTransactionFormValues>(() => deriveInitialValues(editing));
+  const [values, setValues] = useState<SubTransactionFormValues>(() =>
+    deriveInitialValues(editing)
+  );
 
-  const handleChange = (field: keyof SubTransactionFormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValues((prev) => ({ ...prev, [field]: e.target.value }));
-  };
+  const handleChange =
+    (field: keyof SubTransactionFormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValues((prev) => ({ ...prev, [field]: e.target.value }));
+    };
 
   const selectedCategories: Category[] = Array.isArray(values.categoryIds)
     ? values.categoryIds
@@ -97,10 +100,7 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Box
-          component="form"
-          sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
-        >
+        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <TextField
             label="Product Code"
             value={values.productCode}
@@ -117,11 +117,7 @@ const SubTransactionFormDialog: React.FC<SubTransactionFormDialogProps> = ({
             value={values.amount}
             onChange={handleChange('amount')}
           />
-          <TextField
-            label="Note"
-            value={values.note}
-            onChange={handleChange('note')}
-          />
+          <TextField label="Note" value={values.note} onChange={handleChange('note')} />
           <Autocomplete<Category, true, false, false>
             multiple
             disableCloseOnSelect

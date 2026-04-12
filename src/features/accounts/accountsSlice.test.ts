@@ -14,7 +14,7 @@ describe('accountsSlice', () => {
       loading: true,
       error: 'some error',
       data: [{ id: 1, code: 'CHK', name: 'Checking', accountTypeId: 1 }],
-    } as any;
+    };
     const next = reducer(populated, clearAccounts());
     expect(next.loading).toBe(false);
     expect(next.error).toBeNull();
@@ -38,7 +38,7 @@ describe('accountsSlice', () => {
     const next = reducer(undefined, {
       type: fetchAccounts.rejected.type,
       payload: 'Network error',
-    } as any);
+    });
     expect(next.loading).toBe(false);
     expect(next.error).toBe('Network error');
   });

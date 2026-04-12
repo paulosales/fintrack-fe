@@ -79,11 +79,7 @@ const SubTransactionTable: React.FC<SubTransactionTableProps> = ({
           ))}
           <TableRow>
             <TableCell colSpan={7}>
-              <Button
-                size="small"
-                startIcon={<AddIcon />}
-                onClick={() => onCreate(transactionId)}
-              >
+              <Button size="small" startIcon={<AddIcon />} onClick={() => onCreate(transactionId)}>
                 Add sub-transaction
               </Button>
             </TableCell>

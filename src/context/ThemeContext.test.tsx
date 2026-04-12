@@ -38,7 +38,6 @@ describe('ThemeContext', () => {
   it('throws when `useTheme` is used outside of ThemeProvider', () => {
     const Bad = () => {
       // this should throw during render
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _ = useTheme();
       return null;
     };

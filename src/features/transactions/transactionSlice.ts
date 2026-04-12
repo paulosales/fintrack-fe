@@ -109,7 +109,11 @@ export const fetchSubTransactions = createAsyncThunk(
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
       }
 
-      const payload = (await response.json()) as { success: boolean; data?: SubTransaction[]; error?: string };
+      const payload = (await response.json()) as {
+        success: boolean;
+        data?: SubTransaction[];
+        error?: string;
+      };
 
       if (!payload.success) {
         return rejectWithValue(payload.error || 'Unknown error');
@@ -330,10 +334,10 @@ const transactionSlice = createSlice({
       });
     builder
       .addCase(fetchSubTransactions.pending, (state, action) => {
-        const id = String(action.meta.arg);
-        (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-        (state as any).detailsByTransactionId[id] = {
-          ...((state as any).detailsByTransactionId[id] || initialDetailsState()),
+        const id = action.meta.arg;
+        state.detailsByTransactionId = state.detailsByTransactionId || {};
+        state.detailsByTransactionId[id] = {
+          ...(state.detailsByTransactionId[id] || initialDetailsState()),
           loading: true,
           error: null,
         } as TransactionDetailsState;
@@ -341,9 +345,9 @@ const transactionSlice = createSlice({
       .addCase(
         fetchSubTransactions.fulfilled,
         (state, action: PayloadAction<{ transactionId: number; data: SubTransaction[] }>) => {
-          const id = String(action.payload.transactionId);
-          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-          (state as any).detailsByTransactionId[id] = {
+          const id = action.payload.transactionId;
+          state.detailsByTransactionId = state.detailsByTransactionId || {};
+          state.detailsByTransactionId[id] = {
             loading: false,
             error: null,
             data: action.payload.data,
@@ -353,17 +357,17 @@ const transactionSlice = createSlice({
       .addCase(
         updateSubTransaction.fulfilled,
         (state, action: PayloadAction<{ transactionId: number; data: SubTransaction }>) => {
-          const id = String(action.payload.transactionId);
-          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-          const existing = (state as any).detailsByTransactionId[id] || { data: [] };
+          const id = action.payload.transactionId;
+          state.detailsByTransactionId = state.detailsByTransactionId || {};
+          const existing = state.detailsByTransactionId[id] || { data: [] };
           const dataArr = existing.data || [];
-          const idx = dataArr.findIndex((s: any) => s.id === action.payload.data.id);
+          const idx = dataArr.findIndex((s) => s.id === action.payload.data.id);
           if (idx >= 0) {
             dataArr[idx] = action.payload.data;
           } else {
             dataArr.push(action.payload.data);
           }
-          (state as any).detailsByTransactionId[id] = {
+          state.detailsByTransactionId[id] = {
             loading: false,
             error: null,
             data: dataArr,
@@ -373,12 +377,12 @@ const transactionSlice = createSlice({
       .addCase(
         createSubTransaction.fulfilled,
         (state, action: PayloadAction<{ transactionId: number; data: SubTransaction }>) => {
-          const id = String(action.payload.transactionId);
-          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-          const existing = (state as any).detailsByTransactionId[id] || { data: [] };
+          const id = action.payload.transactionId;
+          state.detailsByTransactionId = state.detailsByTransactionId || {};
+          const existing = state.detailsByTransactionId[id] || { data: [] };
           const dataArr = existing.data || [];
           dataArr.push(action.payload.data);
-          (state as any).detailsByTransactionId[id] = {
+          state.detailsByTransactionId[id] = {
             loading: false,
             error: null,
             data: dataArr,
@@ -389,23 +393,23 @@ const transactionSlice = createSlice({
         deleteSubTransaction.fulfilled,
         (state, action: PayloadAction<{ id: number; transactionId: number }>) => {
           const { id: deletedId, transactionId } = action.payload;
-          const key = String(transactionId);
-          (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-          const detail = (state as any).detailsByTransactionId[key];
+          const key = transactionId;
+          state.detailsByTransactionId = state.detailsByTransactionId || {};
+          const detail = state.detailsByTransactionId[key];
           if (detail && Array.isArray(detail.data)) {
-            (state as any).detailsByTransactionId[key] = {
+            state.detailsByTransactionId[key] = {
               ...detail,
-              data: detail.data.filter((s: any) => s.id !== deletedId),
+              data: detail.data.filter((s) => s.id !== deletedId),
             };
           }
         }
       )
       .addCase(fetchSubTransactions.rejected, (state, action) => {
         const transactionId = action.meta.arg as number;
-        const id = String(transactionId);
-        (state as any).detailsByTransactionId = (state as any).detailsByTransactionId || {};
-        (state as any).detailsByTransactionId[id] = {
-          ...((state as any).detailsByTransactionId[id] || initialDetailsState()),
+        const id = transactionId;
+        state.detailsByTransactionId = state.detailsByTransactionId || {};
+        state.detailsByTransactionId[id] = {
+          ...(state.detailsByTransactionId[id] || initialDetailsState()),
           loading: false,
           error: (action.payload as string) || 'API call failed',
         } as TransactionDetailsState;

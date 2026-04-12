@@ -16,7 +16,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       parser: typescriptParser,
-      globals: {...globals.browser, RequestInit: true},
+      globals: { ...globals.browser, RequestInit: true },
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
