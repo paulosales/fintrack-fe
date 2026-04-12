@@ -235,5 +235,24 @@
       "editAria": "editar configuração de orçamento {{id}}",
       "deleteAria": "excluir configuração de orçamento {{id}}"
     }
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Entre para continuar",
+      "withGoogle": "Continuar com o Google",
+      "withFacebook": "Continuar com o Facebook",
+      "withAdfs": "Continuar com SSO Corporativo",
+      "error": "Falha no login: {{error}}"
+    },
+    "callback": {
+      "loading": "Entrando..."
+    },
+    "error": {
+      "title": "Erro de Autenticação",
+      "backToLogin": "Voltar para o Login"
+    },
+    "user": {
+      "logout": "Sair"
+    }
   }
 }

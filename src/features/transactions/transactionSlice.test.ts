@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer, { fetchTransactions } from './transactionSlice';
+import authReducer from '../auth/authSlice';
 import type { TransactionFilters } from './types';
 import { defaultPagination } from '../../types/pagination';
 
@@ -39,7 +40,7 @@ describe('transactionSlice async thunk', () => {
     );
 
     const store = configureStore({
-      reducer: { transactions: transactionsReducer },
+      reducer: { transactions: transactionsReducer, auth: authReducer },
     });
 
     await store.dispatch(
@@ -69,7 +70,9 @@ describe('transactionSlice async thunk', () => {
       })
     );
 
-    const store = configureStore({ reducer: { transactions: transactionsReducer } });
+    const store = configureStore({
+      reducer: { transactions: transactionsReducer, auth: authReducer },
+    });
     await store.dispatch(
       fetchTransactions({
         accountId: null,
@@ -97,7 +100,9 @@ describe('transactionSlice async thunk', () => {
       })
     );
 
-    const store = configureStore({ reducer: { transactions: transactionsReducer } });
+    const store = configureStore({
+      reducer: { transactions: transactionsReducer, auth: authReducer },
+    });
     await store.dispatch(
       fetchTransactions({
         accountId: null,
@@ -123,7 +128,9 @@ describe('transactionSlice async thunk', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    const store = configureStore({ reducer: { transactions: transactionsReducer } });
+    const store = configureStore({
+      reducer: { transactions: transactionsReducer, auth: authReducer },
+    });
     await store.dispatch(
       fetchTransactions({
         accountId: null,
@@ -136,7 +143,8 @@ describe('transactionSlice async thunk', () => {
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/account/transactions?description=Coffee+Shop&page=1&page_size=10'
+      '/account/transactions?description=Coffee+Shop&page=1&page_size=10',
+      { headers: {} }
     );
   });
 });

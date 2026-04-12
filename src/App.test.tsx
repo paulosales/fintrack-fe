@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
+import authReducer from './features/auth/authSlice';
 import transactionsReducer from './features/transactions/transactionSlice';
 import accountsReducer from './features/accounts/accountsSlice';
 import transactionTypesReducer from './features/transactionTypes/transactionTypesSlice';
@@ -13,10 +14,18 @@ import categoriesReducer from './features/categories/categoriesSlice';
 import transactionCategoryTotalsReducer from './features/transactionCategoryTotals/transactionCategoryTotalsSlice';
 import budgetsReducer from './features/budgets/budgetSlice';
 import budgetSetupsReducer from './features/budgetSetups/budgetSetupSlice';
+import type { AuthState } from './features/auth/types';
 
-const createTestStore = () =>
+const authenticatedAuth: AuthState = {
+  token: 'test-token',
+  user: { id: '1', email: 'test@example.com', name: 'Test User', picture: null },
+  status: 'authenticated',
+};
+
+const createTestStore = (auth: AuthState = authenticatedAuth) =>
   configureStore({
     reducer: {
+      auth: authReducer,
       transactions: transactionsReducer,
       accounts: accountsReducer,
       transactionTypes: transactionTypesReducer,
@@ -25,10 +34,11 @@ const createTestStore = () =>
       budgets: budgetsReducer,
       budgetSetups: budgetSetupsReducer,
     },
+    preloadedState: { auth },
   });
 
-const renderApp = (initialPath = '/transactions') => {
-  const store = createTestStore();
+const renderApp = (initialPath = '/transactions', auth: AuthState = authenticatedAuth) => {
+  const store = createTestStore(auth);
   return render(
     <ThemeProvider>
       <Provider store={store}>
@@ -52,6 +62,14 @@ beforeEach(() => {
       }),
     })
   );
+});
+
+describe('App — unauthenticated', () => {
+  it('redirects protected routes to /login when not authenticated', () => {
+    renderApp('/transactions', { token: null, user: null, status: 'idle' });
+    expect(screen.getByText('Fintrack')).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+  });
 });
 
 describe('App', () => {

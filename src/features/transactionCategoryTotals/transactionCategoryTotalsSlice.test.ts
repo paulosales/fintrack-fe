@@ -4,6 +4,7 @@ import transactionCategoryTotalsReducer, {
   fetchTransactionCategoryTotalDetails,
   fetchTransactionCategoryTotals,
 } from './transactionCategoryTotalsSlice';
+import authReducer from '../auth/authSlice';
 import { defaultPagination } from '../../types/pagination';
 
 describe('transactionCategoryTotalsSlice', () => {
@@ -35,7 +36,7 @@ describe('transactionCategoryTotalsSlice', () => {
     );
 
     const store = configureStore({
-      reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer },
+      reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer, auth: authReducer },
     });
 
     await store.dispatch(
@@ -80,7 +81,7 @@ describe('transactionCategoryTotalsSlice', () => {
     );
 
     const store = configureStore({
-      reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer },
+      reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer, auth: authReducer },
     });
 
     await store.dispatch(

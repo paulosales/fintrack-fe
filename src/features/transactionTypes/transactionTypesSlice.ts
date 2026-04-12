@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { TransactionType } from '../../models/transactionTypes';
+import type { RootState } from '../../store';
 
 export interface TransactionTypesState {
   loading: boolean;
@@ -15,9 +16,12 @@ const initialState: TransactionTypesState = {
 
 export const fetchTransactionTypes = createAsyncThunk(
   'transactionTypes/fetchTransactionTypes',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await fetch('/account/transaction-types');
+      const token = (getState() as RootState).auth.token;
+      const response = await fetch('/account/transaction-types', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);

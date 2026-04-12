@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { defaultPagination } from '../../types/pagination';
+import type { RootState } from '../../store';
 import type {
   TransactionCategoryTotal,
   TransactionCategoryTotalDetail,
@@ -31,8 +32,9 @@ interface TransactionCategoryTotalsPayload {
 
 export const fetchTransactionCategoryTotals = createAsyncThunk(
   'transactionCategoryTotals/fetchTotals',
-  async (filters: TransactionCategoryTotalsFilters, { rejectWithValue }) => {
+  async (filters: TransactionCategoryTotalsFilters, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams();
 
       if (filters.month !== null) {
@@ -51,7 +53,9 @@ export const fetchTransactionCategoryTotals = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/account/transaction-category-totals${query}`);
+      const response = await fetch(`/account/transaction-category-totals${query}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
       if (!response.ok) {
         const text = await response.text();
@@ -82,8 +86,9 @@ export const fetchTransactionCategoryTotals = createAsyncThunk(
 
 export const fetchTransactionCategoryTotalDetails = createAsyncThunk(
   'transactionCategoryTotals/fetchDetails',
-  async (request: TransactionCategoryTotalDetailRequest, { rejectWithValue }) => {
+  async (request: TransactionCategoryTotalDetailRequest, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams({
         month: String(request.month),
         year: String(request.year),
@@ -91,7 +96,8 @@ export const fetchTransactionCategoryTotalDetails = createAsyncThunk(
       });
 
       const response = await fetch(
-        `/account/transaction-category-totals/details?${searchParams.toString()}`
+        `/account/transaction-category-totals/details?${searchParams.toString()}`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
 
       if (!response.ok) {

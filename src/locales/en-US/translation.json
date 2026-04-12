@@ -242,5 +242,24 @@
       "editAria": "edit budget setup {{id}}",
       "deleteAria": "delete budget setup {{id}}"
     }
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Sign in to continue",
+      "withGoogle": "Continue with Google",
+      "withFacebook": "Continue with Facebook",
+      "withAdfs": "Continue with Enterprise SSO",
+      "error": "Login failed: {{error}}"
+    },
+    "callback": {
+      "loading": "Signing you in..."
+    },
+    "error": {
+      "title": "Authentication Error",
+      "backToLogin": "Back to Login"
+    },
+    "user": {
+      "logout": "Sign out"
+    }
   }
 }

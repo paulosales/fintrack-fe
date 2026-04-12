@@ -6,9 +6,11 @@ import categoriesReducer from '../features/categories/categoriesSlice';
 import transactionCategoryTotalsReducer from '../features/transactionCategoryTotals/transactionCategoryTotalsSlice';
 import budgetsReducer from '../features/budgets/budgetSlice';
 import budgetSetupsReducer from '../features/budgetSetups/budgetSetupSlice';
+import authReducer from '../features/auth/authSlice';
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     transactions: transactionsReducer,
     accounts: accountsReducer,
     transactionTypes: transactionTypesReducer,

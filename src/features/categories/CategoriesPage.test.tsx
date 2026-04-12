@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
 import CategoriesPage from './CategoriesPage';
 import categoriesReducer, { type CategoriesState } from './categoriesSlice';
+import authReducer from '../auth/authSlice';
 
 interface TestState {
   categories: CategoriesState;
@@ -13,6 +14,7 @@ const renderWithStore = (state: TestState) => {
   const store = configureStore({
     reducer: {
       categories: categoriesReducer,
+      auth: authReducer,
     },
     preloadedState: state,
   });

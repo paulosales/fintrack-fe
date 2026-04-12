@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import budgetSetupReducer, { fetchBudgetSetups } from './budgetSetupSlice';
+import authReducer from '../auth/authSlice';
 
 describe('budgetSetupSlice', () => {
   it('fetches budget setups successfully', async () => {
@@ -34,10 +35,14 @@ describe('budgetSetupSlice', () => {
 
     vi.stubGlobal('fetch', fetchMock);
 
-    const store = configureStore({ reducer: { budgetSetups: budgetSetupReducer } });
+    const store = configureStore({
+      reducer: { budgetSetups: budgetSetupReducer, auth: authReducer },
+    });
     await store.dispatch(fetchBudgetSetups({ page: 1, pageSize: 10 }));
 
-    expect(fetchMock).toHaveBeenCalledWith('/account/budget-setups?page=1&page_size=10');
+    expect(fetchMock).toHaveBeenCalledWith('/account/budget-setups?page=1&page_size=10', {
+      headers: {},
+    });
     expect(store.getState().budgetSetups.data).toHaveLength(1);
     expect(store.getState().budgetSetups.pagination.page).toBe(1);
   });

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Category, CategoryMutationPayload } from '../../models/categories';
+import type { RootState } from '../../store';
 
 export interface CategoriesState {
   loading: boolean;
@@ -37,9 +38,12 @@ const parseCategoryResponse = async (response: Response) => {
 
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await fetch('/account/categories');
+      const token = (getState() as RootState).auth.token;
+      const response = await fetch('/account/categories', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -65,12 +69,14 @@ export const fetchCategories = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   'categories/createCategory',
-  async (payload: CategoryMutationPayload, { rejectWithValue }) => {
+  async (payload: CategoryMutationPayload, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch('/account/categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -86,13 +92,15 @@ export const updateCategory = createAsyncThunk(
   'categories/updateCategory',
   async (
     { id, payload }: { id: number; payload: CategoryMutationPayload },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/categories/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -106,10 +114,12 @@ export const updateCategory = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
   'categories/deleteCategory',
-  async (id: number, { rejectWithValue }) => {
+  async (id: number, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/categories/${id}`, {
         method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {

@@ -7,6 +7,7 @@ import type {
 } from './types';
 import type { SubTransaction, TransactionDetailsState } from './types';
 import { defaultPagination } from '../../types/pagination';
+import type { RootState } from '../../store';
 
 const initialState: TransactionState = {
   loading: false,
@@ -48,8 +49,9 @@ const parseTransactionResponse = async (response: Response) => {
 
 export const fetchTransactions = createAsyncThunk(
   'transactions/fetchTransactions',
-  async (filters: TransactionFilters, { rejectWithValue }) => {
+  async (filters: TransactionFilters, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams();
       const description = filters.description.trim();
 
@@ -73,7 +75,9 @@ export const fetchTransactions = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/account/transactions${query}`);
+      const response = await fetch(`/account/transactions${query}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -100,9 +104,12 @@ export const fetchTransactions = createAsyncThunk(
 
 export const fetchSubTransactions = createAsyncThunk(
   'transactions/fetchSubTransactions',
-  async (transactionId: number, { rejectWithValue }) => {
+  async (transactionId: number, { rejectWithValue, getState }) => {
     try {
-      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`);
+      const token = (getState() as RootState).auth.token;
+      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
       if (!response.ok) {
         const text = await response.text();
@@ -144,14 +151,21 @@ export const updateSubTransaction = createAsyncThunk(
         categoryIds?: number[];
       };
     },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
-      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const token = (getState() as RootState).auth.token;
+      const response = await fetch(
+        `/account/transactions/${transactionId}/sub_transactions/${id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -173,11 +187,19 @@ export const updateSubTransaction = createAsyncThunk(
 
 export const deleteSubTransaction = createAsyncThunk(
   'transactions/deleteSubTransaction',
-  async ({ id, transactionId }: { id: number; transactionId: number }, { rejectWithValue }) => {
+  async (
+    { id, transactionId }: { id: number; transactionId: number },
+    { rejectWithValue, getState }
+  ) => {
     try {
-      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions/${id}`, {
-        method: 'DELETE',
-      });
+      const token = (getState() as RootState).auth.token;
+      const response = await fetch(
+        `/account/transactions/${transactionId}/sub_transactions/${id}`,
+        {
+          method: 'DELETE',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -207,12 +229,16 @@ export const createSubTransaction = createAsyncThunk(
         categoryIds?: number[];
       };
     },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(payload),
       });
 
@@ -236,12 +262,14 @@ export const createSubTransaction = createAsyncThunk(
 
 export const createTransaction = createAsyncThunk(
   'transactions/createTransaction',
-  async (payload: TransactionMutationPayload, { rejectWithValue }) => {
+  async (payload: TransactionMutationPayload, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch('/account/transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -258,13 +286,15 @@ export const updateTransaction = createAsyncThunk(
   'transactions/updateTransaction',
   async (
     { id, payload }: { id: number; payload: TransactionMutationPayload },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/transactions/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -279,10 +309,12 @@ export const updateTransaction = createAsyncThunk(
 
 export const deleteTransaction = createAsyncThunk(
   'transactions/deleteTransaction',
-  async (id: number, { rejectWithValue }) => {
+  async (id: number, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/transactions/${id}`, {
         method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {

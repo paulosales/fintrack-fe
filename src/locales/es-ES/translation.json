@@ -235,5 +235,24 @@
       "editAria": "editar configuración de presupuesto {{id}}",
       "deleteAria": "eliminar configuración de presupuesto {{id}}"
     }
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Inicia sesión para continuar",
+      "withGoogle": "Continuar con Google",
+      "withFacebook": "Continuar con Facebook",
+      "withAdfs": "Continuar con SSO Empresarial",
+      "error": "Error al iniciar sesión: {{error}}"
+    },
+    "callback": {
+      "loading": "Iniciando sesión..."
+    },
+    "error": {
+      "title": "Error de autenticación",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "user": {
+      "logout": "Cerrar sesión"
+    }
   }
 }

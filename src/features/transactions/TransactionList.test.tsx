@@ -12,6 +12,7 @@ import transactionTypesReducer, {
 import type { TransactionState } from './types';
 import TransactionList from './TransactionList';
 import { defaultPagination } from '../../types/pagination';
+import authReducer from '../auth/authSlice';
 
 interface TestState {
   transactions: TransactionState;
@@ -27,6 +28,7 @@ const renderWithStore = (state: TestState) => {
       accounts: accountsReducer,
       categories: categoriesReducer,
       transactionTypes: transactionTypesReducer,
+      auth: authReducer,
     },
     preloadedState: state,
   });

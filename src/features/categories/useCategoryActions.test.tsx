@@ -5,12 +5,14 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import useCategoryActions, { buildCategoryFormDefaults } from './useCategoryActions';
 import categoriesReducer from './categoriesSlice';
+import authReducer from '../auth/authSlice';
 import type { Category } from '../../models/categories';
 
 const createTestStore = () =>
   configureStore({
     reducer: {
       categories: categoriesReducer,
+      auth: authReducer,
     },
   });
 

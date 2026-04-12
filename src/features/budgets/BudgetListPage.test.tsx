@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
 import accountsReducer, { type AccountsState } from '../accounts/accountsSlice';
 import budgetReducer from './budgetSlice';
+import authReducer from '../auth/authSlice';
 import BudgetListPage from './BudgetListPage';
 import type { BudgetState } from './types';
 import { defaultPagination } from '../../types/pagination';
@@ -18,6 +19,7 @@ const renderWithStore = (state: TestState) => {
     reducer: {
       accounts: accountsReducer,
       budgets: budgetReducer,
+      auth: authReducer,
     },
     preloadedState: state,
   });

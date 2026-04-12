@@ -231,5 +231,24 @@
       "editAria": "modifier la configuration du budget {{id}}",
       "deleteAria": "supprimer la configuration du budget {{id}}"
     }
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Connectez-vous pour continuer",
+      "withGoogle": "Continuer avec Google",
+      "withFacebook": "Continuer avec Facebook",
+      "withAdfs": "Continuer avec SSO d'entreprise",
+      "error": "Échec de la connexion : {{error}}"
+    },
+    "callback": {
+      "loading": "Connexion en cours..."
+    },
+    "error": {
+      "title": "Erreur d'authentification",
+      "backToLogin": "Retour à la connexion"
+    },
+    "user": {
+      "logout": "Se déconnecter"
+    }
   }
 }

@@ -5,6 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, fireEvent } from '@testing-library/react';
 import categoriesReducer, { type CategoriesState } from '../categories/categoriesSlice';
 import transactionCategoryTotalsReducer from './transactionCategoryTotalsSlice';
+import authReducer from '../auth/authSlice';
 import TransactionCategoryTotalsPage from './TransactionCategoryTotalsPage';
 import type { TransactionCategoryTotalsState } from './types';
 import { defaultPagination } from '../../types/pagination';
@@ -19,6 +20,7 @@ const renderWithStore = (state: TestState) => {
     reducer: {
       categories: categoriesReducer,
       transactionCategoryTotals: transactionCategoryTotalsReducer,
+      auth: authReducer,
     },
     preloadedState: state,
   });

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { defaultPagination } from '../../types/pagination';
+import type { RootState } from '../../store';
 import type {
   BudgetSetupFilters,
   BudgetSetupMutationPayload,
@@ -40,14 +41,17 @@ const parseBudgetSetupResponse = async (response: Response) => {
 
 export const fetchBudgetSetups = createAsyncThunk(
   'budgetSetups/fetchBudgetSetups',
-  async (filters: BudgetSetupFilters, { rejectWithValue }) => {
+  async (filters: BudgetSetupFilters, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams({
         page: String(filters.page),
         page_size: String(filters.pageSize),
       });
 
-      const response = await fetch(`/account/budget-setups?${searchParams.toString()}`);
+      const response = await fetch(`/account/budget-setups?${searchParams.toString()}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
       if (!response.ok) {
         const text = await response.text();
@@ -77,12 +81,14 @@ export const fetchBudgetSetups = createAsyncThunk(
 
 export const createBudgetSetup = createAsyncThunk(
   'budgetSetups/createBudgetSetup',
-  async (payload: BudgetSetupMutationPayload, { rejectWithValue }) => {
+  async (payload: BudgetSetupMutationPayload, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch('/account/budget-setups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -98,13 +104,15 @@ export const updateBudgetSetup = createAsyncThunk(
   'budgetSetups/updateBudgetSetup',
   async (
     { id, payload }: { id: number; payload: BudgetSetupMutationPayload },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/budget-setups/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -118,10 +126,12 @@ export const updateBudgetSetup = createAsyncThunk(
 
 export const deleteBudgetSetup = createAsyncThunk(
   'budgetSetups/deleteBudgetSetup',
-  async (id: number, { rejectWithValue }) => {
+  async (id: number, { rejectWithValue, getState }) => {
     try {
+      const token = (getState() as RootState).auth.token;
       const response = await fetch(`/account/budget-setups/${id}`, {
         method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {
