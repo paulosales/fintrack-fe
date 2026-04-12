@@ -37,7 +37,7 @@ describe('budgetSetupSlice', () => {
     const store = configureStore({ reducer: { budgetSetups: budgetSetupReducer } });
     await store.dispatch(fetchBudgetSetups({ page: 1, pageSize: 10 }));
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/budget-setups?page=1&page_size=10');
+    expect(fetchMock).toHaveBeenCalledWith('/account/budget-setups?page=1&page_size=10');
     expect(store.getState().budgetSetups.data).toHaveLength(1);
     expect(store.getState().budgetSetups.pagination.page).toBe(1);
   });

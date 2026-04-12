@@ -59,7 +59,7 @@ export const fetchBudgetMonthTotals = createAsyncThunk(
         page_size: String(filters.pageSize),
       });
 
-      const response = await fetch(`/api/budgets?${searchParams.toString()}`);
+      const response = await fetch(`/account/budgets?${searchParams.toString()}`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -96,7 +96,7 @@ export const fetchBudgetDetails = createAsyncThunk(
         month: String(request.month),
       });
 
-      const response = await fetch(`/api/budgets/details?${searchParams.toString()}`);
+      const response = await fetch(`/account/budgets/details?${searchParams.toString()}`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -143,7 +143,7 @@ export const createBudget = createAsyncThunk(
   'budgets/createBudget',
   async (payload: BudgetMutationPayload, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/budgets', {
+      const response = await fetch('/account/budgets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ export const updateBudget = createAsyncThunk(
   'budgets/updateBudget',
   async ({ id, payload }: { id: number; payload: BudgetMutationPayload }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/budgets/${id}`, {
+      const response = await fetch(`/account/budgets/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ export const deleteBudget = createAsyncThunk(
   'budgets/deleteBudget',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/budgets/${id}`, {
+      const response = await fetch(`/account/budgets/${id}`, {
         method: 'DELETE',
       });
 
@@ -207,7 +207,7 @@ export const generateBudgets = createAsyncThunk(
   'budgets/generateBudgets',
   async (payload: BudgetGeneratePayload, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/budgets/generate', {
+      const response = await fetch('/account/budgets/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

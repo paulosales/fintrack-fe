@@ -73,7 +73,7 @@ export const fetchTransactions = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/api/transactions${query}`);
+      const response = await fetch(`/account/transactions${query}`);
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -102,7 +102,7 @@ export const fetchSubTransactions = createAsyncThunk(
   'transactions/fetchSubTransactions',
   async (transactionId: number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions`);
+      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -147,7 +147,7 @@ export const updateSubTransaction = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions/${id}`, {
+      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -175,7 +175,7 @@ export const deleteSubTransaction = createAsyncThunk(
   'transactions/deleteSubTransaction',
   async ({ id, transactionId }: { id: number; transactionId: number }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions/${id}`, {
+      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -210,7 +210,7 @@ export const createSubTransaction = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`/api/transactions/${transactionId}/sub_transactions`, {
+      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -238,7 +238,7 @@ export const createTransaction = createAsyncThunk(
   'transactions/createTransaction',
   async (payload: TransactionMutationPayload, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/transactions', {
+      const response = await fetch('/account/transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ export const updateTransaction = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`/api/transactions/${id}`, {
+      const response = await fetch(`/account/transactions/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -281,7 +281,7 @@ export const deleteTransaction = createAsyncThunk(
   'transactions/deleteTransaction',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/transactions/${id}`, {
+      const response = await fetch(`/account/transactions/${id}`, {
         method: 'DELETE',
       });
 

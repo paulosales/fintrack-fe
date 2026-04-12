@@ -51,7 +51,7 @@ export const fetchTransactionCategoryTotals = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/api/transaction-category-totals${query}`);
+      const response = await fetch(`/account/transaction-category-totals${query}`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -91,7 +91,7 @@ export const fetchTransactionCategoryTotalDetails = createAsyncThunk(
       });
 
       const response = await fetch(
-        `/api/transaction-category-totals/details?${searchParams.toString()}`
+        `/account/transaction-category-totals/details?${searchParams.toString()}`
       );
 
       if (!response.ok) {

@@ -39,7 +39,7 @@ export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch('/account/categories');
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -67,7 +67,7 @@ export const createCategory = createAsyncThunk(
   'categories/createCategory',
   async (payload: CategoryMutationPayload, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch('/account/categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const updateCategory = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`/api/categories/${id}`, {
+      const response = await fetch(`/account/categories/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const deleteCategory = createAsyncThunk(
   'categories/deleteCategory',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/categories/${id}`, {
+      const response = await fetch(`/account/categories/${id}`, {
         method: 'DELETE',
       });
 

@@ -17,7 +17,7 @@ export const fetchTransactionTypes = createAsyncThunk(
   'transactionTypes/fetchTransactionTypes',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/transaction-types');
+      const response = await fetch('/account/transaction-types');
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);

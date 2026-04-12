@@ -31,7 +31,7 @@ describe('budgetSlice', () => {
     const store = configureStore({ reducer: { budgets: budgetReducer } });
     await store.dispatch(fetchBudgetMonthTotals({ page: 1, pageSize: 10 }));
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/budgets?page=1&page_size=10');
+    expect(fetchMock).toHaveBeenCalledWith('/account/budgets?page=1&page_size=10');
     expect(store.getState().budgets.data).toHaveLength(1);
     expect(store.getState().budgets.pagination.page).toBe(1);
     expect(store.getState().budgets.error).toBeNull();
@@ -71,7 +71,7 @@ describe('budgetSlice', () => {
       })
     );
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/budgets/generate', {
+    expect(fetchMock).toHaveBeenCalledWith('/account/budgets/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

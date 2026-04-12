@@ -47,7 +47,7 @@ export const fetchBudgetSetups = createAsyncThunk(
         page_size: String(filters.pageSize),
       });
 
-      const response = await fetch(`/api/budget-setups?${searchParams.toString()}`);
+      const response = await fetch(`/account/budget-setups?${searchParams.toString()}`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -79,7 +79,7 @@ export const createBudgetSetup = createAsyncThunk(
   'budgetSetups/createBudgetSetup',
   async (payload: BudgetSetupMutationPayload, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/budget-setups', {
+      const response = await fetch('/account/budget-setups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const updateBudgetSetup = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`/api/budget-setups/${id}`, {
+      const response = await fetch(`/account/budget-setups/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export const deleteBudgetSetup = createAsyncThunk(
   'budgetSetups/deleteBudgetSetup',
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/budget-setups/${id}`, {
+      const response = await fetch(`/account/budget-setups/${id}`, {
         method: 'DELETE',
       });
 

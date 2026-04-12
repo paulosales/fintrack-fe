@@ -136,7 +136,7 @@ describe('transactionSlice async thunk', () => {
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/transactions?description=Coffee+Shop&page=1&page_size=10'
+      '/account/transactions?description=Coffee+Shop&page=1&page_size=10'
     );
   });
 });

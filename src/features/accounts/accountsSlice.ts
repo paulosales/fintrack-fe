@@ -17,7 +17,7 @@ export const fetchAccounts = createAsyncThunk(
   'accounts/fetchAccounts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/accounts');
+      const response = await fetch('/account/accounts');
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
