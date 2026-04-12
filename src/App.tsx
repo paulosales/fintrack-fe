@@ -7,7 +7,6 @@ import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/
 import CategoriesPage from './features/categories/CategoriesPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
-import LoginPage from './features/auth/LoginPage';
 import AuthCallbackPage from './features/auth/AuthCallbackPage';
 import AuthErrorPage from './features/auth/AuthErrorPage';
 import LanguageSelector from './components/LanguageSelector';
@@ -17,7 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import fintrackIcon from './assets/icons/fintrack.svg';
 import SpotlightSearch from './components/SpotlightSearch';
 
-const AUTH_PATHS = ['/login', '/auth/callback', '/auth/error'];
+const AUTH_PATHS = ['/auth/callback', '/auth/error'];
 
 const App: React.FC = () => {
   const { t } = useTranslation();
@@ -95,7 +94,6 @@ const App: React.FC = () => {
       >
         <Routes>
           {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/auth/error" element={<AuthErrorPage />} />
           {/* Protected routes */}

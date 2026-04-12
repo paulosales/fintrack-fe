@@ -8,5 +8,5 @@ export interface AuthUser {
 export interface AuthState {
   token: string | null;
   user: AuthUser | null;
-  status: 'idle' | 'loading' | 'authenticated' | 'error';
+  status: 'idle' | 'loading' | 'authenticated' | 'error' | 'logging-out';
 }

@@ -7,6 +7,10 @@ import { configureStore } from '@reduxjs/toolkit';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import authReducer from './features/auth/authSlice';
+
+vi.mock('./features/auth/pkce', () => ({
+  startPkceLogin: vi.fn(),
+}));
 import transactionsReducer from './features/transactions/transactionSlice';
 import accountsReducer from './features/accounts/accountsSlice';
 import transactionTypesReducer from './features/transactionTypes/transactionTypesSlice';
@@ -64,11 +68,13 @@ beforeEach(() => {
   );
 });
 
+import { startPkceLogin } from './features/auth/pkce';
+
 describe('App — unauthenticated', () => {
-  it('redirects protected routes to /login when not authenticated', () => {
+  it('redirects to Keycloak and renders no protected content when not authenticated', () => {
     renderApp('/transactions', { token: null, user: null, status: 'idle' });
-    expect(screen.getByText('Fintrack')).toBeInTheDocument();
-    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(startPkceLogin).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('heading', { name: /Transaction List/i })).not.toBeInTheDocument();
   });
 });
 

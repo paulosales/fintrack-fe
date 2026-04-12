@@ -7,6 +7,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import UserMenu from './UserMenu';
 import type { AuthState } from '../features/auth/types';
+import { startPkceLogout } from '../features/auth/pkce';
+
+vi.mock('../features/auth/pkce', () => ({
+  startPkceLogout: vi.fn(),
+  ID_TOKEN_KEY: 'fintrack-id-token',
+}));
 
 const createStore = (auth: Partial<AuthState> = {}) =>
   configureStore({
@@ -27,7 +33,6 @@ const renderUserMenu = (auth: Partial<AuthState> = {}) =>
       <MemoryRouter initialEntries={['/']}>
         <Routes>
           <Route path="/" element={<UserMenu />} />
-          <Route path="/login" element={<div>Login Page</div>} />
         </Routes>
       </MemoryRouter>
     </Provider>
@@ -52,13 +57,13 @@ describe('UserMenu', () => {
     });
   });
 
-  it('navigates to /login after logout', async () => {
+  it('calls startPkceLogout after logout', async () => {
     renderUserMenu();
     fireEvent.click(screen.getByRole('button'));
     await waitFor(() => screen.getByText(/sign out/i));
     fireEvent.click(screen.getByText(/sign out/i));
     await waitFor(() => {
-      expect(screen.getByText('Login Page')).toBeInTheDocument();
+      expect(startPkceLogout).toHaveBeenCalledOnce();
     });
   });
 
@@ -75,7 +80,7 @@ describe('UserMenu', () => {
     await waitFor(() => screen.getByText(/sign out/i));
     fireEvent.click(screen.getByText(/sign out/i));
     expect(store.getState().auth.token).toBeNull();
-    expect(store.getState().auth.status).toBe('idle');
+    expect(store.getState().auth.status).toBe('logging-out');
     vi.restoreAllMocks();
   });
 });

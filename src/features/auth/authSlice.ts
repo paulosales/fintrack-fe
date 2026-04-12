@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, AuthUser } from './types';
+import { ID_TOKEN_KEY } from './pkce';
 
 const TOKEN_KEY = 'fintrack-token';
 
@@ -51,9 +52,10 @@ const authSlice = createSlice({
     },
     logout(state) {
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(ID_TOKEN_KEY);
       state.token = null;
       state.user = null;
-      state.status = 'idle';
+      state.status = 'logging-out';
     },
   },
 });

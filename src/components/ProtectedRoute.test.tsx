@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -7,6 +7,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import ProtectedRoute from './ProtectedRoute';
 import type { AuthState } from '../features/auth/types';
+import { startPkceLogin } from '../features/auth/pkce';
+
+vi.mock('../features/auth/pkce', () => ({
+  startPkceLogin: vi.fn(),
+  ID_TOKEN_KEY: 'fintrack-id-token',
+}));
 
 const createStore = (auth: Partial<AuthState> = {}) =>
   configureStore({
@@ -29,22 +35,25 @@ const renderWithAuth = (auth: Partial<AuthState> = {}) =>
           <Route element={<ProtectedRoute />}>
             <Route path="/protected" element={<div>Protected Content</div>} />
           </Route>
-          <Route path="/login" element={<div>Login Page</div>} />
         </Routes>
       </MemoryRouter>
     </Provider>
   );
 
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 describe('ProtectedRoute', () => {
-  it('redirects to /login when unauthenticated', () => {
+  it('triggers Keycloak login when unauthenticated', () => {
     renderWithAuth({ status: 'idle' });
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
+    expect(startPkceLogin).toHaveBeenCalledOnce();
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
-  it('redirects to /login while loading', () => {
+  it('triggers Keycloak login when status is loading', () => {
     renderWithAuth({ status: 'loading' });
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
+    expect(startPkceLogin).toHaveBeenCalledOnce();
   });
 
   it('renders protected content when authenticated', () => {
@@ -54,6 +63,12 @@ describe('ProtectedRoute', () => {
       user: { id: '1', email: 'a@b.com', name: 'Alice', picture: null },
     });
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
-    expect(screen.queryByText('Login Page')).not.toBeInTheDocument();
+    expect(startPkceLogin).not.toHaveBeenCalled();
+  });
+
+  it('does not trigger Keycloak login when logging out', () => {
+    renderWithAuth({ status: 'logging-out' });
+    expect(startPkceLogin).not.toHaveBeenCalled();
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 });

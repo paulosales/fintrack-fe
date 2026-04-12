@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
@@ -13,11 +12,11 @@ import {
 } from '@mui/material';
 import type { AppDispatch, RootState } from '../store';
 import { logout } from '../features/auth/authSlice';
+import { startPkceLogout } from '../features/auth/pkce';
 
 const UserMenu: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -37,7 +36,7 @@ const UserMenu: React.FC = () => {
   const handleLogout = () => {
     handleClose();
     dispatch(logout());
-    navigate('/login', { replace: true });
+    startPkceLogout();
   };
 
   return (

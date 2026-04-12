@@ -12,6 +12,7 @@ const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? 'fintrack-fe';
 
 const VERIFIER_KEY = 'pkce_verifier';
 const STATE_KEY = 'pkce_state';
+export const ID_TOKEN_KEY = 'fintrack-id-token';
 
 function base64url(bytes: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)))
@@ -107,6 +108,35 @@ export async function exchangeCodeForToken(code: string, state: string): Promise
     throw new Error(`Token exchange failed (${res.status}): ${text}`);
   }
 
-  const data = (await res.json()) as { access_token: string };
+  const data = (await res.json()) as { access_token: string; id_token?: string };
+  if (data.id_token) {
+    localStorage.setItem(ID_TOKEN_KEY, data.id_token);
+  }
   return data.access_token;
+}
+
+/**
+ * Redirect the browser to Keycloak's end-session endpoint to fully terminate
+ * the SSO session.  Without this, Keycloak would silently re-authenticate the
+ * user the next time ProtectedRoute triggers a login redirect.
+ *
+ * @param postLogoutRedirectUri - Where Keycloak should send the user after
+ *   logout.  Defaults to the app origin.
+ */
+export function startPkceLogout(postLogoutRedirectUri?: string): void {
+  const redirectUri = postLogoutRedirectUri ?? window.location.origin;
+  const logoutUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout`;
+
+  const idToken = localStorage.getItem(ID_TOKEN_KEY);
+  localStorage.removeItem(ID_TOKEN_KEY);
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    post_logout_redirect_uri: redirectUri,
+  });
+  if (idToken) {
+    params.set('id_token_hint', idToken);
+  }
+
+  window.location.href = `${logoutUrl}?${params.toString()}`;
 }
