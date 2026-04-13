@@ -83,12 +83,7 @@ const AccountTypeFormDialog: React.FC<AccountTypeFormDialogProps> = ({
         <Button onClick={onClose} disabled={isSubmitting}>
           {t('common.cancel')}
         </Button>
-        <Button
-          type="submit"
-          form="account-type-form"
-          variant="contained"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" form="account-type-form" variant="contained" disabled={isSubmitting}>
           {editingAccountType ? t('common.saveChanges') : t('accountTypes.create')}
         </Button>
       </DialogActions>

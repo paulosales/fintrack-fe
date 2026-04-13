@@ -231,6 +231,7 @@
     }
   },
   "accounts": {
+    "title": "Accounts",
     "create": "Create Account",
     "edit": "Edit Account",
     "created": "Account created.",

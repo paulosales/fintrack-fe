@@ -224,6 +224,7 @@
     }
   },
   "accounts": {
+    "title": "Cuentas",
     "create": "Crear Cuenta",
     "edit": "Editar Cuenta",
     "created": "Cuenta creada.",

@@ -224,6 +224,7 @@
     }
   },
   "accounts": {
+    "title": "账户",
     "create": "创建账户",
     "edit": "编辑账户",
     "created": "账户已创建。",

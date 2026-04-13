@@ -220,6 +220,7 @@
     }
   },
   "accounts": {
+    "title": "Comptes",
     "create": "Créer un Compte",
     "edit": "Modifier le Compte",
     "created": "Compte créé.",

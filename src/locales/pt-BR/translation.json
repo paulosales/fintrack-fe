@@ -224,6 +224,7 @@
     }
   },
   "accounts": {
+    "title": "Contas",
     "created": "Conta criada.",
     "updated": "Conta atualizada.",
     "deleted": "Conta excluída.",

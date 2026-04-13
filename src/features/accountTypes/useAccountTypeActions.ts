@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import useConfirmDialog from '../../hooks/useConfirmDialog';
 import type { AccountType, AccountTypeMutationPayload } from '../../models/accountTypes';
 import type { AppDispatch } from '../../store';
-import { createAccountType, deleteAccountType, updateAccountType } from '../accounts/accountTypesSlice';
+import {
+  createAccountType,
+  deleteAccountType,
+  updateAccountType,
+} from '../accounts/accountTypesSlice';
 
 export const buildAccountTypeFormDefaults = (
   accountType: AccountType | null
