@@ -1,30 +1,30 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { Account, AccountMutationPayload } from '../../models/accounts';
+import type { AccountType, AccountTypeMutationPayload } from '../../models/accountTypes';
 import type { RootState } from '../../store';
 
-export interface AccountsState {
+export interface AccountTypesState {
   loading: boolean;
   error: string | null;
-  data: Account[];
+  data: AccountType[];
 }
 
-const initialState: AccountsState = {
+const initialState: AccountTypesState = {
   loading: false,
   error: null,
   data: [],
 };
 
-const sortAccounts = (accounts: Account[]) =>
-  [...accounts].sort((a, b) => a.code.localeCompare(b.code));
+const sortAccountTypes = (accountTypes: AccountType[]) =>
+  [...accountTypes].sort((a, b) => a.name.localeCompare(b.name));
 
-const parseAccountResponse = async (response: Response) => {
+const parseAccountTypeResponse = async (response: Response) => {
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`HTTP ${response.status}: ${text}`);
   }
   const payload = (await response.json()) as {
     success: boolean;
-    data?: Account;
+    data?: AccountType;
     error?: string;
   };
   if (!payload.success || !payload.data) {
@@ -33,12 +33,12 @@ const parseAccountResponse = async (response: Response) => {
   return payload.data;
 };
 
-export const fetchAccounts = createAsyncThunk(
-  'accounts/fetchAccounts',
+export const fetchAccountTypes = createAsyncThunk(
+  'accountTypes/fetchAccountTypes',
   async (_, { rejectWithValue, getState }) => {
     try {
       const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/accounts', {
+      const response = await fetch('/account/account-types', {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!response.ok) {
@@ -47,7 +47,7 @@ export const fetchAccounts = createAsyncThunk(
       }
       const payload = (await response.json()) as {
         success: boolean;
-        data?: Account[];
+        data?: AccountType[];
         error?: string;
       };
       if (!payload.success) {
@@ -61,12 +61,12 @@ export const fetchAccounts = createAsyncThunk(
   }
 );
 
-export const createAccount = createAsyncThunk(
-  'accounts/createAccount',
-  async (payload: AccountMutationPayload, { rejectWithValue, getState }) => {
+export const createAccountType = createAsyncThunk(
+  'accountTypes/createAccountType',
+  async (payload: AccountTypeMutationPayload, { rejectWithValue, getState }) => {
     try {
       const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/accounts', {
+      const response = await fetch('/account/account-types', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,22 +74,22 @@ export const createAccount = createAsyncThunk(
         },
         body: JSON.stringify(payload),
       });
-      return await parseAccountResponse(response);
+      return await parseAccountTypeResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
     }
   }
 );
 
-export const updateAccount = createAsyncThunk(
-  'accounts/updateAccount',
+export const updateAccountType = createAsyncThunk(
+  'accountTypes/updateAccountType',
   async (
-    { id, payload }: { id: number; payload: AccountMutationPayload },
+    { id, payload }: { id: number; payload: AccountTypeMutationPayload },
     { rejectWithValue, getState }
   ) => {
     try {
       const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/accounts/${id}`, {
+      const response = await fetch(`/account/account-types/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,19 +97,19 @@ export const updateAccount = createAsyncThunk(
         },
         body: JSON.stringify(payload),
       });
-      return await parseAccountResponse(response);
+      return await parseAccountTypeResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
     }
   }
 );
 
-export const deleteAccount = createAsyncThunk(
-  'accounts/deleteAccount',
+export const deleteAccountType = createAsyncThunk(
+  'accountTypes/deleteAccountType',
   async (id: number, { rejectWithValue, getState }) => {
     try {
       const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/accounts/${id}`, {
+      const response = await fetch(`/account/account-types/${id}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -128,61 +128,54 @@ export const deleteAccount = createAsyncThunk(
   }
 );
 
-const accountsSlice = createSlice({
-  name: 'accounts',
+const accountTypesSlice = createSlice({
+  name: 'accountTypes',
   initialState,
-  reducers: {
-    clearAccounts(state) {
-      state.data = [];
-      state.error = null;
-      state.loading = false;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAccounts.pending, (state) => {
+      .addCase(fetchAccountTypes.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAccounts.fulfilled, (state, action: PayloadAction<Account[]>) => {
+      .addCase(fetchAccountTypes.fulfilled, (state, action: PayloadAction<AccountType[]>) => {
         state.loading = false;
         state.data = action.payload;
       })
-      .addCase(fetchAccounts.rejected, (state, action) => {
+      .addCase(fetchAccountTypes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(createAccount.pending, (state) => {
+      .addCase(createAccountType.pending, (state) => {
         state.error = null;
       })
-      .addCase(createAccount.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.data = sortAccounts([...state.data, action.payload]);
+      .addCase(createAccountType.fulfilled, (state, action: PayloadAction<AccountType>) => {
+        state.data = sortAccountTypes([...state.data, action.payload]);
       })
-      .addCase(createAccount.rejected, (state, action) => {
+      .addCase(createAccountType.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(updateAccount.pending, (state) => {
+      .addCase(updateAccountType.pending, (state) => {
         state.error = null;
       })
-      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.data = sortAccounts(
-          state.data.map((account) => (account.id === action.payload.id ? action.payload : account))
+      .addCase(updateAccountType.fulfilled, (state, action: PayloadAction<AccountType>) => {
+        state.data = sortAccountTypes(
+          state.data.map((at) => (at.id === action.payload.id ? action.payload : at))
         );
       })
-      .addCase(updateAccount.rejected, (state, action) => {
+      .addCase(updateAccountType.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(deleteAccount.pending, (state) => {
+      .addCase(deleteAccountType.pending, (state) => {
         state.error = null;
       })
-      .addCase(deleteAccount.fulfilled, (state, action: PayloadAction<number>) => {
-        state.data = state.data.filter((account) => account.id !== action.payload);
+      .addCase(deleteAccountType.fulfilled, (state, action: PayloadAction<number>) => {
+        state.data = state.data.filter((at) => at.id !== action.payload);
       })
-      .addCase(deleteAccount.rejected, (state, action) => {
+      .addCase(deleteAccountType.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },
 });
 
-export const { clearAccounts } = accountsSlice.actions;
-export default accountsSlice.reducer;
+export default accountTypesSlice.reducer;

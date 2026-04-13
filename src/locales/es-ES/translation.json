@@ -10,6 +10,8 @@
     "transactions": "Lista de transacciones",
     "transactionCategoryTotals": "Transacciones por categoría",
     "categories": "Categorías",
+    "accountTypes": "Tipos de cuenta",
+    "accounts": "Cuentas",
     "budgetSetups": "Configuración de presupuesto",
     "budgets": "Presupuesto"
   },
@@ -193,6 +195,60 @@
     "actions": {
       "editAria": "editar categoría {{id}}",
       "deleteAria": "eliminar categoría {{id}}"
+    }
+  },
+  "accountTypes": {
+    "title": "Tipos de cuenta",
+    "create": "Crear tipo de cuenta",
+    "edit": "Editar tipo de cuenta",
+    "created": "Tipo de cuenta creado.",
+    "updated": "Tipo de cuenta actualizado.",
+    "deleted": "Tipo de cuenta eliminado.",
+    "deleteConfirm": "¿Eliminar el tipo de cuenta {{id}}?",
+    "empty": "No se encontraron tipos de cuenta.",
+    "requiredError": "El código y el nombre son obligatorios.",
+    "failedLoadAccountTypes": "Error al cargar los tipos de cuenta: {{error}}",
+    "form": {
+      "code": "Código",
+      "name": "Nombre"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "name": "Nombre",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "editAria": "editar tipo de cuenta {{id}}",
+      "deleteAria": "eliminar tipo de cuenta {{id}}"
+    }
+  },
+  "accounts": {
+    "create": "Crear Cuenta",
+    "edit": "Editar Cuenta",
+    "created": "Cuenta creada.",
+    "updated": "Cuenta actualizada.",
+    "deleted": "Cuenta eliminada.",
+    "deleteConfirm": "¿Eliminar la cuenta {{id}}?",
+    "empty": "No se encontraron cuentas.",
+    "requiredError": "El código, el nombre y el tipo de cuenta son obligatorios.",
+    "failedLoadAccounts": "Error al cargar las cuentas: {{error}}",
+    "failedLoadAccountTypes": "Error al cargar los tipos de cuenta: {{error}}",
+    "form": {
+      "code": "Código",
+      "name": "Nombre",
+      "accountType": "Tipo de cuenta"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "name": "Nombre",
+      "type": "Tipo de cuenta",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "editAria": "editar cuenta {{id}}",
+      "deleteAria": "eliminar cuenta {{id}}"
     }
   },
   "budgetSetups": {

@@ -10,6 +10,8 @@
     "transactions": "Liste des transactions",
     "transactionCategoryTotals": "Transactions par catégorie",
     "categories": "Catégories",
+    "accountTypes": "Types de comptes",
+    "accounts": "Comptes",
     "budgetSetups": "Configuration du budget",
     "budgets": "Budget"
   },
@@ -189,6 +191,60 @@
     "actions": {
       "editAria": "modifier la catégorie {{id}}",
       "deleteAria": "supprimer la catégorie {{id}}"
+    }
+  },
+  "accountTypes": {
+    "title": "Types de comptes",
+    "create": "Créer un type de compte",
+    "edit": "Modifier le type de compte",
+    "created": "Type de compte créé.",
+    "updated": "Type de compte mis à jour.",
+    "deleted": "Type de compte supprimé.",
+    "deleteConfirm": "Supprimer le type de compte {{id}} ?",
+    "empty": "Aucun type de compte trouvé.",
+    "requiredError": "Le code et le nom sont requis.",
+    "failedLoadAccountTypes": "Échec du chargement des types de compte : {{error}}",
+    "form": {
+      "code": "Code",
+      "name": "Nom"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Nom",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier le type de compte {{id}}",
+      "deleteAria": "supprimer le type de compte {{id}}"
+    }
+  },
+  "accounts": {
+    "create": "Créer un Compte",
+    "edit": "Modifier le Compte",
+    "created": "Compte créé.",
+    "updated": "Compte mis à jour.",
+    "deleted": "Compte supprimé.",
+    "deleteConfirm": "Supprimer le compte {{id}} ?",
+    "empty": "Aucun compte trouvé.",
+    "requiredError": "Le code, le nom et le type de compte sont requis.",
+    "failedLoadAccounts": "Échec du chargement des comptes : {{error}}",
+    "failedLoadAccountTypes": "Échec du chargement des types de compte : {{error}}",
+    "form": {
+      "code": "Code",
+      "name": "Nom",
+      "accountType": "Type de compte"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Nom",
+      "type": "Type de compte",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier le compte {{id}}",
+      "deleteAria": "supprimer le compte {{id}}"
     }
   },
   "budgetSetups": {

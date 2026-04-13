@@ -14,6 +14,8 @@
     "transactions": "Transaction List",
     "transactionCategoryTotals": "Transactions By Category",
     "categories": "Categories",
+    "accountTypes": "Account Types",
+    "accounts": "Accounts",
     "budgetSetups": "Budget Setup",
     "budgets": "Budget"
   },
@@ -200,6 +202,60 @@
     "actions": {
       "editAria": "edit category {{id}}",
       "deleteAria": "delete category {{id}}"
+    }
+  },
+  "accountTypes": {
+    "title": "Account Types",
+    "create": "Create Account Type",
+    "edit": "Edit Account Type",
+    "created": "Account type created.",
+    "updated": "Account type updated.",
+    "deleted": "Account type deleted.",
+    "deleteConfirm": "Delete account type {{id}}?",
+    "empty": "No account types found.",
+    "requiredError": "Code and name are required.",
+    "failedLoadAccountTypes": "Failed to load account types: {{error}}",
+    "form": {
+      "code": "Code",
+      "name": "Name"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit account type {{id}}",
+      "deleteAria": "delete account type {{id}}"
+    }
+  },
+  "accounts": {
+    "create": "Create Account",
+    "edit": "Edit Account",
+    "created": "Account created.",
+    "updated": "Account updated.",
+    "deleted": "Account deleted.",
+    "deleteConfirm": "Delete account {{id}}?",
+    "empty": "No accounts found.",
+    "requiredError": "Code, name, and account type are required.",
+    "failedLoadAccounts": "Failed to load accounts: {{error}}",
+    "failedLoadAccountTypes": "Failed to load account types: {{error}}",
+    "form": {
+      "code": "Code",
+      "name": "Name",
+      "accountType": "Account Type"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "type": "Account Type",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit account {{id}}",
+      "deleteAria": "delete account {{id}}"
     }
   },
   "budgetSetups": {

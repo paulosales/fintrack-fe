@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import TransactionList from './features/transactions/TransactionList';
 import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/TransactionCategoryTotalsPage';
 import CategoriesPage from './features/categories/CategoriesPage';
+import AccountsPage from './features/accounts/AccountsPage';
+import AccountTypesPage from './features/accountTypes/AccountTypesPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import AuthCallbackPage from './features/auth/AuthCallbackPage';
@@ -28,11 +30,15 @@ const App: React.FC = () => {
       ? '/transaction-category-totals'
       : location.pathname === '/categories'
         ? '/categories'
-        : location.pathname === '/budget-setups'
-          ? '/budget-setups'
-          : location.pathname === '/budgets'
-            ? '/budgets'
-            : '/transactions';
+        : location.pathname === '/account-types'
+          ? '/account-types'
+          : location.pathname === '/accounts'
+            ? '/accounts'
+            : location.pathname === '/budget-setups'
+              ? '/budget-setups'
+              : location.pathname === '/budgets'
+                ? '/budgets'
+                : '/transactions';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -78,6 +84,18 @@ const App: React.FC = () => {
             />
             <Tab
               component={RouterLink}
+              to="/account-types"
+              value="/account-types"
+              label={t('nav.accountTypes')}
+            />
+            <Tab
+              component={RouterLink}
+              to="/accounts"
+              value="/accounts"
+              label={t('nav.accounts')}
+            />
+            <Tab
+              component={RouterLink}
               to="/budget-setups"
               value="/budget-setups"
               label={t('nav.budgetSetups')}
@@ -105,6 +123,8 @@ const App: React.FC = () => {
               element={<TransactionCategoryTotalsPage />}
             />
             <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/account-types" element={<AccountTypesPage />} />
+            <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/budget-setups" element={<BudgetSetupListPage />} />
             <Route path="/budgets" element={<BudgetListPage />} />
             <Route path="*" element={<Navigate to="/transactions" replace />} />

@@ -4,3 +4,9 @@ export interface Account {
   name: string;
   accountTypeId: number;
 }
+
+export interface AccountMutationPayload {
+  code: string;
+  name: string;
+  accountTypeId: number;
+}

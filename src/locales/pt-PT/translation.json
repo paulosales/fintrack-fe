@@ -10,6 +10,8 @@
     "transactions": "Lista de Transações",
     "transactionCategoryTotals": "Transações por Categoria",
     "categories": "Categorias",
+    "accountTypes": "Tipos de conta",
+    "accounts": "Contas",
     "budgetSetups": "Configuração de Orçamento",
     "budgets": "Orçamento"
   },
@@ -193,6 +195,58 @@
     "actions": {
       "editAria": "editar categoria {{id}}",
       "deleteAria": "eliminar categoria {{id}}"
+    }
+  },
+  "accountTypes": {
+    "title": "Tipos de conta",
+    "create": "Criar tipo de conta",
+    "edit": "Editar tipo de conta",
+    "created": "Tipo de conta criado.",
+    "updated": "Tipo de conta atualizado.",
+    "deleted": "Tipo de conta eliminado.",
+    "deleteConfirm": "Eliminar tipo de conta {{id}}?",
+    "empty": "Nenhum tipo de conta encontrado.",
+    "requiredError": "Código e nome são obrigatórios.",
+    "failedLoadAccountTypes": "Falha ao carregar tipos de conta: {{error}}",
+    "form": {
+      "code": "Código",
+      "name": "Nome"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "name": "Nome",
+      "actions": "Ações"
+    },
+    "actions": {
+      "editAria": "editar tipo de conta {{id}}",
+      "deleteAria": "eliminar tipo de conta {{id}}"
+    }
+  },
+  "accounts": {
+    "created": "Conta criada.",
+    "updated": "Conta atualizada.",
+    "deleted": "Conta eliminada.",
+    "deleteConfirm": "Eliminar conta {{id}}?",
+    "empty": "Nenhuma conta encontrada.",
+    "requiredError": "Código, nome e tipo de conta são obrigatórios.",
+    "failedLoadAccounts": "Falha ao carregar contas: {{error}}",
+    "failedLoadAccountTypes": "Falha ao carregar tipos de conta: {{error}}",
+    "form": {
+      "code": "Código",
+      "name": "Nome",
+      "accountType": "Tipo de conta"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "name": "Nome",
+      "type": "Tipo de conta",
+      "actions": "Ações"
+    },
+    "actions": {
+      "editAria": "editar conta {{id}}",
+      "deleteAria": "eliminar conta {{id}}"
     }
   },
   "budgetSetups": {

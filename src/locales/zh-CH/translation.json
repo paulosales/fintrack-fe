@@ -10,6 +10,8 @@
     "transactions": "交易列表",
     "transactionCategoryTotals": "按类别查看交易",
     "categories": "类别",
+    "accountTypes": "账户类型",
+    "accounts": "账户",
     "budgetSetups": "预算配置",
     "budgets": "预算"
   },
@@ -193,6 +195,60 @@
     "actions": {
       "editAria": "编辑类别 {{id}}",
       "deleteAria": "删除类别 {{id}}"
+    }
+  },
+  "accountTypes": {
+    "title": "账户类型",
+    "create": "创建账户类型",
+    "edit": "编辑账户类型",
+    "created": "账户类型已创建。",
+    "updated": "账户类型已更新。",
+    "deleted": "账户类型已删除。",
+    "deleteConfirm": "删除账户类型 {{id}}？",
+    "empty": "未找到账户类型。",
+    "requiredError": "代码和名称为必填项。",
+    "failedLoadAccountTypes": "加载账户类型失败：{{error}}",
+    "form": {
+      "code": "代码",
+      "name": "名称"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "代码",
+      "name": "名称",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑账户类型 {{id}}",
+      "deleteAria": "删除账户类型 {{id}}"
+    }
+  },
+  "accounts": {
+    "create": "创建账户",
+    "edit": "编辑账户",
+    "created": "账户已创建。",
+    "updated": "账户已更新。",
+    "deleted": "账户已删除。",
+    "deleteConfirm": "删除账户 {{id}}？",
+    "empty": "未找到账户。",
+    "requiredError": "代码、名称和账户类型为必填项。",
+    "failedLoadAccounts": "加载账户失败：{{error}}",
+    "failedLoadAccountTypes": "加载账户类型失败：{{error}}",
+    "form": {
+      "code": "代码",
+      "name": "名称",
+      "accountType": "账户类型"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "代码",
+      "name": "名称",
+      "type": "账户类型",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑账户 {{id}}",
+      "deleteAria": "删除账户 {{id}}"
     }
   },
   "budgetSetups": {
