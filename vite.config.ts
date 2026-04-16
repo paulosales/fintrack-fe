@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/account': {
-        target: 'http://localhost',
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost',
         changeOrigin: true,
       },
     },
