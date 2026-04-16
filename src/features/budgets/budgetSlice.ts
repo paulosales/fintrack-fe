@@ -130,19 +130,6 @@ export const fetchBudgetDetails = createAsyncThunk(
         error: error instanceof Error ? error.message : 'API call failed',
       });
     }
-  },
-  {
-    condition: (request, { getState }) => {
-      const state = getState() as { budgets: BudgetState };
-      const key = getBudgetDetailKey(request);
-      const existing = state.budgets.detailsByKey[key];
-
-      if (!existing) {
-        return true;
-      }
-
-      return !existing.loading && existing.data.length === 0;
-    },
   }
 );
 
