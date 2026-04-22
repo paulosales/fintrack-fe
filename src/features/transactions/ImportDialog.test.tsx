@@ -50,7 +50,7 @@ describe('ImportDialog', () => {
     renderDialog({ open: true });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText('Import Transactions')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^Import$/i.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Import$/i })).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
@@ -79,7 +79,7 @@ describe('ImportDialog', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
-    expect(screen.getByText('Please select a bank.ank.')).toBeInTheDocument();
+    expect(screen.getByText('Please select a bank.')).toBeInTheDocument();
   });
 
   it('shows validation error when submitting without file after importer is selected', async () => {
@@ -107,7 +107,7 @@ describe('ImportDialog', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
-    expect(screen.getByText('Please select a CSV file. a CSV file.')).toBeInTheDocument();
+    expect(screen.getByText('Please select a CSV file.')).toBeInTheDocument();
     expect(store.getState().import.loading).toBe(false);
   });
 
@@ -115,7 +115,7 @@ describe('ImportDialog', () => {
     renderDialog();
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(['col1,col2\n1,2'], 'my-transactions.csv', { type: 'text/csv' });
-    fireEvent.change(fileInput, { target: { files: [file] } }{ files: [file] } });
+    fireEvent.change(fileInput, { target: { files: [file] } });
     await waitFor(() => {
       expect(screen.getByText('my-transactions.csv')).toBeInTheDocument();
     });
@@ -151,7 +151,7 @@ describe('ImportDialog', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     // Submit
-    fireEvent.click(screen.getByRole('button', { name: /^Import$/i;
+    fireEvent.click(screen.getByRole('button', { name: /^Import$/i }));
 
     await waitFor(() => {
       expect(store.getState().import.importId).toBe('import-abc');
@@ -184,7 +184,7 @@ describe('ImportDialog', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     // Submit
-    fireEvent.click(screen.getByRole('button', { name: /^Import$/i;
+    fireEvent.click(screen.getByRole('button', { name: /^Import$/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -194,7 +194,7 @@ describe('ImportDialog', () => {
   it('calls onClose when cancel is clicked', () => {
     const onClose = vi.fn();
     renderDialog({ onClose });
-    fireEvent.click(screen.getByRole('button', { name: /Cancel/i
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
     expect(onClose).toHaveBeenCalled();
   });
 
