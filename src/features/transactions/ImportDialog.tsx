@@ -37,12 +37,10 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
   const [validationError, setValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset state when dialog opens
+  // Reset Redux import state every time the dialog opens, regardless of whether
+  // the component remounted (exit animation may still be running when reopened)
   useEffect(() => {
     if (open) {
-      setImporterType(null);
-      setFile(null);
-      setValidationError(null);
       dispatch(resetImport());
     }
   }, [open, dispatch]);
@@ -96,7 +94,21 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
   }, [error, onError, onClose]);
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="sm"
+      slotProps={{
+        transition: {
+          onExited: () => {
+            setImporterType(null);
+            setFile(null);
+            setValidationError(null);
+          },
+        },
+      }}
+    >
       <DialogTitle>{t('import.title')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
