@@ -20,6 +20,7 @@ import useSubTransactionActions from './useSubTransactionActions';
 import { fetchAccounts } from '../accounts/accountsSlice';
 import { fetchCategories } from '../categories/categoriesSlice';
 import { fetchTransactionTypes } from '../transactionTypes/transactionTypesSlice';
+import { resetImport } from './importSlice';
 
 const TransactionList: React.FC = () => {
   const { t } = useTranslation();
@@ -93,6 +94,12 @@ const TransactionList: React.FC = () => {
     dispatch(fetchAccounts());
     dispatch(fetchTransactionTypes());
     dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetImport());
+    };
   }, [dispatch]);
 
   const getAccountName = (id: number) => {
