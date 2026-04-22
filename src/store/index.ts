@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer from '../features/transactions/transactionSlice';
+import importReducer from '../features/transactions/importSlice';
 import accountsReducer from '../features/accounts/accountsSlice';
 import accountTypesReducer from '../features/accounts/accountTypesSlice';
 import transactionTypesReducer from '../features/transactionTypes/transactionTypesSlice';
@@ -13,6 +14,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     transactions: transactionsReducer,
+    import: importReducer,
     accounts: accountsReducer,
     accountTypes: accountTypesReducer,
     transactionTypes: transactionTypesReducer,

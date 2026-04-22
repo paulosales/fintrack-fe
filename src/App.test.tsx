@@ -12,6 +12,7 @@ vi.mock('./features/auth/pkce', () => ({
   startPkceLogin: vi.fn(),
 }));
 import transactionsReducer from './features/transactions/transactionSlice';
+import importReducer from './features/transactions/importSlice';
 import accountsReducer from './features/accounts/accountsSlice';
 import transactionTypesReducer from './features/transactionTypes/transactionTypesSlice';
 import categoriesReducer from './features/categories/categoriesSlice';
@@ -31,6 +32,7 @@ const createTestStore = (auth: AuthState = authenticatedAuth) =>
     reducer: {
       auth: authReducer,
       transactions: transactionsReducer,
+      import: importReducer,
       accounts: accountsReducer,
       transactionTypes: transactionTypesReducer,
       categories: categoriesReducer,

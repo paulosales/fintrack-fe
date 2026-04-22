@@ -311,5 +311,16 @@
     "user": {
       "logout": "Cerrar sesión"
     }
+  },
+  "import": {
+    "button": "Importar CSV",
+    "title": "Importar Transacciones",
+    "selectImporter": "Seleccionar Banco",
+    "selectFile": "Seleccionar Archivo CSV",
+    "submit": "Importar",
+    "success": "{{count}} transacciones en cola para importar.",
+    "error": "Error al importar: {{error}}",
+    "noFile": "Por favor, seleccione un archivo CSV.",
+    "noImporter": "Por favor, seleccione un banco."
   }
 }

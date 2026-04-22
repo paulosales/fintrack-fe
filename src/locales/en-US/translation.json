@@ -318,5 +318,16 @@
     "user": {
       "logout": "Sign out"
     }
+  },
+  "import": {
+    "button": "Import CSV",
+    "title": "Import Transactions",
+    "selectImporter": "Select Bank",
+    "selectFile": "Select CSV File",
+    "submit": "Import",
+    "success": "{{count}} transactions queued for import.",
+    "error": "Import failed: {{error}}",
+    "noFile": "Please select a CSV file.",
+    "noImporter": "Please select a bank."
   }
 }

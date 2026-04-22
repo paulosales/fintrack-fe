@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import type { AppDispatch } from '../../store';
@@ -28,18 +28,21 @@ function useTransactionFilters() {
     );
   }, [dispatch, accountId, transactionTypeId, categoryId, description, page, pageSize]);
 
-  const reloadTransactions = (nextPage = page) => {
-    dispatch(
-      fetchTransactions({
-        accountId,
-        transactionTypeId,
-        categoryId,
-        description,
-        page: nextPage,
-        pageSize,
-      })
-    );
-  };
+  const reloadTransactions = useCallback(
+    (nextPage = page) => {
+      dispatch(
+        fetchTransactions({
+          accountId,
+          transactionTypeId,
+          categoryId,
+          description,
+          page: nextPage,
+          pageSize,
+        })
+      );
+    },
+    [dispatch, accountId, transactionTypeId, categoryId, description, page, pageSize]
+  );
 
   const handleReload = () => reloadTransactions();
 

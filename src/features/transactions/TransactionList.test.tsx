@@ -4,6 +4,7 @@ import { act } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import transactionsReducer from './transactionSlice';
+import importReducer from './importSlice';
 import accountsReducer, { AccountsState } from '../accounts/accountsSlice';
 import categoriesReducer, { CategoriesState } from '../categories/categoriesSlice';
 import transactionTypesReducer, {
@@ -29,6 +30,7 @@ const renderWithStore = (state: TestState) => {
       categories: categoriesReducer,
       transactionTypes: transactionTypesReducer,
       auth: authReducer,
+      import: importReducer,
     },
     preloadedState: state,
   });
@@ -202,5 +204,59 @@ describe('TransactionList', () => {
     });
     // wait for the sub item to be removed
     await waitFor(() => expect(screen.queryByText('Sub item')).not.toBeInTheDocument());
+  });
+
+  it('renders the Import CSV button', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: [], pagination: defaultPagination }),
+      })
+    );
+    renderWithStore({
+      transactions: {
+        loading: false,
+        error: null,
+        data: [],
+        detailsByTransactionId: {},
+        pagination: defaultPagination,
+      },
+      accounts: mockAccountsState,
+      categories: mockCategoriesState,
+      transactionTypes: mockTransactionTypesState,
+    });
+    expect(await screen.findByText('Import CSV')).toBeInTheDocument();
+  });
+
+  it('opens the ImportDialog when Import CSV button is clicked', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: [], pagination: defaultPagination }),
+      })
+    );
+    renderWithStore({
+      transactions: {
+        loading: false,
+        error: null,
+        data: [],
+        detailsByTransactionId: {},
+        pagination: defaultPagination,
+      },
+      accounts: mockAccountsState,
+      categories: mockCategoriesState,
+      transactionTypes: mockTransactionTypesState,
+    });
+
+    const importButton = await screen.findByText('Import CSV');
+    act(() => {
+      importButton.click();
+    });
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Import Transactions')).toBeInTheDocument();
   });
 });

@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { Alert, Box, Button, Typography } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
+import ImportDialog from './ImportDialog';
 
 import type { Transaction } from './types';
 import SubTransactionFormDialog from './SubTransactionFormDialog';
@@ -22,6 +24,12 @@ import { fetchTransactionTypes } from '../transactionTypes/transactionTypesSlice
 const TransactionList: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importFeedback, setImportFeedback] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({ open: false, message: '', severity: 'success' });
 
   const { data, loading, error, pagination } = useSelector(
     (state: RootState) => state.transactions
@@ -106,9 +114,18 @@ const TransactionList: React.FC = () => {
         <Typography variant="h4" component="h1">
           {t('transactions.title')}
         </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateClick}>
-          {t('transactions.create')}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            startIcon={<FileUploadIcon />}
+            onClick={() => setImportDialogOpen(true)}
+          >
+            {t('import.button')}
+          </Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateClick}>
+            {t('transactions.create')}
+          </Button>
+        </Box>
       </Box>
 
       <TransactionFilters
@@ -205,6 +222,34 @@ const TransactionList: React.FC = () => {
         message={actionError || ''}
         severity="error"
         onClose={closeFeedback}
+      />
+
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={(queuedCount) => {
+          setImportDialogOpen(false);
+          handleReload();
+          setImportFeedback({
+            open: true,
+            message: t('import.success', { count: queuedCount }),
+            severity: 'success',
+          });
+        }}
+        onError={(message) => {
+          setImportFeedback({
+            open: true,
+            message: t('import.error', { error: message }),
+            severity: 'error',
+          });
+        }}
+      />
+
+      <FeedbackSnackbar
+        open={importFeedback.open}
+        message={importFeedback.message}
+        severity={importFeedback.severity}
+        onClose={() => setImportFeedback((prev) => ({ ...prev, open: false }))}
       />
     </Box>
   );
