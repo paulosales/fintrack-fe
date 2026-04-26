@@ -1,6 +1,10 @@
 {
-  "app": { "title": "Fintrack" },
-  "language": { "label": "Langue" },
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "Langue"
+  },
   "theme": {
     "toggleAria": "changer le thème",
     "switchToDark": "Passer au mode sombre",
@@ -13,9 +17,13 @@
     "accountTypes": "Types de comptes",
     "accounts": "Comptes",
     "budgetSetups": "Configuration du budget",
-    "budgets": "Budget"
+    "budgets": "Budget",
+    "settings": "Paramètres"
   },
-  "pagination": { "pageSize": "Taille de page", "items": "{{count}} éléments" },
+  "pagination": {
+    "pageSize": "Taille de page",
+    "items": "{{count}} éléments"
+  },
   "common": {
     "cancel": "Annuler",
     "delete": "Supprimer",
@@ -103,7 +111,11 @@
     "failedLoadTotals": "Échec du chargement des totaux par catégorie : {{error}}",
     "empty": "Aucun total de catégorie trouvé.",
     "detailsEmpty": "Aucun détail trouvé.",
-    "filters": { "month": "Sélectionner un mois", "year": "Année", "category": "Sélectionner une catégorie" },
+    "filters": {
+      "month": "Sélectionner un mois",
+      "year": "Année",
+      "category": "Sélectionner une catégorie"
+    },
     "columns": {
       "month": "Mois",
       "category": "Catégorie",
@@ -234,14 +246,16 @@
     "form": {
       "code": "Code",
       "name": "Nom",
-      "accountType": "Type de compte"
+      "accountType": "Type de compte",
+      "currency": "Devise"
     },
     "columns": {
       "id": "ID",
       "code": "Code",
       "name": "Nom",
       "type": "Type de compte",
-      "actions": "Actions"
+      "actions": "Actions",
+      "currency": "Devise"
     },
     "actions": {
       "editAria": "modifier le compte {{id}}",
@@ -318,5 +332,33 @@
     "error": "Échec de l'importation : {{error}}",
     "noFile": "Veuillez sélectionner un fichier CSV.",
     "noImporter": "Veuillez sélectionner une banque."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "create": "Créer un paramètre",
+    "edit": "Modifier le paramètre",
+    "created": "Paramètre créé.",
+    "updated": "Paramètre mis à jour.",
+    "deleted": "Paramètre supprimé.",
+    "deleteConfirm": "Supprimer le paramètre {{code}} ?",
+    "empty": "Aucun paramètre trouvé.",
+    "requiredError": "Le code et la description sont obligatoires.",
+    "failedLoadSettings": "Échec du chargement des paramètres : {{error}}",
+    "form": {
+      "code": "Code",
+      "description": "Description",
+      "value": "Valeur"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "description": "Description",
+      "value": "Valeur",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "modifier le paramètre {{code}}",
+      "deleteAria": "supprimer le paramètre {{code}}"
+    }
   }
 }

@@ -1,6 +1,10 @@
 {
-  "app": { "title": "Fintrack" },
-  "language": { "label": "Idioma" },
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "Idioma"
+  },
   "theme": {
     "toggleAria": "alternar tema",
     "switchToDark": "Mudar para o tema escuro",
@@ -13,9 +17,13 @@
     "accountTypes": "Tipos de conta",
     "accounts": "Contas",
     "budgetSetups": "Configuração de Orçamento",
-    "budgets": "Orçamento"
+    "budgets": "Orçamento",
+    "settings": "Configurações"
   },
-  "pagination": { "pageSize": "Tamanho da página", "items": "{{count}} itens" },
+  "pagination": {
+    "pageSize": "Tamanho da página",
+    "items": "{{count}} itens"
+  },
   "common": {
     "cancel": "Cancelar",
     "delete": "Excluir",
@@ -236,14 +244,16 @@
     "form": {
       "code": "Código",
       "name": "Nome",
-      "accountType": "Tipo de conta"
+      "accountType": "Tipo de conta",
+      "currency": "Moeda"
     },
     "columns": {
       "id": "ID",
       "code": "Código",
       "name": "Nome",
       "type": "Tipo de conta",
-      "actions": "Ações"
+      "actions": "Ações",
+      "currency": "Moeda"
     },
     "actions": {
       "editAria": "editar conta {{id}}",
@@ -320,5 +330,33 @@
     "error": "Falha na importação: {{error}}",
     "noFile": "Por favor, selecione um arquivo CSV.",
     "noImporter": "Por favor, selecione um banco."
+  },
+  "settings": {
+    "title": "Configurações",
+    "create": "Criar configuração",
+    "edit": "Editar configuração",
+    "created": "Configuração criada.",
+    "updated": "Configuração atualizada.",
+    "deleted": "Configuração excluída.",
+    "deleteConfirm": "Excluir configuração {{code}}?",
+    "empty": "Nenhuma configuração encontrada.",
+    "requiredError": "Código e descrição são obrigatórios.",
+    "failedLoadSettings": "Falha ao carregar as configurações: {{error}}",
+    "form": {
+      "code": "Código",
+      "description": "Descrição",
+      "value": "Valor"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "description": "Descrição",
+      "value": "Valor",
+      "actions": "Ações"
+    },
+    "actions": {
+      "editAria": "editar configuração {{code}}",
+      "deleteAria": "excluir configuração {{code}}"
+    }
   }
 }

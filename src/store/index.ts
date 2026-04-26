@@ -9,6 +9,9 @@ import transactionCategoryTotalsReducer from '../features/transactionCategoryTot
 import budgetsReducer from '../features/budgets/budgetSlice';
 import budgetSetupsReducer from '../features/budgetSetups/budgetSetupSlice';
 import authReducer from '../features/auth/authSlice';
+import settingsReducer from '../features/settings/settingsSlice';
+import currenciesReducer from '../features/currencies/currenciesSlice';
+import ratesReducer from '../features/currencies/ratesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +25,9 @@ export const store = configureStore({
     transactionCategoryTotals: transactionCategoryTotalsReducer,
     budgets: budgetsReducer,
     budgetSetups: budgetSetupsReducer,
+    settings: settingsReducer,
+    currencies: currenciesReducer,
+    rates: ratesReducer,
   },
 });
 

@@ -36,6 +36,7 @@ const navItems = (t: (k: string) => string) => [
   { key: 'accounts', label: t('nav.accounts'), path: '/accounts' },
   { key: 'budgetSetups', label: t('nav.budgetSetups'), path: '/budget-setups' },
   { key: 'budgets', label: t('nav.budgets'), path: '/budgets' },
+  { key: 'settings', label: t('nav.settings'), path: '/settings' },
 ];
 
 const SpotlightSearch: React.FC = () => {

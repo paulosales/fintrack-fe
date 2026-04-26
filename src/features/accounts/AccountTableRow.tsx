@@ -29,6 +29,7 @@ const AccountTableRow: React.FC<AccountTableRowProps> = ({
       <TableCell>{account.code}</TableCell>
       <TableCell>{account.name}</TableCell>
       <TableCell>{accountTypeName}</TableCell>
+      <TableCell>{account.currency ?? '—'}</TableCell>
       <TableCell align="right" sx={{ minWidth: 120 }}>
         <IconButton
           aria-label={t('accounts.actions.editAria', { id: account.id })}

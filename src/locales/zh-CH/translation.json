@@ -1,6 +1,10 @@
 {
-  "app": { "title": "Fintrack" },
-  "language": { "label": "语言" },
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "语言"
+  },
   "theme": {
     "toggleAria": "切换主题",
     "switchToDark": "切换到深色模式",
@@ -13,9 +17,13 @@
     "accountTypes": "账户类型",
     "accounts": "账户",
     "budgetSetups": "预算配置",
-    "budgets": "预算"
+    "budgets": "预算",
+    "settings": "设置"
   },
-  "pagination": { "pageSize": "每页数量", "items": "{{count}} 项" },
+  "pagination": {
+    "pageSize": "每页数量",
+    "items": "{{count}} 项"
+  },
   "common": {
     "cancel": "取消",
     "delete": "删除",
@@ -238,14 +246,16 @@
     "form": {
       "code": "代码",
       "name": "名称",
-      "accountType": "账户类型"
+      "accountType": "账户类型",
+      "currency": "货币"
     },
     "columns": {
       "id": "ID",
       "code": "代码",
       "name": "名称",
       "type": "账户类型",
-      "actions": "操作"
+      "actions": "操作",
+      "currency": "货币"
     },
     "actions": {
       "editAria": "编辑账户 {{id}}",
@@ -321,6 +331,32 @@
     "success": "{{count}} 条交易记录已加入导入队列。",
     "error": "导入失败：{{error}}",
     "noFile": "请选择一个 CSV 文件。",
-    "noImporter": "请选择一个银行。"
-  }
+    "noImporter": "请选择一个银行。"  },
+  "settings": {
+    "title": "设置",
+    "create": "创建设置",
+    "edit": "编辑设置",
+    "created": "设置已创建。",
+    "updated": "设置已更新。",
+    "deleted": "设置已删除。",
+    "deleteConfirm": "删除设置 {{code}}？",
+    "empty": "未找到设置。",
+    "requiredError": "代码和描述为必填项。",
+    "failedLoadSettings": "加载设置失败：{{error}}",
+    "form": {
+      "code": "代码",
+      "description": "描述",
+      "value": "値"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "代码",
+      "description": "描述",
+      "value": "値",
+      "actions": "操作"
+    },
+    "actions": {
+      "editAria": "编辑设置 {{code}}",
+      "deleteAria": "删除设置 {{code}}"
+    }  }
 }

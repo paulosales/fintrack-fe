@@ -2,23 +2,22 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import useConfirmDialog from '../../hooks/useConfirmDialog';
-import type { Account, AccountMutationPayload } from '../../models/accounts';
+import type { Setting, SettingMutationPayload } from '../../models/settings';
 import type { AppDispatch } from '../../store';
-import { createAccount, deleteAccount, updateAccount } from './accountsSlice';
+import { createSetting, deleteSetting, updateSetting } from './settingsSlice';
 
-export const buildAccountFormDefaults = (account: Account | null): AccountMutationPayload => ({
-  code: account?.code ?? '',
-  name: account?.name ?? '',
-  accountTypeId: account?.accountTypeId ?? 0,
-  currency: account?.currency ?? '',
+export const buildSettingFormDefaults = (setting: Setting | null): SettingMutationPayload => ({
+  code: setting?.code ?? '',
+  description: setting?.description ?? '',
+  value: setting?.value ?? '',
 });
 
-const useAccountActions = () => {
+const useSettingActions = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [editingSetting, setEditingSetting] = useState<Setting | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -29,7 +28,7 @@ const useAccountActions = () => {
     payload: confirmPayload,
     openConfirm,
     closeConfirm,
-  } = useConfirmDialog<Account>();
+  } = useConfirmDialog<Setting>();
 
   const closeFeedback = () => {
     setActionError(null);
@@ -37,15 +36,15 @@ const useAccountActions = () => {
   };
 
   const handleCreateClick = () => {
-    setEditingAccount(null);
+    setEditingSetting(null);
     setFormError(null);
     setActionError(null);
     setActionMessage(null);
     setDialogOpen(true);
   };
 
-  const handleEditClick = (account: Account) => {
-    setEditingAccount(account);
+  const handleEditClick = (setting: Setting) => {
+    setEditingSetting(setting);
     setFormError(null);
     setActionError(null);
     setActionMessage(null);
@@ -55,27 +54,26 @@ const useAccountActions = () => {
   const handleDialogClose = () => {
     if (isSubmitting) return;
     setDialogOpen(false);
-    setEditingAccount(null);
+    setEditingSetting(null);
     setFormError(null);
   };
 
-  const buildPayload = (formValues: AccountMutationPayload): AccountMutationPayload | null => {
+  const buildPayload = (formValues: SettingMutationPayload): SettingMutationPayload | null => {
     const code = formValues.code.trim();
-    const name = formValues.name.trim();
-    if (!code || !name || !formValues.accountTypeId) {
-      setFormError(t('accounts.requiredError'));
+    const description = formValues.description.trim();
+    if (!code || !description) {
+      setFormError(t('settings.requiredError'));
       return null;
     }
     setFormError(null);
     return {
       code,
-      name,
-      accountTypeId: formValues.accountTypeId,
-      currency: formValues.currency || undefined,
+      description,
+      value: formValues.value?.trim() || null,
     };
   };
 
-  const handleSubmit = async (formValues: AccountMutationPayload) => {
+  const handleSubmit = async (formValues: SettingMutationPayload) => {
     const payload = buildPayload(formValues);
     if (!payload) return;
 
@@ -84,15 +82,15 @@ const useAccountActions = () => {
     setActionMessage(null);
 
     try {
-      if (editingAccount) {
-        await dispatch(updateAccount({ id: editingAccount.id, payload })).unwrap();
-        setActionMessage(t('accounts.updated'));
+      if (editingSetting) {
+        await dispatch(updateSetting({ code: editingSetting.code, payload })).unwrap();
+        setActionMessage(t('settings.updated'));
       } else {
-        await dispatch(createAccount(payload)).unwrap();
-        setActionMessage(t('accounts.created'));
+        await dispatch(createSetting(payload)).unwrap();
+        setActionMessage(t('settings.created'));
       }
       setDialogOpen(false);
-      setEditingAccount(null);
+      setEditingSetting(null);
     } catch (submitError) {
       setActionError(submitError instanceof Error ? submitError.message : String(submitError));
     } finally {
@@ -100,29 +98,32 @@ const useAccountActions = () => {
     }
   };
 
-  const handleDeleteClick = (account: Account) => {
-    openConfirm(account);
+  const handleDeleteClick = (setting: Setting) => {
+    openConfirm(setting);
     setActionError(null);
     setActionMessage(null);
   };
 
   const handleConfirm = async () => {
-    if (!confirmPayload) return closeConfirm();
+    if (!confirmPayload) return;
+    setIsSubmitting(true);
     setActionError(null);
     setActionMessage(null);
+    closeConfirm();
+
     try {
-      await dispatch(deleteAccount(confirmPayload.id)).unwrap();
-      setActionMessage(t('accounts.deleted'));
+      await dispatch(deleteSetting(confirmPayload.code)).unwrap();
+      setActionMessage(t('settings.deleted'));
     } catch (deleteError) {
       setActionError(deleteError instanceof Error ? deleteError.message : String(deleteError));
     } finally {
-      closeConfirm();
+      setIsSubmitting(false);
     }
   };
 
   return {
     dialogOpen,
-    editingAccount,
+    editingSetting,
     formError,
     isSubmitting,
     actionError,
@@ -140,4 +141,4 @@ const useAccountActions = () => {
   };
 };
 
-export default useAccountActions;
+export default useSettingActions;

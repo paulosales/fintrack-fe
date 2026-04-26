@@ -6,29 +6,19 @@ import { Alert, Box, Button, CircularProgress, Typography } from '@mui/material'
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FeedbackSnackbar from '../../components/FeedbackSnackbar';
 import type { AppDispatch, RootState } from '../../store';
-import AccountFormDialog from './AccountFormDialog';
-import AccountTable from './AccountTable';
-import useAccountActions, { buildAccountFormDefaults } from './useAccountActions';
-import { fetchAccounts } from './accountsSlice';
-import { fetchAccountTypes } from './accountTypesSlice';
-import { fetchCurrencies } from '../currencies/currenciesSlice';
+import { fetchSettings } from './settingsSlice';
+import SettingFormDialog from './SettingFormDialog';
+import SettingTable from './SettingTable';
+import useSettingActions, { buildSettingFormDefaults } from './useSettingActions';
 
-const AccountsPage: React.FC = () => {
+const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const { data, loading, error } = useSelector((state: RootState) => state.accounts);
-  const {
-    data: accountTypes,
-    loading: accountTypesLoading,
-    error: accountTypesError,
-  } = useSelector((state: RootState) => state.accountTypes);
-  const { data: currencies, loading: currenciesLoading } = useSelector(
-    (state: RootState) => state.currencies
-  );
+  const { data, loading, error } = useSelector((state: RootState) => state.settings);
 
   const {
     dialogOpen,
-    editingAccount,
+    editingSetting,
     formError,
     isSubmitting,
     actionError,
@@ -43,12 +33,10 @@ const AccountsPage: React.FC = () => {
     handleSubmit,
     handleDeleteClick,
     handleConfirm,
-  } = useAccountActions();
+  } = useSettingActions();
 
   useEffect(() => {
-    dispatch(fetchAccounts());
-    dispatch(fetchAccountTypes());
-    dispatch(fetchCurrencies());
+    dispatch(fetchSettings());
   }, [dispatch]);
 
   return (
@@ -64,18 +52,16 @@ const AccountsPage: React.FC = () => {
         }}
       >
         <Typography variant="h4" component="h1">
-          {t('accounts.title')}
+          {t('settings.title')}
         </Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateClick}>
-          {t('accounts.create')}
+          {t('settings.create')}
         </Button>
       </Box>
 
-      {(error ?? accountTypesError) && (
+      {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error
-            ? t('accounts.failedLoadAccounts', { error })
-            : t('accounts.failedLoadAccountTypes', { error: accountTypesError })}
+          {t('settings.failedLoadSettings', { error })}
         </Alert>
       )}
 
@@ -86,26 +72,17 @@ const AccountsPage: React.FC = () => {
       )}
 
       {!loading && !error && data.length === 0 && (
-        <Alert severity="info">{t('accounts.empty')}</Alert>
+        <Alert severity="info">{t('settings.empty')}</Alert>
       )}
 
       {!loading && data.length > 0 && (
-        <AccountTable
-          accounts={data}
-          accountTypes={accountTypes}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteClick}
-        />
+        <SettingTable settings={data} onEdit={handleEditClick} onDelete={handleDeleteClick} />
       )}
 
-      <AccountFormDialog
+      <SettingFormDialog
         open={dialogOpen}
-        editingAccount={editingAccount}
-        initialValues={buildAccountFormDefaults(editingAccount)}
-        accountTypes={accountTypes}
-        accountTypesLoading={accountTypesLoading}
-        currencies={currencies}
-        currenciesLoading={currenciesLoading}
+        editingSetting={editingSetting}
+        initialValues={buildSettingFormDefaults(editingSetting)}
         formError={formError}
         isSubmitting={isSubmitting}
         onClose={handleDialogClose}
@@ -114,12 +91,11 @@ const AccountsPage: React.FC = () => {
 
       <ConfirmDialog
         open={confirmOpen}
-        title={t('accounts.deleteConfirm', { id: confirmPayload?.id ?? '' })}
-        content={t('accounts.deleteConfirm', { id: confirmPayload?.id ?? '' })}
+        title={t('settings.deleteConfirm', { code: confirmPayload?.code ?? '' })}
+        content={t('settings.deleteConfirm', { code: confirmPayload?.code ?? '' })}
         confirmText={t('common.delete')}
-        cancelText={t('common.cancel')}
-        onCancel={closeConfirm}
         onConfirm={handleConfirm}
+        onCancel={closeConfirm}
       />
 
       <FeedbackSnackbar
@@ -132,4 +108,4 @@ const AccountsPage: React.FC = () => {
   );
 };
 
-export default AccountsPage;
+export default SettingsPage;

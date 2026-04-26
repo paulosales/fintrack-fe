@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
+  Autocomplete,
   Button,
   CircularProgress,
   Dialog,
@@ -15,6 +16,7 @@ import {
 } from '@mui/material';
 import type { Account, AccountMutationPayload } from '../../models/accounts';
 import type { AccountType } from '../../models/accountTypes';
+import type { Currency } from '../../models/currencies';
 
 interface AccountFormDialogProps {
   open: boolean;
@@ -22,6 +24,8 @@ interface AccountFormDialogProps {
   initialValues: AccountMutationPayload;
   accountTypes: AccountType[];
   accountTypesLoading: boolean;
+  currencies: Currency[];
+  currenciesLoading: boolean;
   formError: string | null;
   isSubmitting: boolean;
   onClose: () => void;
@@ -34,6 +38,8 @@ const AccountFormDialog: React.FC<AccountFormDialogProps> = ({
   initialValues,
   accountTypes,
   accountTypesLoading,
+  currencies,
+  currenciesLoading,
   formError,
   isSubmitting,
   onClose,
@@ -97,6 +103,39 @@ const AccountFormDialog: React.FC<AccountFormDialogProps> = ({
                   </MenuItem>
                 ))}
               </TextField>
+            )}
+          />
+          <Controller
+            control={control}
+            name="currency"
+            render={({ field }) => (
+              <Autocomplete
+                options={currencies}
+                loading={currenciesLoading}
+                getOptionLabel={(opt) =>
+                  typeof opt === 'string' ? opt : `${opt.code} — ${opt.name}`
+                }
+                value={currencies.find((c) => c.code === field.value) ?? null}
+                onChange={(_, newValue) => {
+                  field.onChange(newValue ? newValue.code : '');
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('accounts.form.currency')}
+                    fullWidth
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {currenciesLoading ? <CircularProgress size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
             )}
           />
         </Stack>

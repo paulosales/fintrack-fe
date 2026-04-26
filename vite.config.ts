@@ -14,6 +14,14 @@ export default defineConfig({
         target: process.env.VITE_PROXY_TARGET || 'http://localhost',
         changeOrigin: true,
       },
+      '/currency': {
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost',
+        changeOrigin: true,
+      },
+      '/settings': {
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost',
+        changeOrigin: true,
+      },
     },
   },
 });

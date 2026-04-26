@@ -3,10 +3,12 @@ export interface Account {
   code: string;
   name: string;
   accountTypeId: number;
+  currency?: string;
 }
 
 export interface AccountMutationPayload {
   code: string;
   name: string;
   accountTypeId: number;
+  currency?: string;
 }

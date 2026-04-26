@@ -9,6 +9,7 @@ import AccountsPage from './features/accounts/AccountsPage';
 import AccountTypesPage from './features/accountTypes/AccountTypesPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
+import SettingsPage from './features/settings/SettingsPage';
 import AuthCallbackPage from './features/auth/AuthCallbackPage';
 import AuthErrorPage from './features/auth/AuthErrorPage';
 import LanguageSelector from './components/LanguageSelector';
@@ -38,7 +39,9 @@ const App: React.FC = () => {
               ? '/budget-setups'
               : location.pathname === '/budgets'
                 ? '/budgets'
-                : '/transactions';
+                : location.pathname === '/settings'
+                  ? '/settings'
+                  : '/transactions';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -101,6 +104,12 @@ const App: React.FC = () => {
               label={t('nav.budgetSetups')}
             />
             <Tab component={RouterLink} to="/budgets" value="/budgets" label={t('nav.budgets')} />
+            <Tab
+              component={RouterLink}
+              to="/settings"
+              value="/settings"
+              label={t('nav.settings')}
+            />
           </Tabs>
         </AppBar>
       )}
@@ -127,6 +136,7 @@ const App: React.FC = () => {
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/budget-setups" element={<BudgetSetupListPage />} />
             <Route path="/budgets" element={<BudgetListPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/transactions" replace />} />
           </Route>
         </Routes>

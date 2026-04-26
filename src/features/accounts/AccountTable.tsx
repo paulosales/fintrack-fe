@@ -37,6 +37,7 @@ const AccountTable: React.FC<AccountTableProps> = ({
             <TableCell>{t('accounts.columns.code')}</TableCell>
             <TableCell>{t('accounts.columns.name')}</TableCell>
             <TableCell>{t('accounts.columns.type')}</TableCell>
+            <TableCell>{t('accounts.columns.currency')}</TableCell>
             <TableCell align="right">{t('accounts.columns.actions')}</TableCell>
           </TableRow>
         </TableHead>

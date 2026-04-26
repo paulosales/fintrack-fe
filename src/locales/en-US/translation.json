@@ -17,7 +17,8 @@
     "accountTypes": "Account Types",
     "accounts": "Accounts",
     "budgetSetups": "Budget Setup",
-    "budgets": "Budget"
+    "budgets": "Budget",
+    "settings": "Settings"
   },
   "pagination": {
     "pageSize": "Page Size",
@@ -245,13 +246,15 @@
     "form": {
       "code": "Code",
       "name": "Name",
-      "accountType": "Account Type"
+      "accountType": "Account Type",
+      "currency": "Currency"
     },
     "columns": {
       "id": "ID",
       "code": "Code",
       "name": "Name",
       "type": "Account Type",
+      "currency": "Currency",
       "actions": "Actions"
     },
     "actions": {
@@ -329,5 +332,33 @@
     "error": "Import failed: {{error}}",
     "noFile": "Please select a CSV file.",
     "noImporter": "Please select a bank."
+  },
+  "settings": {
+    "title": "Settings",
+    "create": "Create Setting",
+    "edit": "Edit Setting",
+    "created": "Setting created.",
+    "updated": "Setting updated.",
+    "deleted": "Setting deleted.",
+    "deleteConfirm": "Delete setting {{code}}?",
+    "empty": "No settings found.",
+    "requiredError": "Code and description are required.",
+    "failedLoadSettings": "Failed to load settings: {{error}}",
+    "form": {
+      "code": "Code",
+      "description": "Description",
+      "value": "Value"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "description": "Description",
+      "value": "Value",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit setting {{code}}",
+      "deleteAria": "delete setting {{code}}"
+    }
   }
 }

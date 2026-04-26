@@ -1,6 +1,10 @@
 {
-  "app": { "title": "Fintrack" },
-  "language": { "label": "Idioma" },
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "Idioma"
+  },
   "theme": {
     "toggleAria": "cambiar tema",
     "switchToDark": "Cambiar al modo oscuro",
@@ -13,9 +17,13 @@
     "accountTypes": "Tipos de cuenta",
     "accounts": "Cuentas",
     "budgetSetups": "Configuración de presupuesto",
-    "budgets": "Presupuesto"
+    "budgets": "Presupuesto",
+    "settings": "Configuración"
   },
-  "pagination": { "pageSize": "Tamaño de página", "items": "{{count}} elementos" },
+  "pagination": {
+    "pageSize": "Tamaño de página",
+    "items": "{{count}} elementos"
+  },
   "common": {
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -238,14 +246,16 @@
     "form": {
       "code": "Código",
       "name": "Nombre",
-      "accountType": "Tipo de cuenta"
+      "accountType": "Tipo de cuenta",
+      "currency": "Moneda"
     },
     "columns": {
       "id": "ID",
       "code": "Código",
       "name": "Nombre",
       "type": "Tipo de cuenta",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "currency": "Moneda"
     },
     "actions": {
       "editAria": "editar cuenta {{id}}",
@@ -322,5 +332,33 @@
     "error": "Error al importar: {{error}}",
     "noFile": "Por favor, seleccione un archivo CSV.",
     "noImporter": "Por favor, seleccione un banco."
+  },
+  "settings": {
+    "title": "Configuración",
+    "create": "Crear configuración",
+    "edit": "Editar configuración",
+    "created": "Configuración creada.",
+    "updated": "Configuración actualizada.",
+    "deleted": "Configuración eliminada.",
+    "deleteConfirm": "¿Eliminar configuración {{code}}?",
+    "empty": "No se encontraron configuraciones.",
+    "requiredError": "El código y la descripción son obligatorios.",
+    "failedLoadSettings": "Error al cargar la configuración: {{error}}",
+    "form": {
+      "code": "Código",
+      "description": "Descripción",
+      "value": "Valor"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Código",
+      "description": "Descripción",
+      "value": "Valor",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "editAria": "editar configuración {{code}}",
+      "deleteAria": "eliminar configuración {{code}}"
+    }
   }
 }

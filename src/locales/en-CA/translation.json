@@ -1,6 +1,10 @@
 {
-  "app": { "title": "Fintrack" },
-  "language": { "label": "Language" },
+  "app": {
+    "title": "Fintrack"
+  },
+  "language": {
+    "label": "Language"
+  },
   "theme": {
     "toggleAria": "toggle theme",
     "switchToDark": "Switch to dark mode",
@@ -13,9 +17,13 @@
     "accountTypes": "Account Types",
     "accounts": "Accounts",
     "budgetSetups": "Budget Setup",
-    "budgets": "Budget"
+    "budgets": "Budget",
+    "settings": "Settings"
   },
-  "pagination": { "pageSize": "Page Size", "items": "{{count}} items" },
+  "pagination": {
+    "pageSize": "Page Size",
+    "items": "{{count}} items"
+  },
   "common": {
     "cancel": "Cancel",
     "delete": "Delete",
@@ -103,7 +111,11 @@
     "failedLoadTotals": "Failed to load category totals: {{error}}",
     "empty": "No category totals found.",
     "detailsEmpty": "No details found.",
-    "filters": { "month": "Select Month", "year": "Year", "category": "Select Category" },
+    "filters": {
+      "month": "Select Month",
+      "year": "Year",
+      "category": "Select Category"
+    },
     "columns": {
       "month": "Month",
       "category": "Category",
@@ -234,14 +246,16 @@
     "form": {
       "code": "Code",
       "name": "Name",
-      "accountType": "Account Type"
+      "accountType": "Account Type",
+      "currency": "Currency"
     },
     "columns": {
       "id": "ID",
       "code": "Code",
       "name": "Name",
       "type": "Account Type",
-      "actions": "Actions"
+      "actions": "Actions",
+      "currency": "Currency"
     },
     "actions": {
       "editAria": "edit account {{id}}",
@@ -317,5 +331,33 @@
     "error": "Import failed: {{error}}",
     "noFile": "Please select a CSV file.",
     "noImporter": "Please select a bank."
+  },
+  "settings": {
+    "title": "Settings",
+    "create": "Create Setting",
+    "edit": "Edit Setting",
+    "created": "Setting created.",
+    "updated": "Setting updated.",
+    "deleted": "Setting deleted.",
+    "deleteConfirm": "Delete setting {{code}}?",
+    "empty": "No settings found.",
+    "requiredError": "Code and description are required.",
+    "failedLoadSettings": "Failed to load settings: {{error}}",
+    "form": {
+      "code": "Code",
+      "description": "Description",
+      "value": "Value"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "description": "Description",
+      "value": "Value",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit setting {{code}}",
+      "deleteAria": "delete setting {{code}}"
+    }
   }
 }
