@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import { defaultPagination } from '../../types/pagination';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 import type {
   BudgetDetailRequest,
   BudgetDetailState,
@@ -51,19 +52,20 @@ const parseBudgetResponse = async (response: Response) => {
   return payload.data;
 };
 
-export const fetchBudgetMonthTotals = createAsyncThunk(
+export const fetchBudgetMonthTotals = createAppAsyncThunk(
   'budgets/fetchMonthTotals',
-  async (filters: BudgetMonthFilters, { rejectWithValue, getState }) => {
+  async (filters: BudgetMonthFilters, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams({
         page: String(filters.page),
         page_size: String(filters.pageSize),
       });
 
-      const response = await fetch(`/account/budgets?${searchParams.toString()}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/budgets?${searchParams.toString()}`,
+        {},
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -91,19 +93,20 @@ export const fetchBudgetMonthTotals = createAsyncThunk(
   }
 );
 
-export const fetchBudgetDetails = createAsyncThunk(
+export const fetchBudgetDetails = createAppAsyncThunk(
   'budgets/fetchDetails',
-  async (request: BudgetDetailRequest, { rejectWithValue, getState }) => {
+  async (request: BudgetDetailRequest, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams({
         year: String(request.year),
         month: String(request.month),
       });
 
-      const response = await fetch(`/account/budgets/details?${searchParams.toString()}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/budgets/details?${searchParams.toString()}`,
+        {},
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -133,19 +136,19 @@ export const fetchBudgetDetails = createAsyncThunk(
   }
 );
 
-export const createBudget = createAsyncThunk(
+export const createBudget = createAppAsyncThunk(
   'budgets/createBudget',
-  async (payload: BudgetMutationPayload, { rejectWithValue, getState }) => {
+  async (payload: BudgetMutationPayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/budgets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/account/budgets',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseBudgetResponse(response);
     } catch (error: unknown) {
@@ -154,22 +157,22 @@ export const createBudget = createAsyncThunk(
   }
 );
 
-export const updateBudget = createAsyncThunk(
+export const updateBudget = createAppAsyncThunk(
   'budgets/updateBudget',
   async (
     { id, payload }: { id: number; payload: BudgetMutationPayload },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/budgets/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/account/budgets/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseBudgetResponse(response);
     } catch (error: unknown) {
@@ -178,15 +181,17 @@ export const updateBudget = createAsyncThunk(
   }
 );
 
-export const deleteBudget = createAsyncThunk(
+export const deleteBudget = createAppAsyncThunk(
   'budgets/deleteBudget',
-  async (id: number, { rejectWithValue, getState }) => {
+  async (id: number, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/budgets/${id}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/budgets/${id}`,
+        {
+          method: 'DELETE',
+        },
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -206,19 +211,19 @@ export const deleteBudget = createAsyncThunk(
   }
 );
 
-export const generateBudgets = createAsyncThunk(
+export const generateBudgets = createAppAsyncThunk(
   'budgets/generateBudgets',
-  async (payload: BudgetGeneratePayload, { rejectWithValue, getState }) => {
+  async (payload: BudgetGeneratePayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/budgets/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/account/budgets/generate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();

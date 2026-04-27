@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import type { Account, AccountMutationPayload } from '../../models/accounts';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 export interface AccountsState {
   loading: boolean;
@@ -33,14 +34,11 @@ const parseAccountResponse = async (response: Response) => {
   return payload.data;
 };
 
-export const fetchAccounts = createAsyncThunk(
+export const fetchAccounts = createAppAsyncThunk(
   'accounts/fetchAccounts',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/accounts', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch('/account/accounts', {}, { dispatch, getState });
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -61,19 +59,19 @@ export const fetchAccounts = createAsyncThunk(
   }
 );
 
-export const createAccount = createAsyncThunk(
+export const createAccount = createAppAsyncThunk(
   'accounts/createAccount',
-  async (payload: AccountMutationPayload, { rejectWithValue, getState }) => {
+  async (payload: AccountMutationPayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/accounts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/account/accounts',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
       return await parseAccountResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
@@ -81,22 +79,22 @@ export const createAccount = createAsyncThunk(
   }
 );
 
-export const updateAccount = createAsyncThunk(
+export const updateAccount = createAppAsyncThunk(
   'accounts/updateAccount',
   async (
     { id, payload }: { id: number; payload: AccountMutationPayload },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/accounts/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/account/accounts/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
       return await parseAccountResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
@@ -104,15 +102,17 @@ export const updateAccount = createAsyncThunk(
   }
 );
 
-export const deleteAccount = createAsyncThunk(
+export const deleteAccount = createAppAsyncThunk(
   'accounts/deleteAccount',
-  async (id: number, { rejectWithValue, getState }) => {
+  async (id: number, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/accounts/${id}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/accounts/${id}`,
+        {
+          method: 'DELETE',
+        },
+        { dispatch, getState }
+      );
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);

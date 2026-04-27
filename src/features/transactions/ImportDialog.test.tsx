@@ -13,7 +13,7 @@ function buildStore(token: string | null = 'test-token') {
       auth: authReducer,
     },
     preloadedState: {
-      auth: { token, loading: false, error: null },
+      auth: { token, user: null, status: 'idle' as const },
     },
   });
 }

@@ -1,6 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import type { Setting, SettingMutationPayload } from '../../models/settings';
 import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 export interface SettingsState {
   loading: boolean;
@@ -33,7 +35,7 @@ const parseSettingResponse = async (response: Response): Promise<Setting> => {
 const sortSettings = (settings: Setting[]) =>
   [...settings].sort((a, b) => a.code.localeCompare(b.code));
 
-export const fetchSettings = createAsyncThunk(
+export const fetchSettings = createAppAsyncThunk(
   'settings/fetchSettings',
   async (_, { rejectWithValue }) => {
     try {
@@ -58,19 +60,19 @@ export const fetchSettings = createAsyncThunk(
   }
 );
 
-export const createSetting = createAsyncThunk(
+export const createSetting = createAppAsyncThunk(
   'settings/createSetting',
-  async (payload: SettingMutationPayload, { rejectWithValue, getState }) => {
+  async (payload: SettingMutationPayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/settings/settings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/settings/settings',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
       return await parseSettingResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
@@ -78,22 +80,22 @@ export const createSetting = createAsyncThunk(
   }
 );
 
-export const updateSetting = createAsyncThunk(
+export const updateSetting = createAppAsyncThunk(
   'settings/updateSetting',
   async (
     { code, payload }: { code: string; payload: SettingMutationPayload },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/settings/settings/${encodeURIComponent(code)}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/settings/settings/${encodeURIComponent(code)}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
       return await parseSettingResponse(response);
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'API call failed');
@@ -101,15 +103,17 @@ export const updateSetting = createAsyncThunk(
   }
 );
 
-export const deleteSetting = createAsyncThunk(
+export const deleteSetting = createAppAsyncThunk(
   'settings/deleteSetting',
-  async (code: string, { rejectWithValue, getState }) => {
+  async (code: string, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/settings/settings/${encodeURIComponent(code)}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/settings/settings/${encodeURIComponent(code)}`,
+        {
+          method: 'DELETE',
+        },
+        { dispatch, getState }
+      );
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);

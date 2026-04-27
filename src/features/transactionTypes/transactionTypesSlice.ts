@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import type { TransactionType } from '../../models/transactionTypes';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 export interface TransactionTypesState {
   loading: boolean;
@@ -14,14 +15,15 @@ const initialState: TransactionTypesState = {
   data: [],
 };
 
-export const fetchTransactionTypes = createAsyncThunk(
+export const fetchTransactionTypes = createAppAsyncThunk(
   'transactionTypes/fetchTransactionTypes',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/transaction-types', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        '/account/transaction-types',
+        {},
+        { dispatch, getState }
+      );
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);

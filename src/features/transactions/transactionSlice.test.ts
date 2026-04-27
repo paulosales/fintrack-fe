@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
 import transactionsReducer, { fetchTransactions } from './transactionSlice';
 import authReducer from '../auth/authSlice';
 import type { TransactionFilters } from './types';
@@ -43,7 +44,7 @@ describe('transactionSlice async thunk', () => {
       reducer: { transactions: transactionsReducer, auth: authReducer },
     });
 
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactions({
         accountId: null,
         transactionTypeId: null,
@@ -73,7 +74,7 @@ describe('transactionSlice async thunk', () => {
     const store = configureStore({
       reducer: { transactions: transactionsReducer, auth: authReducer },
     });
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactions({
         accountId: null,
         transactionTypeId: null,
@@ -103,7 +104,7 @@ describe('transactionSlice async thunk', () => {
     const store = configureStore({
       reducer: { transactions: transactionsReducer, auth: authReducer },
     });
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactions({
         accountId: null,
         transactionTypeId: null,
@@ -131,7 +132,7 @@ describe('transactionSlice async thunk', () => {
     const store = configureStore({
       reducer: { transactions: transactionsReducer, auth: authReducer },
     });
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactions({
         accountId: null,
         transactionTypeId: null,

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
 import budgetReducer, { fetchBudgetMonthTotals, generateBudgets } from './budgetSlice';
 import authReducer from '../auth/authSlice';
 import { defaultPagination } from '../../types/pagination';
@@ -30,7 +31,7 @@ describe('budgetSlice', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const store = configureStore({ reducer: { budgets: budgetReducer, auth: authReducer } });
-    await store.dispatch(fetchBudgetMonthTotals({ page: 1, pageSize: 10 }));
+    await (store.dispatch as AppDispatch)(fetchBudgetMonthTotals({ page: 1, pageSize: 10 }));
 
     expect(fetchMock).toHaveBeenCalledWith('/account/budgets?page=1&page_size=10', { headers: {} });
     expect(store.getState().budgets.data).toHaveLength(1);
@@ -49,7 +50,7 @@ describe('budgetSlice', () => {
     );
 
     const store = configureStore({ reducer: { budgets: budgetReducer, auth: authReducer } });
-    await store.dispatch(fetchBudgetMonthTotals({ page: 1, pageSize: 10 }));
+    await (store.dispatch as AppDispatch)(fetchBudgetMonthTotals({ page: 1, pageSize: 10 }));
 
     expect(store.getState().budgets.data).toEqual([]);
     expect(store.getState().budgets.pagination).toEqual(defaultPagination);
@@ -65,7 +66,7 @@ describe('budgetSlice', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const store = configureStore({ reducer: { budgets: budgetReducer, auth: authReducer } });
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       generateBudgets({
         startDate: '2026-01-01',
         endDate: '2026-12-31',

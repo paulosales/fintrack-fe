@@ -1,5 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { RootState } from '../../store';
+import { createSlice } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 export interface ImportState {
   loading: boolean;
@@ -35,22 +36,24 @@ interface ImportResponse {
   message: string;
 }
 
-export const importTransactions = createAsyncThunk(
+export const importTransactions = createAppAsyncThunk(
   'import/importTransactions',
   async (
     { importerType, file }: { importerType: ImporterType; file: File },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`/import/api/v1/import/${importerType}`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
+      const response = await authenticatedFetch(
+        `/import/api/v1/import/${importerType}`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();

@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, AuthUser } from './types';
-import { ID_TOKEN_KEY } from './pkce';
+import { ID_TOKEN_KEY, REFRESH_TOKEN_KEY, refreshAccessToken } from './pkce';
 
 const TOKEN_KEY = 'fintrack-token';
 
@@ -34,6 +34,14 @@ const initialState: AuthState = {
   status: storedUser ? 'authenticated' : 'idle',
 };
 
+export const refreshAuth = createAsyncThunk('auth/refresh', async () => {
+  const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!storedRefreshToken) {
+    throw new Error('No refresh token available');
+  }
+  return refreshAccessToken(storedRefreshToken);
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -50,15 +58,45 @@ const authSlice = createSlice({
         state.status = 'error';
       }
     },
+    sessionExpired(state) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      state.token = null;
+      state.user = null;
+      state.status = 'idle';
+    },
     logout(state) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(ID_TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
       state.token = null;
       state.user = null;
       state.status = 'logging-out';
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(refreshAuth.fulfilled, (state, action: PayloadAction<string>) => {
+        const token = action.payload;
+        const user = decodeJwtUser(token);
+        if (user) {
+          localStorage.setItem(TOKEN_KEY, token);
+          state.token = token;
+          state.user = user;
+          state.status = 'authenticated';
+        } else {
+          state.status = 'error';
+        }
+      })
+      .addCase(refreshAuth.rejected, (state) => {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        state.token = null;
+        state.user = null;
+        state.status = 'idle';
+      });
+  },
 });
 
-export const { setToken, logout } = authSlice.actions;
+export const { setToken, sessionExpired, logout } = authSlice.actions;
 export default authSlice.reducer;

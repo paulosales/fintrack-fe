@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import { defaultPagination } from '../../types/pagination';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 import type {
   TransactionCategoryTotal,
   TransactionCategoryTotalDetail,
@@ -30,11 +31,10 @@ interface TransactionCategoryTotalsPayload {
   pagination: TransactionCategoryTotalsState['pagination'];
 }
 
-export const fetchTransactionCategoryTotals = createAsyncThunk(
+export const fetchTransactionCategoryTotals = createAppAsyncThunk(
   'transactionCategoryTotals/fetchTotals',
-  async (filters: TransactionCategoryTotalsFilters, { rejectWithValue, getState }) => {
+  async (filters: TransactionCategoryTotalsFilters, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams();
 
       if (filters.month !== null) {
@@ -53,9 +53,11 @@ export const fetchTransactionCategoryTotals = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/account/transaction-category-totals${query}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/transaction-category-totals${query}`,
+        {},
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -84,20 +86,23 @@ export const fetchTransactionCategoryTotals = createAsyncThunk(
   }
 );
 
-export const fetchTransactionCategoryTotalDetails = createAsyncThunk(
+export const fetchTransactionCategoryTotalDetails = createAppAsyncThunk(
   'transactionCategoryTotals/fetchDetails',
-  async (request: TransactionCategoryTotalDetailRequest, { rejectWithValue, getState }) => {
+  async (
+    request: TransactionCategoryTotalDetailRequest,
+    { rejectWithValue, dispatch, getState }
+  ) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams({
         month: String(request.month),
         year: String(request.year),
         category_id: String(request.categoryId),
       });
 
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `/account/transaction-category-totals/details?${searchParams.toString()}`,
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        {},
+        { dispatch, getState }
       );
 
       if (!response.ok) {

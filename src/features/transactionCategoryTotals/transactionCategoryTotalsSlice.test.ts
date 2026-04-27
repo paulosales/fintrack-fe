@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
 import transactionCategoryTotalsReducer, {
   fetchTransactionCategoryTotalDetails,
   fetchTransactionCategoryTotals,
@@ -39,7 +40,7 @@ describe('transactionCategoryTotalsSlice', () => {
       reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer, auth: authReducer },
     });
 
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactionCategoryTotals({
         month: null,
         year: null,
@@ -84,7 +85,7 @@ describe('transactionCategoryTotalsSlice', () => {
       reducer: { transactionCategoryTotals: transactionCategoryTotalsReducer, auth: authReducer },
     });
 
-    await store.dispatch(
+    await (store.dispatch as AppDispatch)(
       fetchTransactionCategoryTotalDetails({ month: 4, year: 2026, categoryId: 1 })
     );
 

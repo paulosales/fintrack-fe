@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import type {
   Transaction,
   TransactionFilters,
@@ -7,7 +8,7 @@ import type {
 } from './types';
 import type { SubTransaction, TransactionDetailsState } from './types';
 import { defaultPagination } from '../../types/pagination';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 const initialState: TransactionState = {
   loading: false,
@@ -47,11 +48,10 @@ const parseTransactionResponse = async (response: Response) => {
   return payload.data;
 };
 
-export const fetchTransactions = createAsyncThunk(
+export const fetchTransactions = createAppAsyncThunk(
   'transactions/fetchTransactions',
-  async (filters: TransactionFilters, { rejectWithValue, getState }) => {
+  async (filters: TransactionFilters, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
       const searchParams = new URLSearchParams();
       const description = filters.description.trim();
 
@@ -75,9 +75,11 @@ export const fetchTransactions = createAsyncThunk(
       searchParams.set('page_size', String(filters.pageSize));
 
       const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
-      const response = await fetch(`/account/transactions${query}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/transactions${query}`,
+        {},
+        { dispatch, getState }
+      );
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -102,14 +104,15 @@ export const fetchTransactions = createAsyncThunk(
   }
 );
 
-export const fetchSubTransactions = createAsyncThunk(
+export const fetchSubTransactions = createAppAsyncThunk(
   'transactions/fetchSubTransactions',
-  async (transactionId: number, { rejectWithValue, getState }) => {
+  async (transactionId: number, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/transactions/${transactionId}/sub_transactions`,
+        {},
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -133,7 +136,7 @@ export const fetchSubTransactions = createAsyncThunk(
   }
 );
 
-export const updateSubTransaction = createAsyncThunk(
+export const updateSubTransaction = createAppAsyncThunk(
   'transactions/updateSubTransaction',
   async (
     {
@@ -151,20 +154,17 @@ export const updateSubTransaction = createAsyncThunk(
         categoryIds?: number[];
       };
     },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `/account/transactions/${transactionId}/sub_transactions/${id}`,
         {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
-        }
+        },
+        { dispatch, getState }
       );
 
       if (!response.ok) {
@@ -185,20 +185,17 @@ export const updateSubTransaction = createAsyncThunk(
   }
 );
 
-export const deleteSubTransaction = createAsyncThunk(
+export const deleteSubTransaction = createAppAsyncThunk(
   'transactions/deleteSubTransaction',
   async (
     { id, transactionId }: { id: number; transactionId: number },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `/account/transactions/${transactionId}/sub_transactions/${id}`,
-        {
-          method: 'DELETE',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+        { method: 'DELETE' },
+        { dispatch, getState }
       );
       if (!response.ok) {
         const text = await response.text();
@@ -213,7 +210,7 @@ export const deleteSubTransaction = createAsyncThunk(
   }
 );
 
-export const createSubTransaction = createAsyncThunk(
+export const createSubTransaction = createAppAsyncThunk(
   'transactions/createSubTransaction',
   async (
     {
@@ -229,18 +226,18 @@ export const createSubTransaction = createAsyncThunk(
         categoryIds?: number[];
       };
     },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/transactions/${transactionId}/sub_transactions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/account/transactions/${transactionId}/sub_transactions`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -260,19 +257,19 @@ export const createSubTransaction = createAsyncThunk(
   }
 );
 
-export const createTransaction = createAsyncThunk(
+export const createTransaction = createAppAsyncThunk(
   'transactions/createTransaction',
-  async (payload: TransactionMutationPayload, { rejectWithValue, getState }) => {
+  async (payload: TransactionMutationPayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/transactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/account/transactions',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseTransactionResponse(response);
     } catch (error: unknown) {
@@ -282,22 +279,22 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
-export const updateTransaction = createAsyncThunk(
+export const updateTransaction = createAppAsyncThunk(
   'transactions/updateTransaction',
   async (
     { id, payload }: { id: number; payload: TransactionMutationPayload },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/transactions/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/account/transactions/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseTransactionResponse(response);
     } catch (error: unknown) {
@@ -307,15 +304,17 @@ export const updateTransaction = createAsyncThunk(
   }
 );
 
-export const deleteTransaction = createAsyncThunk(
+export const deleteTransaction = createAppAsyncThunk(
   'transactions/deleteTransaction',
-  async (id: number, { rejectWithValue, getState }) => {
+  async (id: number, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/transactions/${id}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/transactions/${id}`,
+        {
+          method: 'DELETE',
+        },
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();

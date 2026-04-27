@@ -13,6 +13,7 @@ const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? 'fintrack-fe';
 const VERIFIER_KEY = 'pkce_verifier';
 const STATE_KEY = 'pkce_state';
 export const ID_TOKEN_KEY = 'fintrack-id-token';
+export const REFRESH_TOKEN_KEY = 'fintrack-refresh-token';
 
 function base64url(bytes: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)))
@@ -108,7 +109,55 @@ export async function exchangeCodeForToken(code: string, state: string): Promise
     throw new Error(`Token exchange failed (${res.status}): ${text}`);
   }
 
-  const data = (await res.json()) as { access_token: string; id_token?: string };
+  const data = (await res.json()) as {
+    access_token: string;
+    id_token?: string;
+    refresh_token?: string;
+  };
+  if (data.id_token) {
+    localStorage.setItem(ID_TOKEN_KEY, data.id_token);
+  }
+  if (data.refresh_token) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+  }
+  return data.access_token;
+}
+
+/**
+ * Use a refresh token to obtain a new access token from Keycloak.
+ *
+ * Stores the new refresh token (rotation) and id_token if provided.
+ *
+ * @returns The new access token.
+ * @throws  If Keycloak returns a non-OK response.
+ */
+export async function refreshAccessToken(refreshToken: string): Promise<string> {
+  const tokenUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
+
+  const res = await fetch(tokenUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: CLIENT_ID,
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Token refresh failed (${res.status}): ${text}`);
+  }
+
+  const data = (await res.json()) as {
+    access_token: string;
+    refresh_token?: string;
+    id_token?: string;
+  };
+
+  if (data.refresh_token) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+  }
   if (data.id_token) {
     localStorage.setItem(ID_TOKEN_KEY, data.id_token);
   }

@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../store/typedThunk';
 import type { Category, CategoryMutationPayload } from '../../models/categories';
-import type { RootState } from '../../store';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
 
 export interface CategoriesState {
   loading: boolean;
@@ -36,14 +37,11 @@ const parseCategoryResponse = async (response: Response) => {
   return payload.data;
 };
 
-export const fetchCategories = createAsyncThunk(
+export const fetchCategories = createAppAsyncThunk(
   'categories/fetchCategories',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/categories', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch('/account/categories', {}, { dispatch, getState });
       if (!response.ok) {
         const text = await response.text();
         return rejectWithValue(`HTTP ${response.status}: ${text}`);
@@ -67,19 +65,19 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
-export const createCategory = createAsyncThunk(
+export const createCategory = createAppAsyncThunk(
   'categories/createCategory',
-  async (payload: CategoryMutationPayload, { rejectWithValue, getState }) => {
+  async (payload: CategoryMutationPayload, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch('/account/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        '/account/categories',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseCategoryResponse(response);
     } catch (error: unknown) {
@@ -88,22 +86,22 @@ export const createCategory = createAsyncThunk(
   }
 );
 
-export const updateCategory = createAsyncThunk(
+export const updateCategory = createAppAsyncThunk(
   'categories/updateCategory',
   async (
     { id, payload }: { id: number; payload: CategoryMutationPayload },
-    { rejectWithValue, getState }
+    { rejectWithValue, dispatch, getState }
   ) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/categories/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const response = await authenticatedFetch(
+        `/account/categories/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+        { dispatch, getState }
+      );
 
       return await parseCategoryResponse(response);
     } catch (error: unknown) {
@@ -112,15 +110,17 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
-export const deleteCategory = createAsyncThunk(
+export const deleteCategory = createAppAsyncThunk(
   'categories/deleteCategory',
-  async (id: number, { rejectWithValue, getState }) => {
+  async (id: number, { rejectWithValue, dispatch, getState }) => {
     try {
-      const token = (getState() as RootState).auth.token;
-      const response = await fetch(`/account/categories/${id}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await authenticatedFetch(
+        `/account/categories/${id}`,
+        {
+          method: 'DELETE',
+        },
+        { dispatch, getState }
+      );
 
       if (!response.ok) {
         const text = await response.text();

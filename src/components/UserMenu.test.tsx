@@ -12,6 +12,8 @@ import { startPkceLogout } from '../features/auth/pkce';
 vi.mock('../features/auth/pkce', () => ({
   startPkceLogout: vi.fn(),
   ID_TOKEN_KEY: 'fintrack-id-token',
+  REFRESH_TOKEN_KEY: 'fintrack-refresh-token',
+  refreshAccessToken: vi.fn(),
 }));
 
 const createStore = (auth: Partial<AuthState> = {}) =>

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
 import importReducer, {
   importTransactions,
   resetImport,
@@ -9,7 +10,7 @@ import importReducer, {
 import authReducer from '../auth/authSlice';
 
 function buildStore(preloadedAuth?: { token: string | null }) {
-  return configureStore({
+  const store = configureStore({
     reducer: {
       import: importReducer,
       auth: authReducer,
@@ -18,12 +19,13 @@ function buildStore(preloadedAuth?: { token: string | null }) {
       ? {
           auth: {
             token: preloadedAuth.token,
-            loading: false,
-            error: null,
+            user: null,
+            status: 'idle' as const,
           },
         }
       : undefined,
   });
+  return store as Omit<typeof store, 'dispatch'> & { dispatch: AppDispatch };
 }
 
 describe('importSlice initial state', () => {

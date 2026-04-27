@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
 import budgetSetupReducer, { fetchBudgetSetups } from './budgetSetupSlice';
 import authReducer from '../auth/authSlice';
 
@@ -38,7 +39,7 @@ describe('budgetSetupSlice', () => {
     const store = configureStore({
       reducer: { budgetSetups: budgetSetupReducer, auth: authReducer },
     });
-    await store.dispatch(fetchBudgetSetups({ page: 1, pageSize: 10 }));
+    await (store.dispatch as AppDispatch)(fetchBudgetSetups({ page: 1, pageSize: 10 }));
 
     expect(fetchMock).toHaveBeenCalledWith('/account/budget-setups?page=1&page_size=10', {
       headers: {},
