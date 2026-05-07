@@ -25,8 +25,8 @@ describe('AuthErrorPage', () => {
     expect(screen.getByText(/invalid_token/i)).toBeInTheDocument();
   });
 
-  it('renders the back to login link', () => {
+  it('renders the back to login button', () => {
     renderErrorPage();
-    expect(screen.getByRole('link', { name: /back to login/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /back to login/i })).toBeInTheDocument();
   });
 });

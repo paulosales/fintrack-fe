@@ -28,8 +28,9 @@ const AuthCallbackPage: React.FC = () => {
           const accessToken = await exchangeCodeForToken(code, state);
           dispatch(setToken(accessToken));
           navigate('/', { replace: true });
-        } catch {
-          navigate('/auth/error?message=token_exchange_failed', { replace: true });
+        } catch (err) {
+          const detail = err instanceof Error ? encodeURIComponent(err.message) : 'unknown';
+          navigate(`/auth/error?message=token_exchange_failed&detail=${detail}`, { replace: true });
         }
       } else if (token) {
         // Legacy path: token was issued by the old auth-service (24 h TTL).

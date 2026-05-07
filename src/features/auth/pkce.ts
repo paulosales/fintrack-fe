@@ -90,7 +90,10 @@ export async function exchangeCodeForToken(code: string, state: string): Promise
   }
 
   const redirectUri = `${window.location.origin}/auth/callback`;
-  const tokenUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
+  // Use same-origin path so the request goes through the Vite/Nginx proxy.
+  // Fetching directly to the external Keycloak HTTP URL from an HTTPS page
+  // would be blocked by the browser as mixed content.
+  const tokenUrl = `/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
 
   const res = await fetch(tokenUrl, {
     method: 'POST',
@@ -132,7 +135,8 @@ export async function exchangeCodeForToken(code: string, state: string): Promise
  * @throws  If Keycloak returns a non-OK response.
  */
 export async function refreshAccessToken(refreshToken: string): Promise<string> {
-  const tokenUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
+  // Same-origin path — proxy forwards to Keycloak (avoids mixed-content block).
+  const tokenUrl = `/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
 
   const res = await fetch(tokenUrl, {
     method: 'POST',
