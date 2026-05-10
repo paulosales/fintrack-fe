@@ -30,6 +30,7 @@ const TransactionCategoryTotalsPage: React.FC = () => {
   });
 
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
+  const [expandedMonths, setExpandedMonths] = useState<Record<string, boolean>>({});
 
   const {
     setPage,
@@ -62,6 +63,11 @@ const TransactionCategoryTotalsPage: React.FC = () => {
         })
       );
     }
+  };
+
+  const handleToggleMonth = (year: number, month: number) => {
+    const key = `${year}-${month}`;
+    setExpandedMonths((current) => ({ ...current, [key]: !(current[key] !== false) }));
   };
 
   return (
@@ -103,8 +109,10 @@ const TransactionCategoryTotalsPage: React.FC = () => {
           rows={data}
           pagination={pagination}
           expandedKeys={expandedKeys}
+          expandedMonths={expandedMonths}
           detailsByKey={detailsByKey}
           onToggle={handleToggleRow}
+          onToggleMonth={handleToggleMonth}
           onPageChange={setPage}
           onPageSizeChange={handlePageSizeChange}
         />

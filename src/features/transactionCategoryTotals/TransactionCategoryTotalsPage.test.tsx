@@ -78,7 +78,8 @@ describe('TransactionCategoryTotalsPage', () => {
     });
 
     expect(await screen.findByText('Groceries')).toBeInTheDocument();
-    expect(screen.getByText('-$100.00')).toBeInTheDocument();
+    // -$100.00 appears in both the month header total and the category row total
+    expect(screen.getAllByText('-$100.00')).toHaveLength(2);
   });
 
   it('expands a row and shows fetched details', async () => {

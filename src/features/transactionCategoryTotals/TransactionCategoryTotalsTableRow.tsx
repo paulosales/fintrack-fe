@@ -12,6 +12,7 @@ interface TransactionCategoryTotalsTableRowProps {
   expanded: boolean;
   detailsState: TransactionCategoryTotalDetailState;
   onToggle: (row: TransactionCategoryTotal) => void;
+  hideMonth?: boolean;
 }
 
 const TransactionCategoryTotalsTableRow: React.FC<TransactionCategoryTotalsTableRowProps> = ({
@@ -19,6 +20,7 @@ const TransactionCategoryTotalsTableRow: React.FC<TransactionCategoryTotalsTable
   expanded,
   detailsState,
   onToggle,
+  hideMonth = false,
 }) => {
   const { t } = useTranslation();
 
@@ -34,7 +36,7 @@ const TransactionCategoryTotalsTableRow: React.FC<TransactionCategoryTotalsTable
             {expanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell>{row.monthLabel}</TableCell>
+        <TableCell>{hideMonth ? null : row.monthLabel}</TableCell>
         <TableCell>{row.category}</TableCell>
         <TableCell align="right">{formatCurrency(row.totalAmount)}</TableCell>
       </TableRow>

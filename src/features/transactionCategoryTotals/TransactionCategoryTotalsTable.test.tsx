@@ -35,8 +35,10 @@ const defaultProps = {
   rows,
   pagination,
   expandedKeys: {},
+  expandedMonths: {},
   detailsByKey: {},
   onToggle: vi.fn(),
+  onToggleMonth: vi.fn(),
   onPageChange: vi.fn(),
   onPageSizeChange: vi.fn(),
 };
@@ -76,6 +78,7 @@ describe('TransactionCategoryTotalsTable', () => {
   it('passes expanded state to the row component', () => {
     const expandedKeys = { '2026-4-1': true };
     render(<TransactionCategoryTotalsTable {...defaultProps} expandedKeys={expandedKeys} />);
-    expect(screen.getByRole('button', { name: /collapse row/i })).toBeInTheDocument();
+    // month row defaults to expanded (collapse button) + category row with expandedKey=true (collapse button)
+    expect(screen.getAllByRole('button', { name: /collapse row/i })).toHaveLength(2);
   });
 });
