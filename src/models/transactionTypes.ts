@@ -3,3 +3,8 @@ export interface TransactionType {
   code: string;
   name: string;
 }
+
+export interface TransactionTypeMutationPayload {
+  code: string;
+  name: string;
+}

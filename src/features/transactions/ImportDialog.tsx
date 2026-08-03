@@ -5,18 +5,26 @@ import {
   Alert,
   Autocomplete,
   Button,
+  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import type { AppDispatch, RootState } from '../../store';
-import { importTransactions, resetImport, IMPORTER_TYPES, type ImporterType } from './importSlice';
+import {
+  importQuestradeTransactions,
+  importTransactions,
+  resetImport,
+  IMPORTER_TYPES,
+  type ImporterType,
+} from './importSlice';
 
 interface ImportDialogProps {
   open: boolean;
@@ -26,6 +34,7 @@ interface ImportDialogProps {
 }
 
 const IMPORTER_OPTIONS = IMPORTER_TYPES.map((t) => ({ label: t, value: t }));
+const QUESTRADE_IMPORTER: ImporterType = 'questrade';
 
 const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, onError }) => {
   const { t } = useTranslation();
@@ -34,8 +43,14 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
 
   const [importerType, setImporterType] = useState<ImporterType | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [refreshToken, setRefreshToken] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [isPractice, setIsPractice] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isQuestrade = importerType === QUESTRADE_IMPORTER;
 
   // Reset Redux import state every time the dialog opens, regardless of whether
   // the component remounted (exit animation may still be running when reopened)
@@ -55,10 +70,35 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
       setValidationError(t('import.noImporter'));
       return;
     }
+
+    if (isQuestrade) {
+      if (!refreshToken.trim()) {
+        setValidationError(t('import.questrade.noRefreshToken'));
+        return;
+      }
+      if (!startDate || !endDate) {
+        setValidationError(t('import.questrade.noDateRange'));
+        return;
+      }
+
+      setValidationError(null);
+      dispatch(
+        importQuestradeTransactions({
+          refreshToken: refreshToken.trim(),
+          startDate,
+          endDate,
+          accountNumber: accountNumber.trim() || undefined,
+          isPractice,
+        })
+      );
+      return;
+    }
+
     if (!file) {
       setValidationError(t('import.noFile'));
       return;
     }
+
     setValidationError(null);
     dispatch(importTransactions({ importerType, file }));
   };
@@ -104,6 +144,11 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
           onExited: () => {
             setImporterType(null);
             setFile(null);
+            setRefreshToken('');
+            setStartDate('');
+            setEndDate('');
+            setAccountNumber('');
+            setIsPractice(false);
             setValidationError(null);
           },
         },
@@ -127,6 +172,7 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
             value={importerType ? { label: importerType, value: importerType } : null}
             onChange={(_, newVal) => {
               setImporterType((newVal?.value as ImporterType) ?? null);
+              setFile(null);
               setValidationError(null);
             }}
             disabled={loading || isSuccess}
@@ -135,29 +181,96 @@ const ImportDialog: React.FC<ImportDialogProps> = ({ open, onClose, onSuccess, o
             )}
           />
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,text/csv"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
+          {isQuestrade ? (
+            <Stack spacing={2}>
+              <TextField
+                label={t('import.questrade.refreshToken')}
+                value={refreshToken}
+                onChange={(event) => {
+                  setRefreshToken(event.target.value);
+                  setValidationError(null);
+                }}
+                disabled={loading || isSuccess}
+                required
+                multiline
+                minRows={3}
+              />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <TextField
+                  label={t('import.questrade.startDate')}
+                  type="date"
+                  value={startDate}
+                  onChange={(event) => {
+                    setStartDate(event.target.value);
+                    setValidationError(null);
+                  }}
+                  disabled={loading || isSuccess}
+                  required
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                />
+                <TextField
+                  label={t('import.questrade.endDate')}
+                  type="date"
+                  value={endDate}
+                  onChange={(event) => {
+                    setEndDate(event.target.value);
+                    setValidationError(null);
+                  }}
+                  disabled={loading || isSuccess}
+                  required
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                />
+              </Stack>
+              <TextField
+                label={t('import.questrade.accountNumber')}
+                value={accountNumber}
+                onChange={(event) => {
+                  setAccountNumber(event.target.value);
+                  setValidationError(null);
+                }}
+                disabled={loading || isSuccess}
+                helperText={t('import.questrade.accountNumberHelp')}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isPractice}
+                    onChange={(event) => setIsPractice(event.target.checked)}
+                    disabled={loading || isSuccess}
+                  />
+                }
+                label={t('import.questrade.practiceMode')}
+              />
+            </Stack>
+          ) : (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
 
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Button
-              variant="outlined"
-              startIcon={<UploadFileIcon />}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading || isSuccess}
-            >
-              {t('import.selectFile')}
-            </Button>
-            {file && (
-              <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {file.name}
-              </Typography>
-            )}
-          </Stack>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Button
+                  variant="outlined"
+                  startIcon={<UploadFileIcon />}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading || isSuccess}
+                >
+                  {t('import.selectFile')}
+                </Button>
+                {file && (
+                  <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {file.name}
+                  </Typography>
+                )}
+              </Stack>
+            </>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>

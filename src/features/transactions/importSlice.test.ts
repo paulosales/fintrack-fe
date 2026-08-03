@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import type { AppDispatch } from '../../store';
 import importReducer, {
+  importQuestradeTransactions,
   importTransactions,
   resetImport,
   IMPORTER_TYPES,
@@ -257,6 +258,50 @@ describe('IMPORTER_TYPES constant', () => {
     expect(IMPORTER_TYPES).toContain('cibic-checking');
     expect(IMPORTER_TYPES).toContain('cibic-savings');
     expect(IMPORTER_TYPES).toContain('c6-checking');
-    expect(IMPORTER_TYPES).toHaveLength(8);
+    expect(IMPORTER_TYPES).toContain('questrade');
+    expect(IMPORTER_TYPES).toHaveLength(9);
+  });
+});
+
+describe('importQuestradeTransactions thunk', () => {
+  it('posts the Questrade payload to the dedicated endpoint', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        import_id: 'quest-id',
+        importer: 'questrade',
+        queued_count: 2,
+        message: '',
+      }),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const store = buildStore({ token: 'tok' });
+    await store.dispatch(
+      importQuestradeTransactions({
+        refreshToken: 'refresh-token',
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+        accountNumber: '12345678',
+        isPractice: true,
+      })
+    );
+
+    const [url, options] = mockFetch.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/import/api/v1/import/questrade');
+    expect(options.method).toBe('POST');
+    expect(options.headers).toMatchObject({
+      Authorization: 'Bearer tok',
+      'Content-Type': 'application/json',
+    });
+    expect(options.body).toBe(
+      JSON.stringify({
+        refresh_token: 'refresh-token',
+        start_date: '2024-01-01',
+        end_date: '2024-01-31',
+        account_number: '12345678',
+        is_practice: true,
+      })
+    );
   });
 });

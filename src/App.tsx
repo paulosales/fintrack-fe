@@ -7,6 +7,7 @@ import TransactionCategoryTotalsPage from './features/transactionCategoryTotals/
 import CategoriesPage from './features/categories/CategoriesPage';
 import AccountsPage from './features/accounts/AccountsPage';
 import AccountTypesPage from './features/accountTypes/AccountTypesPage';
+import TransactionTypesPage from './features/transactionTypes/TransactionTypesPage';
 import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import SettingsPage from './features/settings/SettingsPage';
@@ -33,6 +34,8 @@ const App: React.FC = () => {
         ? '/categories'
         : location.pathname === '/account-types'
           ? '/account-types'
+          : location.pathname === '/transaction-types'
+            ? '/transaction-types'
           : location.pathname === '/accounts'
             ? '/accounts'
             : location.pathname === '/budget-setups'
@@ -93,6 +96,12 @@ const App: React.FC = () => {
             />
             <Tab
               component={RouterLink}
+              to="/transaction-types"
+              value="/transaction-types"
+              label={t('nav.transactionTypes')}
+            />
+            <Tab
+              component={RouterLink}
               to="/accounts"
               value="/accounts"
               label={t('nav.accounts')}
@@ -133,6 +142,7 @@ const App: React.FC = () => {
             />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/account-types" element={<AccountTypesPage />} />
+            <Route path="/transaction-types" element={<TransactionTypesPage />} />
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/budget-setups" element={<BudgetSetupListPage />} />
             <Route path="/budgets" element={<BudgetListPage />} />

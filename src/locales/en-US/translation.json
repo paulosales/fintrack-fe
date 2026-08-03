@@ -15,6 +15,7 @@
     "transactionCategoryTotals": "Transactions By Category",
     "categories": "Categories",
     "accountTypes": "Account Types",
+    "transactionTypes": "Transaction Types",
     "accounts": "Accounts",
     "budgetSetups": "Budget Setup",
     "budgets": "Budget",
@@ -231,6 +232,32 @@
       "deleteAria": "delete account type {{id}}"
     }
   },
+  "transactionTypes": {
+    "title": "Transaction Types",
+    "create": "Create Transaction Type",
+    "edit": "Edit Transaction Type",
+    "created": "Transaction type created.",
+    "updated": "Transaction type updated.",
+    "deleted": "Transaction type deleted.",
+    "deleteConfirm": "Delete transaction type {{id}}?",
+    "empty": "No transaction types found.",
+    "requiredError": "Code and name are required.",
+    "failedLoadTransactionTypes": "Failed to load transaction types: {{error}}",
+    "form": {
+      "code": "Code",
+      "name": "Name"
+    },
+    "columns": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "actions": "Actions"
+    },
+    "actions": {
+      "editAria": "edit transaction type {{id}}",
+      "deleteAria": "delete transaction type {{id}}"
+    }
+  },
   "accounts": {
     "title": "Accounts",
     "create": "Create Account",
@@ -331,7 +358,17 @@
     "success": "{{count}} transactions queued for import.",
     "error": "Import failed: {{error}}",
     "noFile": "Please select a CSV file.",
-    "noImporter": "Please select a bank."
+    "noImporter": "Please select a bank.",
+    "questrade": {
+      "refreshToken": "Questrade Refresh Token",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "accountNumber": "Questrade Account Number",
+      "accountNumberHelp": "Optional when the token only has access to one TFSA account.",
+      "practiceMode": "Use practice environment",
+      "noRefreshToken": "Please provide the Questrade refresh token.",
+      "noDateRange": "Please provide a start and end date."
+    }
   },
   "settings": {
     "title": "Settings",
