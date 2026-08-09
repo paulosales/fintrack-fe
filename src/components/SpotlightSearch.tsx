@@ -25,6 +25,7 @@ const useIsMac = () => {
 };
 
 const navItems = (t: (k: string) => string) => [
+  { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { key: 'transactions', label: t('nav.transactions'), path: '/transactions' },
   {
     key: 'transactionCategoryTotals',

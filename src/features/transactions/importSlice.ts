@@ -32,6 +32,7 @@ export const IMPORTER_TYPES = [
   'nu',
   'cibic-checking',
   'cibic-savings',
+  'cibic-mastercard',
   'c6-checking',
   'questrade',
 ] as const;

@@ -11,6 +11,7 @@ import TransactionTypesPage from './features/transactionTypes/TransactionTypesPa
 import BudgetListPage from './features/budgets/BudgetListPage';
 import BudgetSetupListPage from './features/budgetSetups/BudgetSetupListPage';
 import SettingsPage from './features/settings/SettingsPage';
+import DashboardPage from './features/dashboard/DashboardPage';
 import AuthCallbackPage from './features/auth/AuthCallbackPage';
 import AuthErrorPage from './features/auth/AuthErrorPage';
 import LanguageSelector from './components/LanguageSelector';
@@ -28,7 +29,11 @@ const App: React.FC = () => {
   const isAuthPage = AUTH_PATHS.some((p) => location.pathname.startsWith(p));
 
   const currentTab =
-    location.pathname === '/transaction-category-totals'
+    location.pathname === '/dashboard'
+      ? '/dashboard'
+      : location.pathname === '/transactions'
+      ? '/transactions'
+      : location.pathname === '/transaction-category-totals'
       ? '/transaction-category-totals'
       : location.pathname === '/categories'
         ? '/categories'
@@ -44,7 +49,7 @@ const App: React.FC = () => {
                 ? '/budgets'
                 : location.pathname === '/settings'
                   ? '/settings'
-                  : '/transactions';
+                  : '/dashboard';
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -70,6 +75,7 @@ const App: React.FC = () => {
             </Box>
           </Toolbar>
           <Tabs value={currentTab} textColor="inherit" indicatorColor="secondary" sx={{ px: 2 }}>
+            <Tab component={RouterLink} to="/dashboard" value="/dashboard" label="Dashboard" />
             <Tab
               component={RouterLink}
               to="/transactions"
@@ -134,7 +140,8 @@ const App: React.FC = () => {
           <Route path="/auth/error" element={<AuthErrorPage />} />
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Navigate to="/transactions" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/transactions" element={<TransactionList />} />
             <Route
               path="/transaction-category-totals"
@@ -147,7 +154,7 @@ const App: React.FC = () => {
             <Route path="/budget-setups" element={<BudgetSetupListPage />} />
             <Route path="/budgets" element={<BudgetListPage />} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/transactions" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>
       </Container>

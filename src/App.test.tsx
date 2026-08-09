@@ -43,7 +43,7 @@ const createTestStore = (auth: AuthState = authenticatedAuth) =>
     preloadedState: { auth },
   });
 
-const renderApp = (initialPath = '/transactions', auth: AuthState = authenticatedAuth) => {
+const renderApp = (initialPath = '/dashboard', auth: AuthState = authenticatedAuth) => {
   const store = createTestStore(auth);
   return render(
     <ThemeProvider>
@@ -88,6 +88,7 @@ describe('App', () => {
 
   it('renders all navigation tabs', () => {
     renderApp();
+    expect(screen.getByRole('tab', { name: /Dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Transaction List/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Transactions By Category/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Categories/i })).toBeInTheDocument();
@@ -106,13 +107,13 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: /Categories/i })).toBeInTheDocument();
   });
 
-  it('redirects root path to /transactions', () => {
+  it('redirects root path to /dashboard', () => {
     renderApp('/');
-    expect(screen.getByRole('heading', { name: /Transaction List/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Dashboard/i })).toBeInTheDocument();
   });
 
-  it('redirects unknown paths to /transactions', () => {
+  it('redirects unknown paths to /dashboard', () => {
     renderApp('/unknown-route');
-    expect(screen.getByRole('heading', { name: /Transaction List/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Dashboard/i })).toBeInTheDocument();
   });
 });

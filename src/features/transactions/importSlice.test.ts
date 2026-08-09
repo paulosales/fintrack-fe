@@ -257,9 +257,10 @@ describe('IMPORTER_TYPES constant', () => {
     expect(IMPORTER_TYPES).toContain('nu');
     expect(IMPORTER_TYPES).toContain('cibic-checking');
     expect(IMPORTER_TYPES).toContain('cibic-savings');
+    expect(IMPORTER_TYPES).toContain('cibic-mastercard');
     expect(IMPORTER_TYPES).toContain('c6-checking');
     expect(IMPORTER_TYPES).toContain('questrade');
-    expect(IMPORTER_TYPES).toHaveLength(9);
+    expect(IMPORTER_TYPES).toHaveLength(10);
   });
 });
 
