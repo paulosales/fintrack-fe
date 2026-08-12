@@ -29,10 +29,10 @@ const storedToken = localStorage.getItem(TOKEN_KEY);
 const storedUser = storedToken ? decodeJwtUser(storedToken) : null;
 
 const initialState: AuthState = {
-  token: storedUser ? storedToken : null,
-  user: storedUser,
-  status: storedUser ? 'authenticated' : 'idle',
-};
+      token: storedUser ? storedToken : null,
+      user: storedUser,
+      status: storedUser ? 'authenticated' : 'idle',
+    };
 
 export const refreshAuth = createAsyncThunk('auth/refresh', async () => {
   const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
