@@ -2,9 +2,14 @@ import React from 'react';
 import { Alert, Box, CircularProgress, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../../store';
+import { store } from '../../store';
 import { fetchTransactionCategoryTotalDetails, fetchTransactionCategoryTotals } from '../transactionCategoryTotals/transactionCategoryTotalsSlice';
 import type { TransactionCategoryTotal, TransactionCategoryTotalDetailRequest } from '../transactionCategoryTotals/types';
 import { getTransactionCategoryDetailKey } from '../transactionCategoryTotals/types';
+import { fetchAccounts } from '../accounts/accountsSlice';
+import type { Transaction } from '../transactions/types';
+import { authenticatedFetch } from '../../utils/authenticatedFetch';
+import { UpcomingPaymentsWidget } from './UpcomingPaymentsWidget';
 import { formatCurrency } from '../../utils/currencyUtils';
 import { formatDateTime } from '../../utils/dateUtils';
 
@@ -34,14 +39,30 @@ interface PieMonthAccumulator {
 }
 
 const PIE_COLORS = [
-  '#C0392B',
+  '#E74C3C',
   '#E67E22',
+  '#F39C12',
+  '#27AE60',
   '#16A085',
-  '#2E86C1',
-  '#7D3C98',
-  '#566573',
-  '#B9770E',
-  '#117864',
+  '#2980B9',
+  '#3498DB',
+  '#8E44AD',
+  '#9B59B6',
+  '#D35400',
+  '#C0392B',
+  '#1ABC9C',
+  '#2C3E50',
+  '#7F8C8D',
+  '#E91E63',
+  '#673AB7',
+  '#009688',
+  '#8BC34A',
+  '#FF5722',
+  '#795548',
+  '#607D8B',
+  '#00ACC1',
+  '#F06292',
+  '#5C6BC0',
 ];
 
 const createMonthLabel = (year: number, month: number): string =>
@@ -145,9 +166,92 @@ const describeArc = (
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { detailsByKey } = useSelector((state: RootState) => state.transactionCategoryTotals);
+  const { data: accounts } = useSelector((state: RootState) => state.accounts);
   const [totalsData, setTotalsData] = React.useState<TransactionCategoryTotal[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Upcoming payments forecast state
+  const [forecastTransactions, setForecastTransactions] = React.useState<Transaction[]>([]);
+  const [forecastLoading, setForecastLoading] = React.useState(false);
+  const [forecastError, setForecastError] = React.useState<string | null>(null);
+
+  const loadForecastData = React.useCallback(async () => {
+    setForecastLoading(true);
+    setForecastError(null);
+    try {
+      if (!accounts.length) {
+        void dispatch(fetchAccounts());
+      }
+
+      const firstRes = await authenticatedFetch(
+        '/account/transactions?page=1&page_size=100',
+        {},
+        { dispatch: store.dispatch, getState: store.getState }
+      );
+
+      if (!firstRes.ok) {
+        throw new Error(`HTTP ${firstRes.status}`);
+      }
+
+      const firstBody = (await firstRes.json()) as {
+        success: boolean;
+        data?: Transaction[];
+        pagination?: { totalPages: number };
+        error?: string;
+      };
+
+      if (!firstBody.success || !firstBody.data) {
+        throw new Error(firstBody.error || 'Failed to fetch transactions');
+      }
+
+      const mergedTransactions: Transaction[] = [...firstBody.data];
+      const totalPages = firstBody.pagination?.totalPages || 1;
+      const pagesToFetch = Math.min(totalPages, 6);
+
+      if (pagesToFetch > 1) {
+        const remainingPages = Array.from({ length: pagesToFetch - 1 }, (_, i) => i + 2);
+        const responses = await Promise.all(
+          remainingPages.map(async (page) => {
+            try {
+              const res = await authenticatedFetch(
+                `/account/transactions?page=${page}&page_size=100`,
+                {},
+                { dispatch: store.dispatch, getState: store.getState }
+              );
+              if (!res.ok) return [];
+              const body = (await res.json()) as { success: boolean; data?: Transaction[] };
+              return body.success && Array.isArray(body.data) ? body.data : [];
+            } catch {
+              return [];
+            }
+          })
+        );
+        for (const pageTxs of responses) {
+          mergedTransactions.push(...pageTxs);
+        }
+      }
+
+      const cibicMasterAccount = accounts.find((a) => a.code === 'CIBICMASTER');
+      const normalizedTransactions = mergedTransactions.map((tx) => {
+        if (cibicMasterAccount && tx.accountId === cibicMasterAccount.id && tx.amount > 0) {
+          return { ...tx, amount: -tx.amount };
+        }
+        return tx;
+      });
+
+      setForecastTransactions(normalizedTransactions);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch transaction data for forecast';
+      setForecastError(msg);
+    } finally {
+      setForecastLoading(false);
+    }
+  }, [accounts.length, dispatch]);
+
+  React.useEffect(() => {
+    void loadForecastData();
+  }, [loadForecastData]);
 
   const [activeSlice, setActiveSlice] = React.useState<{
     monthLabel: string;
@@ -236,12 +340,32 @@ const DashboardPage: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
         Dashboard
       </Typography>
-      <Typography variant="body1" sx={{ mb: 3 }}>
-        Expense by category for the last 6 months.
+      <Typography variant="body1" sx={{ mb: 3 }} color="text.secondary">
+        Financial overview, upcoming payment forecasts, and expense analytics.
       </Typography>
+
+      {/* ── TOP WIDGET: Upcoming Payments Forecast ──────────────── */}
+      <UpcomingPaymentsWidget
+        transactions={forecastTransactions}
+        accounts={accounts}
+        loading={forecastLoading}
+        error={forecastError}
+        onRefresh={loadForecastData}
+        defaultWindowDays={30}
+      />
+
+      {/* ── Category Breakdown Section ──────────────────────────── */}
+      <Box sx={{ mt: 4, mb: 2 }}>
+        <Typography variant="h5" component="h2" sx={{ fontWeight: 700, letterSpacing: '-0.01em' }}>
+          Expense by Category
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Distribution across categories for the last 6 months. Hover over slices to inspect transactions.
+        </Typography>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>

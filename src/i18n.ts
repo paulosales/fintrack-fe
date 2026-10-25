@@ -57,7 +57,7 @@ const normalizeLanguage = (value?: string | null): SupportedLanguage => {
 };
 
 const savedLanguage =
-  typeof window !== 'undefined' ? window.localStorage.getItem('fintrack-language') : null;
+  typeof window !== 'undefined' ? window.localStorage?.getItem?.('fintrack-language') : null;
 const browserLanguage = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
 
 void i18n.use(initReactI18next).init({
@@ -71,7 +71,7 @@ void i18n.use(initReactI18next).init({
 
 i18n.on('languageChanged', (language) => {
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem('fintrack-language', language);
+    window.localStorage?.setItem?.('fintrack-language', language);
   }
 });
 
